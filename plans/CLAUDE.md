@@ -67,8 +67,3 @@ not go stale. That is what makes the whole test suite runnable without network a
   domain conventions). `domain.md` has been corrected to point at this repo's real locations
   (`plans/decisions/CONTEXT.md`, `plans/decisions/adr/`); if a setup skill regenerates it, that
   fix must be reapplied.
-
-## Next steps
-
-A **PRD** drawing `decisions/` together into one buildable specification, then numbered issues
-derived from it.

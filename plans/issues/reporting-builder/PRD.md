@@ -2,10 +2,20 @@
 
 Status: ready-for-agent
 
-Source of truth for every decision referenced here: `plans/decisions/` — in particular
-`CONTEXT.md` (vocabulary), `api-report-fresh.md` (upstream contract), `architecture.md`
-(technical design), and ADR-0001 / ADR-0002. Terms in **bold** are defined in `CONTEXT.md`
-and are used with exactly that meaning throughout.
+**This document is the source of truth for the app.** It is the entry point; the documents
+below carry the depth it summarises. Terms in **bold** are defined in the glossary and are used
+with exactly that meaning throughout.
+
+| Read next | For |
+|---|---|
+| [`../../decisions/CONTEXT.md`](../../decisions/CONTEXT.md) | Domain glossary. Read before naming anything. |
+| [`../../decisions/api-report-fresh.md`](../../decisions/api-report-fresh.md) | The upstream API contract. **Overrides the vendor's published spec**, which is wrong in ~19 places. |
+| [`../../decisions/architecture.md`](../../decisions/architecture.md) | Technical design: modules, tool surface, repair taxonomy, SSE events, chart rules, deployment, verification ladder. The operational detail this PRD summarises. |
+| [`../../decisions/adr/`](../../decisions/adr/) | ADR-0001 (caching), ADR-0002 (Assistant tools and Repair), ADR-0003 (dev-only fakes). |
+| [`../../../scratch/README.md`](../../../scratch/README.md) | Read before touching `scratch/` — it holds conclusions that were later overturned. |
+
+`plans/decisions/` is current and agreed. `plans/old_decision_depricated/` is superseded and must
+not inform implementation.
 
 ---
 

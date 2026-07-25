@@ -17,18 +17,15 @@ lines, it belongs in a doc and this file keeps only the pointer.
 
 Where two documents disagree, `plans/decisions/architecture.md` wins.
 
-## Where things are
+## Source of truth
 
-- **Spec index** — `plans/CLAUDE.md` describes every file in `plans/` and when to read it.
-- **Glossary** — `plans/decisions/CONTEXT.md`. Read before naming anything.
-- **ADRs** — `plans/decisions/adr/`. Read the ones touching your area before changing behaviour.
-- **Upstream API contract** — `plans/decisions/api-report-fresh.md`. This **overrides** the
-  vendor's published `/spec`, which is wrong in ~19 places.
-- **Technical design** — `plans/decisions/architecture.md`. The operational spine: modules,
-  tool surface, repair taxonomy, SSE events, deployment, verification ladder.
-- **Issue tracker conventions** — `plans/agents/issue-tracker.md`.
-- **Triage labels** — `plans/agents/triage-labels.md` (`needs-triage`, `needs-info`,
-  `ready-for-agent`, `ready-for-human`, `wontfix`).
+**[`plans/issues/reporting-builder/PRD.md`](plans/issues/reporting-builder/PRD.md) is the source
+of truth for the whole app.** Start there. It defines the problem, the solution, every user story,
+and every implementation and testing decision — and its header points onward to the supporting
+documents (glossary, upstream contract, technical design, ADRs) when you need that depth.
+
+Do not go looking for a second opinion elsewhere in the repo. Where anything disagrees with the
+PRD and the documents it points to, they win.
 
 ## Vocabulary — one trap worth stating here
 
