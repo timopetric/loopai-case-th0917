@@ -1,6 +1,6 @@
 # 06 — Date range, grouping and granularity controls
 
-Status: ready-for-agent
+Status: done
 
 ## Parent
 

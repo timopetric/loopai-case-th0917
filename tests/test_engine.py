@@ -462,6 +462,140 @@ class TestActionedEmailsNonAdditiveAcrossActors:
         assert table.warnings == []
 
 
+class TestSingleBucketCollapseIsFirstClassForBothMetricFamilies:
+    """Issue 06: collapsing the whole Coverage Window into one Bucket must be
+    a first-class engine path, not a special case bolted onto grouping — it
+    is what makes ranking possible in issue 07. This class asserts that
+    collapse for *both* metric families (Counters and Duration Metrics),
+    ungrouped and grouped, against fixture figures re-derived independently
+    with a standalone script reading `app/dev_fixtures/resp-full-unscoped-latest.json`
+    directly (`sum(raw[key])`, `sum(raw[f"{key}_count"])`) — not via
+    `upstream.py` or `engine.py`:
+
+        resolved:      Σ = 16372 (108 Actors, 103 Mailboxes)
+        resolve_time:  Σvalue = 187974.09936833332, Σcount = 16371,
+                       mean = 11.482139109909799
+        handle_time:   Σvalue = 85.06691555555557, Σcount = 6407,
+                       mean = 0.013277183635953734
+                       (differs from the issue brief's quoted 85.06691555555555
+                       / 0.01327718363595373 in the last digit or two — plain
+                       Python `sum()` summation order — re-derived rather than
+                       trusted verbatim, per the issue's own instruction.)
+    """
+
+    def test_counter_family_collapses_to_one_row_per_entity_that_reconciles(
+        self, dataset
+    ) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="total",
+            group_by="mailbox",
+        )
+
+        table = execute(spec, dataset)
+
+        assert len(table.rows) == 103
+        assert all(row.bucket == "total" for row in table.rows)
+        assert sum(row.values["resolved"] for row in table.rows) == TOTAL_RESOLVED
+        assert table.totals["resolved"] == TOTAL_RESOLVED
+
+    def test_duration_family_collapses_to_one_row_per_entity_with_weighted_means(
+        self, dataset
+    ) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.HANDLE_TIME],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="total",
+            group_by="agent",
+            duration_display="avg",
+        )
+
+        table = execute(spec, dataset)
+
+        assert len(table.rows) == 108
+        assert all(row.bucket == "total" for row in table.rows)
+        # A per-entity weighted mean over the whole window, never a mean of
+        # that entity's 14 daily averages: reconstruct entity totals from raw
+        # per-bucket arrays and confirm the engine's collapsed cell matches
+        # Σvalue/Σcount exactly, for every entity that did any work.
+        for entity in dataset.actors:
+            entity_sum = sum(entity.metrics["handle_time"])
+            entity_count = sum(entity.counts["handle_time"])
+            row = next(r for r in table.rows if r.group_key == entity.id)
+            if entity_count == 0:
+                assert row.values["handle_time"] is None
+            else:
+                assert row.values["handle_time"] == pytest.approx(
+                    entity_sum / entity_count, rel=1e-12
+                )
+
+    def test_ungrouped_duration_collapse_matches_the_independently_derived_whole_window_figure(
+        self, dataset
+    ) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVE_TIME],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="total",
+            group_by="none",
+            duration_display="avg",
+        )
+
+        table = execute(spec, dataset)
+
+        assert table.rows[0].values["resolve_time"] == pytest.approx(
+            11.482139109909799, rel=1e-12
+        )
+        assert table.rows[0].counts["resolve_time"] == 16371
+
+    def test_ungrouped_counter_collapse_matches_the_independently_derived_whole_window_figure(
+        self, dataset
+    ) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="total",
+            group_by="none",
+        )
+
+        table = execute(spec, dataset)
+
+        assert table.rows[0].values["resolved"] == 16372
+        assert table.rows[0].bucket == "total"
+
+    def test_collapsing_does_not_disturb_the_zero_count_none_sentinel(self, dataset) -> None:
+        """Follow-on from issue 05, restated for the collapsed path: which
+        cells are zero-count changes when 14 daily buckets collapse into one
+        (an Actor with a single ticket on one day is no longer zero-count
+        that day once collapsed), but a *genuinely* zero-count entity across
+        the whole window must still render `None`, never `0.0`, after
+        collapse."""
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVE_TIME],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="total",
+            group_by="agent",
+            duration_display="avg",
+        )
+
+        table = execute(spec, dataset)
+
+        zero_ticket_row = next(r for r in table.rows if r.group_key == "user_yoJRgsMu")
+        assert zero_ticket_row.values["resolve_time"] is None
+        assert zero_ticket_row.counts["resolve_time"] == 0
+        # And under "total" display the same collapsed cell is a true 0.0,
+        # not withheld — the avg/total asymmetry survives collapse too.
+        total_spec = spec.model_copy(update={"duration_display": "total"})
+        total_table = execute(total_spec, dataset)
+        total_row = next(r for r in total_table.rows if r.group_key == "user_yoJRgsMu")
+        assert total_row.values["resolve_time"] == 0.0
+
+
 class TestUnsupportedMetrics:
     def test_a_sum_kind_metric_is_not_yet_supported_by_any_slice(self, dataset) -> None:
         """`replies_to_resolve` (`kind == "sum"`) is out of issue 05's scope

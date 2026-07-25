@@ -3,6 +3,19 @@ import type { CSSProperties } from "react";
 import type { ReportTable as ReportTableData } from "./lib/report";
 
 /**
+ * The group column header must follow the selected grouping (issue 06) —
+ * this used to be hardcoded to "Actor" from when `group_by` could only ever
+ * be "agent" (issue 04). The wire value stays `"agent"` (CONTEXT.md — the
+ * upstream/spec spelling is correct and not renamed); only the label
+ * shown to the user is "Actor".
+ */
+function groupColumnLabel(groupBy: "none" | "agent" | "mailbox"): string | null {
+  if (groupBy === "agent") return "Actor";
+  if (groupBy === "mailbox") return "Mailbox";
+  return null;
+}
+
+/**
  * A plain table of the executed report (issue 04), extended in issue 05 for
  * Duration Metrics: every duration column header names its unit, hovering a
  * duration cell reveals the `_count` behind it (the tooltip, not a column —
@@ -12,8 +25,15 @@ import type { ReportTable as ReportTableData } from "./lib/report";
  * metadata the backend sends — no client-side re-aggregation, so preview and
  * exports (added in later slices) cannot disagree with what is on screen.
  */
-export function ReportTable({ table }: { table: ReportTableData }) {
-  const hasGroups = table.rows.some((row) => row.group_label !== null);
+export function ReportTable({
+  table,
+  groupBy,
+}: {
+  table: ReportTableData;
+  groupBy: "none" | "agent" | "mailbox";
+}) {
+  const groupLabel = groupColumnLabel(groupBy);
+  const hasGroups = groupLabel !== null && table.rows.some((row) => row.group_label !== null);
 
   return (
     <>
@@ -28,7 +48,7 @@ export function ReportTable({ table }: { table: ReportTableData }) {
         <thead>
           <tr>
             <th style={headerStyle}>Day</th>
-            {hasGroups && <th style={headerStyle}>Actor</th>}
+            {hasGroups && <th style={headerStyle}>{groupLabel}</th>}
             {table.columns.map((column) => (
               <th key={column.key} style={headerStyle}>
                 {column.label}

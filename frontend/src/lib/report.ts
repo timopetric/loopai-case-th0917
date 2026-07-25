@@ -47,6 +47,18 @@ export interface ReportTable {
   warnings: string[];
 }
 
+/**
+ * Mirrors `app/engine.py`'s `_label()` exactly (`key.replace("_", " ").capitalize()`)
+ * so a metric picker built from the catalogue (`/api/v1/meta`, which carries
+ * `key`/`kind`/`unit` but no display label) reads the same as the resulting
+ * table's column headers, without hardcoding a metric list anywhere in the
+ * frontend (issue 06).
+ */
+export function formatMetricLabel(key: string): string {
+  const withSpaces = key.replace(/_/g, " ");
+  return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
+}
+
 export async function fetchReport(spec: ReportSpec): Promise<ReportTable> {
   const response = await apiFetch("/api/v1/report", {
     method: "POST",
