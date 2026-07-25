@@ -1,6 +1,6 @@
 # 01 — Walking skeleton
 
-Status: ready-for-agent
+Status: done
 
 ## Parent
 
