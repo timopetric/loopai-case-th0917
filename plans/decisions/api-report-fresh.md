@@ -799,7 +799,7 @@ or per-ticket effort?" — it is a **sum of per-ticket durations in hours**, wit
 `handle_time_count` tickets contributing, giving ~48 s/ticket (B8 proves the sum semantics).
 Exposing both the total and the per-ticket average, as they propose, is right.
 
-**D5. Flag, not override — the "no cache" decision.** `architecture.md` D2's risk row already
+**D5. Flag, not override — the "no cache" decision.** *(Resolved 2026-07-25: the flag was accepted; see ADR-0001 — the app now fetches the full window and memoises it for 5 minutes, keyed on the `/health` coverage window.)* `architecture.md` D2's risk row already
 anticipates this ("if latency ever bites, add a per-process memo"). B12 quantifies it: every
 call returns the same 362 KB in ~0.3 s regardless of parameters, and the payload is provably
 static across days (C1). The measurements support the decision being low-risk; my only ask is

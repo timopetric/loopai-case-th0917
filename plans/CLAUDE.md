@@ -30,6 +30,7 @@ Paths written in backticks inside these documents (e.g. `scratch/fresh-eyes/`) a
 |---|---|
 | [`0001`](decisions/adr/0001-fetch-full-coverage-window-and-memoise.md) | Fetch the full coverage window on every miss, memoised 5 minutes, keyed on the `/health` window. Supersedes the earlier "no caching layer" rule. |
 | [`0002`](decisions/adr/0002-field-scoped-assistant-tools-that-repair.md) | Field-scoped Assistant tools over one atomic patch, chosen for progressive rendering; cross-field drift is repaired and reported, never rejected. |
+| [`0003`](decisions/adr/0003-dev-only-fakes-for-the-verification-loop.md) | Development-only `DEV_FAKE_UPSTREAM` / `DEV_FAKE_LLM` flags make the browser verification loop free and deterministic; refused outside development, banner shown when active. |
 
 ---
 
@@ -43,6 +44,9 @@ Paths written in backticks inside these documents (e.g. `scratch/fresh-eyes/`) a
 ---
 
 ## `scratch/` — evidence, and a build-time dependency
+
+**See `scratch/README.md` first** — it lists the superseded conclusions inside that directory that
+will mislead anyone reading them in isolation.
 
 Not specification, but **not disposable either** — two things in it are needed while building:
 
@@ -60,7 +64,9 @@ not go stale. That is what makes the whole test suite runnable without network a
 ## Also not in this folder
 
 - **`plans/agents/`** — meta-docs consumed by tooling (issue-tracker layout, triage labels,
-  domain conventions). Pre-existing; untouched by this reorganisation.
+  domain conventions). `domain.md` has been corrected to point at this repo's real locations
+  (`plans/decisions/CONTEXT.md`, `plans/decisions/adr/`); if a setup skill regenerates it, that
+  fix must be reapplied.
 
 ## Next steps
 

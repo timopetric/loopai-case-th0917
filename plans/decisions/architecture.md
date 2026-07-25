@@ -7,7 +7,7 @@ Companion docs: [idea.md](idea.md) (problem, findings, product scope) and [api-m
 - FastAPI + Python backend, `uv` tooling; config via **pydantic-settings** reading `.env` (playbook §3). `.env.example` committed.
 - Frontend: **React** (+ Vite + TS) — chosen over Preact for execution speed with well-trodden patterns.
 - Single microservice: multi-stage Docker, frontend built and served through FastAPI. Deploy: Railway.
-- **No database, no mock mode; a 5-minute in-process memo of one dataset** (revised — see ADR-0001). The backend fetches the full Coverage Window from the real upstream and memoises that single normalised dataset for 5 minutes, slicing requested ranges locally. Saved response snapshots exist only as test fixtures and scratch evidence, never as a runtime data path.
+- **No database, no mock mode; a 5-minute in-process memo of one dataset** (revised — see ADR-0001). The backend fetches the full Coverage Window from the real upstream and memoises that single normalised dataset for 5 minutes, slicing requested ranges locally. Saved response snapshots exist only as test fixtures and scratch evidence, never as a shipped runtime data path. *(Narrow exception: `DEV_FAKE_UPSTREAM` / `DEV_FAKE_LLM` serve fixtures for the verification loop and are refused outside development — ADR-0003.)*
 - AI agent: **OpenRouter** (OpenAI-compatible), model **`qwen/qwen3.6-plus`** — slug confirmed live 2026-07-25, see §5. Orchestrated with **LangGraph** (kept minimal — see D4). Prompt templates as **`*.jinja`** files.
 - Tool calls run **on the backend**; the frontend receives **SSE** events that are translated server-side into user-friendly messages/tags — internal tool names/args never leak.
 - Backend is auth-gated (shared key/password in Settings) since it now hosts the agent chat (and pays for LLM tokens).
@@ -91,6 +91,37 @@ Produced/consumed by: builder UI (edits it), agent (edits it via tools), engine 
 - `.env.example` (committed, exhaustive, commented) ↔ `Settings` fields 1:1. `.env` gitignored.
 - `.gitignore` covers `.env`, venv/node/dist/pycache. **Test fixtures are committed, never gitignored** (playbook §15: tests must pin fixtures).
 - Prompt templates: `app/agent/prompts/*.jinja`, rendered with jinja2 (`report_agent_system.jinja`, `spec_diff_summary.jinja`, …). Templates get: current spec JSON, metric catalog with units gotchas, data window, tool guidance.
+
+### Makefile — the single UX surface
+
+```make
+make backend    # uvicorn --reload on :8000        ← own terminal, live reload output
+make frontend   # vite dev server on :5173         ← own terminal, live HMR output
+make dev        # both together (convenience only; prefer the two above when debugging)
+make test       # pytest — offline, no network, no LLM
+make lint       # ruff + tsc --noEmit
+make check      # lint + test in one command: the single green signal
+make build      # docker build -t timopetric/caseth0917:$(TAG)
+make run        # run the built image on :8000     ← the §12 browser-checklist target
+make push       # push :$(TAG) and :latest to Docker Hub
+```
+
+`backend` and `frontend` are deliberately separate so each runs in its own terminal with its
+own live output — reload errors and Vite HMR messages are the fastest debugging signal there is,
+and interleaving them into one stream hides both. `make dev` exists for convenience, not for
+debugging. `make run` earns its place because §12 requires the browser checklist to run against
+the **built image**, where a build-time-config mistake would surface and the dev server cannot.
+
+### Logging — loguru, kept plain
+
+One loguru sink to stderr, level from `LOG_LEVEL`, stdlib and uvicorn loggers intercepted so
+everything shares one format. No file sinks, no rotation, no request-id middleware — the
+platform captures stderr and that is enough here.
+
+What gets logged: upstream fetches (cache hit/miss, coverage window), Assistant Tool Steps with
+tool names and durations, **Repairs** applied, and every error with a stack trace. What must
+**never** be logged: the shared API key, the OpenRouter key, or any full prompt. Tool names are
+fine server-side — they only must not reach the browser (§6).
 
 ## 5. AI agent
 
@@ -269,12 +300,12 @@ State: one `ReportSpec` store (Zustand — tiny, Claude-familiar), synced to URL
 ## 8. Decision log (updated)
 
 - **D1 aggregation on backend** — unchanged (shared path for preview/exports/agent).
-- **D2 upstream strategy — revised twice, now final: direct live calls only.** No cache, no MOCK switch, no boundary ABC — one thin client module, faked in tests via dependency override with committed fixtures. Rationale: the app is a live proxy + client-side aggregator; a mock/cache layer was insurance we decided not to buy (Timo's call, 2026-07-25 — simplicity and speed of build win; the scratch snapshots remain as emergency fixtures if upstream ever vanishes).
+- **D2 upstream strategy — revised again, now final: full-window fetch + 5-minute in-process memo (ADR-0001).** No MOCK switch, no boundary ABC, no database — one thin client module, faked in tests via dependency override with committed fixtures. The earlier "no cache at all" position was superseded once probing showed every response is the same 362 KB payload regardless of parameters: memoising one dataset keyed on the `/health` Coverage Window costs nothing and is what lets an out-of-range request be refused locally instead of silently answered.
 - **D3 persistence: no database at all** — not even as a V2 path. Spec-in-URL covers sharing; chat history is per-session in memory. If "saved named reports" ever becomes real, revisit — but nothing in this product needs a DB, and Postgres would be pure infrastructure theater here.
 - **D4 agent: LangGraph minimal ReAct + OpenRouter/qwen** — replaces "single forced tool call". Structured edits via pydantic-validated tools; streaming via §6. Fallback: hand-rolled loop if framework streaming misbehaves; graceful "agent unavailable" without an API key.
 - **D5 frontend: React + Vite** — replaces Preact (speed of execution over bundle size).
 - **D6 auth: shared X-API-Key** in Settings + login screen — new.
-- **Playbook adoptions:** config.py pattern, auth-once-on-router, error envelope, `.env.example` discipline, fixtures-committed rule, uv + Makefile-lite.
+- **Playbook adoptions (7, all one-file-or-one-rule):** `config.py` pattern, auth-once-on-router, error envelope, `.env.example` discipline, committed-fixtures rule, `.python-version`, thin Makefile, small `conftest.py`, root `AGENTS.md` router (+ `CLAUDE.md` symlink), and the principle that upstream DTO shapes never surface as API models. **Logging: loguru**, single stderr sink, no file/rotation machinery.
 - **Playbook skips (deliberate, one-night sprint):** Postgres/alembic/repositories (no DB at all), the boundary ABC+factory+MOCK idiom (a single thin client + test-time dependency override suffices), request-id middleware + loguru contract (std logging OK), CI/release machinery, ADR/issue tracker, integration-test tier (unit tests on engine/exporters/agent-loop with the committed fixture), digest-pinned/rootless Docker hardening (basic multi-stage only).
 
 ## 9. Deployment
@@ -313,46 +344,79 @@ loopai/
 | Risk | Mitigation |
 |---|---|
 | Upstream changes/vanishes during eval | Accepted risk (direct-call decision): no runtime fallback; committed scratch snapshots would let us wire an emergency stub quickly if it ever dies |
-| Every preview hits upstream (no cache) | Fine at this scale (one POST, small payload); if latency ever bites, add a per-process memo — deliberately not built now |
+| Stale data served from the 5-minute memo | Acceptable: the upstream dataset is provably static across calendar days, so the memo can only be stale about a dataset that does not change. The `/health` Coverage Window is re-read on the same interval, so a redeployed upstream is picked up within 5 minutes (ADR-0001) |
 | Units assumption (hours) wrong | Isolated in `upstream/normalize.py`; README + UI tooltip state it |
 | qwen tool-calling quality via OpenRouter | **Largely retired 2026-07-25** — smoke-tested live against the 9-tool strict-enum surface (§5): correct tool selection, 3 parallel calls in one message, zero enum hallucination across all tests. Two residual guards remain: never parse assistant prose as tool calls, and absorb the reasoning-delta preamble in the SSE presenter. `LLM_MODEL` stays swappable. |
 | LangGraph streaming ↔ SSE impedance | Presenter isolates the mapping; fallback to hand-rolled openai-sdk loop behind the same event taxonomy |
 | SSE through Railway proxy | Heartbeats, one-stream-per-message, client auto-retry |
 | Excel/chart polish eats the night | Time-capped; table + CSV are the product's core |
 
-## 12. Verification loop (browser-driven self-test)
+## 12. Verification loop — the autonomy ladder
 
-Unit tests cover the engine, exporters and Assistant loop, but none of them prove the *app*
-works — that the SPA builds, the login gate passes, a report renders, the chart draws, exports
-download, and the Assistant visibly moves the controls. That gap is exactly where a one-night
-build breaks.
+Unit tests cover pure functions; none of them prove the *app* works. This section defines three
+levels of verification, cheapest first. **A coding agent should climb only as far as the change
+requires, but must reach level 3 before declaring the work done.**
 
-**Make browser verification a step in the build process**, not a manual afterthought:
+### Level 1 — `make check` (offline, free, after every edit)
 
-1. `uv run uvicorn app.main:app --reload` (backend) + `npm run dev` (Vite) — or the built
-   image, to test what actually ships.
-2. Drive a real browser over **Chrome DevTools MCP**: open the app, enter the API key, pick a
-   preset, assert the table has rows, switch `chart_metric`, download a CSV, send the
-   Assistant a plain-English request, and confirm the builder controls move.
-3. Read the console and network panels — a 401 loop, a CORS surprise, or a `VITE_*` baked to
-   `localhost` all surface here and nowhere else.
+Lint, typecheck, unit tests and **API-level tests** in one command. The API-level tests
+(`test_api.py`) drive the real routes in-process via FastAPI's `TestClient` with `upstream`
+faked from the committed fixture and a **fake LLM** returning scripted tool calls. No network,
+no Docker, no tokens. They catch what unit tests structurally cannot — the seams:
 
-Checks worth scripting, because each maps to a decision that could silently regress:
+- the auth dependency is actually attached (a request without a key is rejected)
+- export routes return spreadsheet content-types, and the CSV parses with a standard reader
+- a **Report Spec** survives a round-trip through URL query parameters, so shared links work
+- the SSE stream emits well-formed frames in the right order (`thinking → status → spec → token → done`)
+- the Tool Step budget forces a final prose answer
+- **no tool name, argument or prompt fragment appears anywhere in the stream**
+
+This is the loop that makes an agent autonomous: a deterministic full-stack red/green it can run
+unattended after every edit.
+
+### Level 2 — browser against dev fakes (free, no tokens, no upstream dependency)
+
+`make run` the built image with `DEV_FAKE_UPSTREAM=1 DEV_FAKE_LLM=1` (ADR-0003), then drive it
+with **Chrome DevTools MCP**: open the app, sign in, click through presets, change metrics and
+dates, download an export, send the Assistant a request and watch the controls move. Read the
+console and network panels — a 401 loop, a CORS surprise, or a build-time value baked to
+`localhost` surface here and nowhere else.
+
+Use this level for anything about layout, interaction, wiring or copy. It is fast, repeatable
+and costs nothing, so an agent can iterate on the UI, screenshot the result, notice its own
+mistakes and fix them without human involvement. The UI shows a fake-mode banner throughout, so
+screenshots cannot later be mistaken for live evidence.
+
+### Level 3 — browser against the real thing (costs tokens; required before "done")
+
+Same walkthrough, `make run` with real credentials: live upstream, live OpenRouter key. This is
+the only level that proves the units are right against today's data, that the **Coverage
+Window** is read correctly from `/health`, and that the real model drives the nine tools as the
+smoke test predicted. Run it last, run it once, and read the output rather than assuming it.
+
+### The checklist (levels 2 and 3)
+
+Each row maps to a decision capable of regressing silently:
 
 | Check | Guards |
 |---|---|
-| Coverage banner shows `10–23 Jul 2026` | `/health` wiring + fallback (ADR-0001) |
-| A date outside coverage is refused, not silently substituted | the fail-open trap |
+| Coverage banner shows the window from `/health` | `/health` wiring + fallback (ADR-0001) |
+| A date outside coverage is refused, not silently substituted | the upstream fail-open trap |
 | Duration column header reads `(h)` and the value is hours | the units finding |
+| Hovering a duration cell reveals the underlying count | invisible-denominator trap |
+| `actioned_emails` shows `—` in the Total row when grouped by Actor | non-additive metric |
 | `set_chart` on an unselected metric adds a column and says so | Repair reporting (ADR-0002) |
 | Assistant request updates controls **incrementally**, not in one snap | field-scoped tools |
-| Chart hides when `granularity: "total"` | chart mode rule |
-| “Thinking…” appears within ~1 s of sending, then clears | `thinking` event wiring |
+| "Thinking…" appears within ~1 s of sending, then clears | `thinking` event wiring |
 | No tool names or enum values appear anywhere in the chat UI | prose/reasoning containment |
+| Chart hides when `granularity: "total"` | chart mode rule |
+| A series keeps its colour when the date range changes | entity-stable colour |
 | XLSX has a second "Report info" sheet | export split |
 | CSV parses with `pandas.read_csv` with no preamble rows | export split |
+| A shared URL reproduces the report exactly | spec-in-URL |
+| Sign-out then a bad key returns to login with the spec intact | 401 handling |
 
-*Status:* `chrome-devtools-mcp@chrome-devtools-plugins` has been added and will be available in
-new sessions. Run this loop against the **built image**, not only the dev server — that is where
-a build-time-config mistake would first appear, and the dev server cannot catch it by
-construction.
+*Status:* `chrome-devtools-mcp@chrome-devtools-plugins` is configured and available in new
+sessions. Levels 2 and 3 must run against the **built image**, not the dev server — that is
+where a build-time-configuration mistake would first appear, and the dev server cannot catch it
+by construction.

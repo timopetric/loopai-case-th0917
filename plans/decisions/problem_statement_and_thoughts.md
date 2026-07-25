@@ -1,3 +1,16 @@
+> **HISTORICAL INPUT — not a specification.** This is the owner's original, unedited brief and
+> preferences, kept because it is the source of the ask. Several ideas explored here were
+> **rejected** during design and must NOT be implemented:
+>
+> - **Postgres / any database — rejected.** No persistence at all (D3). Sharing is by URL;
+>   chat history is per-session in memory.
+> - **CodeMirror — not used** in this version.
+> - **Preact — rejected** in favour of React (D5).
+> - `docker compose` remains only as a one-command local run; the deployed image is built
+>   locally and pushed to a registry (§9).
+>
+> Where this file and `architecture.md` disagree, **`architecture.md` wins**.
+
 
 
 https://ai-homework-production-2423.up.railway.app/

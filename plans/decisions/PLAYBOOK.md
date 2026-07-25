@@ -1,3 +1,12 @@
+> **REFERENCE ONLY — from a different project (`pobude`).** This is scaffolding guidance, not a
+> decision record for this repo, and it describes a service with a database, Postgres/alembic,
+> repositories, CI/release machinery and a GitLab pipeline — **none of which apply here**.
+> Its internal links point into the pobude repo and are expected to be broken.
+>
+> `architecture.md` §0 and §8 state exactly which patterns are **adopted** (config, auth-once
+> on the router, error envelope, `.env.example` discipline, committed fixtures, uv) and which
+> are **deliberately skipped**. Follow that list, not this document, whenever the two differ.
+
 # FastAPI Microservice Playbook
 
 Distilled from building **pobude** (the similarity microservice) in July 2026 — from PRD to

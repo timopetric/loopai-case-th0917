@@ -87,9 +87,13 @@ smallest and the most likely to be checked.
 
 6. The AI agent, editing the same `ReportSpec` through validated tool calls.
 
-**Cut without regret:** charts, saved/scheduled reports, user management, pagination,
-virtualised tables, dark mode, drill-downs, anything touching `filters`, any granularity or
-timezone control. Most of those either don't work upstream or don't survive contact with a
+**Cut without regret:** saved/scheduled reports, user management, pagination,
+virtualised tables, drill-downs, anything touching `filters`, any granularity or
+timezone control.
+
+*Revised 2026-07-25:* **charts are IN**, not cut. Once `ReportTable` carries raw numbers plus
+per-column metadata, a chart is a second consumer of an object that already exists — see
+`architecture.md` §7 for the settled design (single metric, top-8, entity-stable colour). Most of those either don't work upstream or don't survive contact with a
 one-night deadline.
 
 **Keep despite being cheap-looking:** shareable URLs encoding the spec. In a reporting
