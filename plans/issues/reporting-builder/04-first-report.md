@@ -1,6 +1,6 @@
 # 04 — First report: Counters, day by Actor
 
-Status: ready-for-agent
+Status: done
 
 ## Parent
 

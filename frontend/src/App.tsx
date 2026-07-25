@@ -1,17 +1,36 @@
 import { useEffect, useState } from "react";
 
+import { ReportTable } from "./ReportTable";
 import { SignIn } from "./SignIn";
 import { UNAUTHORIZED_EVENT, apiFetch } from "./lib/apiClient";
 import { getStoredApiKey } from "./lib/apiKey";
 import type { Meta } from "./lib/meta";
 import { fetchMeta } from "./lib/meta";
+import type { ReportSpec, ReportTable as ReportTableData } from "./lib/report";
+import { fetchReport } from "./lib/report";
+
+/**
+ * The client's literal ask (PRD user story 3): day × Actor, populated the
+ * moment the app opens, no controls touched. Metrics are Counters only —
+ * this slice's engine does not yet aggregate Duration Metrics (issue 05).
+ * The date range spans the whole Coverage Window; a real builder UI with
+ * metric/date/group controls arrives in later slices.
+ */
+const DEFAULT_SPEC: ReportSpec = {
+  metrics: ["resolved", "replies", "new_tickets"],
+  date_from: "2026-07-10",
+  date_to: "2026-07-23",
+  granularity: "day",
+  group_by: "agent",
+};
 
 /**
  * Walking-skeleton page (issue 01), now behind the sign-in gate (issue 02),
- * now showing the Coverage Window from `/api/v1/meta` (issue 03).
- * The report builder UI arrives in later slices; this proves the SPA is
- * served from the backend's own origin and can reach it through a relative
- * path, with no build-time configuration.
+ * showing the Coverage Window from `/api/v1/meta` (issue 03), and now the
+ * first real report — the day × Actor table with real numbers (issue 04).
+ * A full builder UI (metric picker, date slider, grouping, presets) arrives
+ * in later slices; this proves real data flows end to end through the
+ * engine and the route.
  *
  * Auth failure handling: on a 401 from any `apiFetch` call, `apiClient`
  * clears the stored key and fires `UNAUTHORIZED_EVENT`; the listener below
@@ -23,6 +42,8 @@ export function App() {
   const [signedIn, setSignedIn] = useState<boolean>(() => getStoredApiKey() !== null);
   const [status, setStatus] = useState<"checking" | "ok" | "error">("checking");
   const [meta, setMeta] = useState<Meta | null>(null);
+  const [table, setTable] = useState<ReportTableData | null>(null);
+  const [reportError, setReportError] = useState<string | null>(null);
 
   useEffect(() => {
     function handleUnauthorized() {
@@ -40,6 +61,12 @@ export function App() {
     fetchMeta()
       .then(setMeta)
       .catch(() => setMeta(null));
+    fetchReport(DEFAULT_SPEC)
+      .then((result) => {
+        setTable(result);
+        setReportError(null);
+      })
+      .catch(() => setReportError("Could not load the report."));
   }, [signedIn]);
 
   if (!signedIn) {
@@ -72,6 +99,9 @@ export function App() {
         </p>
       )}
       <p>Backend status: {status}</p>
+      <h2>Resolved, replies and new tickets — by day and Actor</h2>
+      {reportError && <p role="alert">{reportError}</p>}
+      {table && <ReportTable table={table} />}
     </main>
   );
 }
