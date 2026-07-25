@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Case File · InTheLoop</title>
+<style>
+  :root{ --paper:#f4f1ea; --paper2:#ebe6da; --ink:#1c1a17; --faint:#6b655c; --rule:#d6cfc0; --red:#b23a2e; --accent:#5b3fb0; --tape:rgba(180,160,110,.4); --shadow:0 24px 50px -30px rgba(60,50,30,.5); }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; }
+  body{ font-family:'Georgia','Times New Roman',serif; color:var(--ink); line-height:1.7; -webkit-font-smoothing:antialiased;
+    background:var(--paper);
+    background-image:radial-gradient(circle at 20% 10%, rgba(255,255,255,.5), transparent 40%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='40' height='40' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E"); }
+  .mono{ font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+  .wrap{ max-width:720px; margin:0 auto; padding:clamp(28px,7vw,52px) clamp(16px,5vw,24px) 100px; }
+  .filetab{ display:flex; align-items:center; flex-wrap:wrap; gap:8px 12px; font-family:ui-monospace,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--faint); margin-bottom:20px; }
+  .filetab .num{ color:var(--red); font-weight:700; }
+  .stamp{ display:inline-block; border:2px solid var(--red); color:var(--red); font-family:ui-monospace,monospace; font-weight:700; font-size:12px; letter-spacing:.14em; padding:5px 11px; border-radius:3px; transform:rotate(-3deg); text-transform:uppercase; }
+  h1{ font-size:clamp(30px,8.5vw,46px); line-height:1.08; letter-spacing:-.01em; margin:20px 0 10px; font-weight:700; }
+  .sub{ font-size:clamp(16px,4.2vw,19px); color:var(--faint); margin:0 0 40px; font-style:italic; max-width:52ch; }
+  .card{ background:var(--paper2); border:1px solid var(--rule); border-radius:4px; padding:clamp(20px,5vw,28px); margin:18px 0; box-shadow:var(--shadow); position:relative; }
+  .card::before{ content:""; position:absolute; top:-11px; left:24px; width:96px; height:22px; background:var(--tape); transform:rotate(-2deg); border-radius:2px; }
+  .exhibit{ font-family:ui-monospace,monospace; font-size:11.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--red); font-weight:700; margin:0 0 12px; }
+  .card p{ margin:0 0 13px; } .card p strong{ color:#000; }
+  .evidence{ background:#fff; border:1px solid var(--rule); border-left:3px solid var(--accent); border-radius:3px; padding:16px 18px; margin:14px 0; font-family:'Courier New',monospace; }
+  .evidence .hdr{ font-size:12px; color:var(--faint); border-bottom:1px dashed var(--rule); padding-bottom:8px; margin-bottom:10px; letter-spacing:.04em; }
+  .evidence .hdr b{ color:var(--ink); }
+  .evidence p{ font-family:'Georgia',serif; margin:0; }
+  .lead-box{ background:#fff; border:1px dashed var(--accent); border-radius:4px; padding:14px 16px; margin:12px 0; }
+  .lead-box .l{ display:block; font-family:'Courier New',monospace; font-size:13px; line-height:1.9; color:#2a2530; word-break:break-all; }
+  .lead-box .m{ color:var(--accent); font-weight:700; }
+  ol.notes{ margin:6px 0; padding-left:0; list-style:none; counter-reset:n; }
+  ol.notes li{ position:relative; padding-left:34px; margin:14px 0; }
+  ol.notes li::before{ counter-increment:n; content:counter(n); position:absolute; left:0; top:1px; width:22px; height:22px; background:var(--accent); color:#fff; border-radius:50%; display:grid; place-items:center; font-family:ui-monospace,monospace; font-size:12px; font-weight:700; }
+  ol.notes li b{ color:#000; }
+  .cta-row{ display:flex; gap:12px; flex-wrap:wrap; margin-top:8px; }
+  .btn{ display:inline-flex; align-items:center; gap:8px; padding:13px 22px; border-radius:4px; font-family:ui-monospace,monospace; font-size:13.5px; font-weight:700; letter-spacing:.04em; text-decoration:none; text-transform:uppercase; min-height:44px; }
+  .btn-primary{ background:var(--accent); color:#fff; } .btn-primary:hover{ filter:brightness(1.08); }
+  .btn-ghost{ background:#fff; color:var(--accent); border:1px solid var(--accent); } .btn-ghost:hover{ background:#f3f0fb; }
+  hr{ border:none; border-top:1px dashed var(--rule); margin:22px 0; }
+  .foot{ text-align:center; margin-top:44px; color:var(--faint); font-family:ui-monospace,monospace; font-size:12.5px; letter-spacing:.06em; line-height:1.9; }
+  .foot .big{ font-family:'Georgia',serif; font-size:19px; font-style:italic; color:var(--ink); letter-spacing:0; }
+  code{ font-family:'Courier New',monospace; background:#fff; border:1px solid var(--rule); padding:1px 6px; border-radius:3px; font-size:13px; color:var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="filetab mono">
+    <span>InTheLoop · Engineering</span><span>—</span><span>Case No. <span class="num">TH-0917</span></span><span>—</span>
+    <span class="stamp">Open Case</span>
+  </div>
+  <h1>The endpoint knows something.<br>Your job is to find out what.</h1>
+  <p class="sub">A live data feed. A frustrated client. A deadline. The docs are thin and possibly unreliable. Investigate, and build what the client actually needs.</p>
+
+  <div class="card">
+    <p class="exhibit">◷ The incident — 09:14</p>
+    <p>A client runs a <strong>large</strong> support operation — many agents, many shared inboxes — and they're flying blind. They can't see <strong>who did what, where, and how fast</strong>. Frustrated clients don't stay clients.</p>
+    <p>Your PM forwards the client's email. He trusts you to run with it.</p>
+    <div class="evidence">
+      <div class="hdr"><b>EXHIBIT A</b> — fwd from PM · subject: this is the whole ask 🙏</div>
+      <p>"We want a <strong>CSV file</strong> with, per <strong>day</strong>, how much each <strong>agent</strong> did in each <strong>inbox</strong> — replies, resolved, handle time, all of it. But not one frozen file — we want an <strong>interface where we decide how the report looks</strong>. Oh, and <strong>Excel</strong> too. And honestly? It'd be amazing to <strong>also look at it in the browser, prepare reports right there, and download them</strong>."</p>
+    </div>
+    <p>Note: we don't ship tools that just sit and wait. The client also gets an <strong>AI agent</strong> — they describe what they want in plain English, and it builds the report.</p>
+  </div>
+
+  <div class="card">
+    <p class="exhibit">⌁ The lead</p>
+    <p>Our backend dev stood up an <strong>endpoint</strong> before he got pulled away. He left a short guide — but real docs are never the whole truth. Probe it. Trust what you observe. Fill in the blanks.</p>
+    <div class="lead-box">
+      <span class="l"><span class="m">POST</span> https://ai-homework-production-2423.up.railway.app/reporting_api/v1/reporting/stats/json</span>
+      <span class="l">Authorization: Bearer &lt;any-token&gt;</span>
+      <span class="l">Content-Type: application/json</span>
+    </div>
+    <div class="cta-row" style="margin-top:16px">
+      <a class="btn btn-primary" href="/spec">Open the guide</a>
+      <a class="btn btn-ghost" href="/reporting-api-guide.pdf" download>↓ PDF</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="exhibit">✦ Field procedure</p>
+    <ol class="notes">
+      <li><b>Figure it out.</b> No docs (or shaky docs) is just Tuesday. Infer the units, don't wait for perfect info, and be upfront about what you assumed.</li>
+      <li><b>Lean forward.</b> Build what the user actually needs — not only what's literally typed in the email.</li>
+      <li><b>Own your calls.</b> Cut a corner to hit the deadline? Fine — just tell us, and tell us what you'd do next.</li>
+    </ol>
+    <hr />
+    <p class="exhibit" style="margin-bottom:12px">⇢ Submit as evidence</p>
+    <ol class="notes">
+      <li>A running app — a deployed link, or a repo we can spin up with one command.</li>
+      <li>A short <b>README</b>: how to run it, what you built, what you assumed, what's next.</li>
+      <li>The code.</li>
+    </ol>
+    <p style="color:var(--faint); font-size:15px; margin-top:12px; font-style:italic">Treat it like the one-night sprint it is. We're not grading polish — we're watching how you think when the map runs out, how you prioritize when the clock's loud, and whether the thing you ship actually helps the client.</p>
+  </div>
+
+  <p class="foot mono">
+    <span class="big">The case is yours.</span><br>Go find out what the endpoint knows.
+  </p>
+</div>
+</body>
+</html>

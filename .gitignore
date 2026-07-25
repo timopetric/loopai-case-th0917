@@ -1,0 +1,26 @@
+# ── Python ──
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+
+# ── Node / frontend ──
+node_modules/
+frontend/dist/
+
+# ── Env & secrets ──
+.env
+.env.*
+!.env.example
+
+# ── Runtime data ──
+logs/
+*.log
+
+# ── IDE / OS ──
+.idea/
+.vscode/
+.DS_Store

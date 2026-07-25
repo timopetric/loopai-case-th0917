@@ -1,0 +1,107 @@
+{
+  "actioned_emails": {
+    "top": 19024,
+    "actor_sum": 28941,
+    "mailbox_sum": 19024,
+    "actor_match": false,
+    "mailbox_match": true
+  },
+  "resolved": {
+    "top": 16372,
+    "actor_sum": 16372,
+    "mailbox_sum": 16372,
+    "actor_match": true,
+    "mailbox_match": true
+  },
+  "new_tickets": {
+    "top": 66288,
+    "actor_sum": 66288,
+    "mailbox_sum": 66288,
+    "actor_match": true,
+    "mailbox_match": true
+  },
+  "open": {
+    "top": 0,
+    "actor_sum": 0,
+    "mailbox_sum": 0,
+    "actor_match": true,
+    "mailbox_match": true
+  },
+  "replies": {
+    "top": 13679,
+    "actor_sum": 13679,
+    "mailbox_sum": 13679,
+    "actor_match": true,
+    "mailbox_match": true
+  },
+  "new_emails": {
+    "top": 68711,
+    "actor_sum": 68711,
+    "mailbox_sum": 68711,
+    "actor_match": true,
+    "mailbox_match": true
+  },
+  "replies_to_resolve": {
+    "top": 17965,
+    "actor_sum": 17965,
+    "mailbox_sum": 17965,
+    "actor_match": true,
+    "mailbox_match": true
+  },
+  "sla_breaches": {
+    "top": 4073,
+    "actor_sum": 4073,
+    "mailbox_sum": 4073,
+    "actor_match": true,
+    "mailbox_match": true
+  },
+  "resolve_time": {
+    "top": 187974.09936833332,
+    "actor_sum": 187974.09936833332,
+    "mailbox_sum": 187974.09936833332,
+    "actor_match": true,
+    "mailbox_match": true
+  },
+  "response_time": {
+    "top": 209110.76623777777,
+    "actor_sum": 209110.76623777777,
+    "mailbox_sum": 209110.76623777777,
+    "actor_match": true,
+    "mailbox_match": true
+  },
+  "time_to_first_reply": {
+    "top": 182526.73611583334,
+    "actor_sum": 182526.73611583334,
+    "mailbox_sum": 182526.73611583334,
+    "actor_match": true,
+    "mailbox_match": true
+  },
+  "resolve_time_business_hours": {
+    "top": 125344.54431722223,
+    "actor_sum": 125344.54431722223,
+    "mailbox_sum": 125344.54431722223,
+    "actor_match": true,
+    "mailbox_match": true
+  },
+  "response_time_business_hours": {
+    "top": 139410.73914055555,
+    "actor_sum": 139410.73914055555,
+    "mailbox_sum": 139410.73914055555,
+    "actor_match": true,
+    "mailbox_match": true
+  },
+  "time_to_first_reply_business_hours": {
+    "top": 121831.71595583334,
+    "actor_sum": 121831.71595583334,
+    "mailbox_sum": 121831.71595583334,
+    "actor_match": true,
+    "mailbox_match": true
+  },
+  "handle_time": {
+    "top": 85.06691555555555,
+    "actor_sum": 85.06691555555555,
+    "mailbox_sum": 85.06691555555555,
+    "actor_match": true,
+    "mailbox_match": true
+  }
+}

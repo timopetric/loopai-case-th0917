@@ -1,0 +1,12 @@
+Installed 6 packages in 13ms
+### Re-verify determinism today + diff vs pass-1 saved resp-q1-full-14day.json ###
+=== re-run identical pass-1 Q1 request === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-z1-rerun-q1.json
+  identical to pass-1 saved response (full dict equality)?: True
+  -> fully static: no drift within this session.
+
+### PDF guide fetch + text extraction ###
+  GET https://ai-homework-production-2423.up.railway.app/reporting-api-guide.pdf -> status=200 len=530705
+  saved -> /home/timop/work/loopai/scratch/reporting-api-guide.pdf
+  num pages: 5
+  extracted text saved -> /home/timop/work/loopai/scratch/reporting-api-guide-pdf-text.txt (4462 chars)

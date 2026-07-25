@@ -1,0 +1,267 @@
+Installed 5 packages in 49ms
+
+########## Q1: full response structure (14-day, day bucket) ##########
+=== Q1 14-day full === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q1-full-14day.json
+Top-level keys: ['ticks', 'actioned_emails', 'resolved', 'new_tickets', 'open', 'replies', 'new_emails', 'replies_to_resolve', 'replies_to_resolve_count', 'resolve_time', 'resolve_time_count', 'response_time', 'response_time_count', 'time_to_first_reply', 'time_to_first_reply_count', 'resolve_time_business_hours', 'resolve_time_business_hours_count', 'response_time_business_hours', 'response_time_business_hours_count', 'time_to_first_reply_business_hours', 'time_to_first_reply_business_hours_count', 'handle_time', 'handle_time_count', 'sla_breaches', 'actors', 'mailbox', 'labels', 'topics', 'categories']
+num ticks: 15
+num actors: 108
+  actor: {'user_id': 'user_yoJRgsMu', 'name': 'Support', 'id': 'user_yoJRgsMu'}
+  actor: {'user_id': 'user_pwNpEQRp', 'name': 'Elena Kaur', 'id': 'user_pwNpEQRp'}
+  actor: {'user_id': 'user_Nq24icrN', 'name': 'Enzo Grant', 'id': 'user_Nq24icrN'}
+  actor: {'user_id': 'user_Pp8PiUHj', 'name': 'Vera Nash', 'id': 'user_Pp8PiUHj'}
+  actor: {'user_id': 'user_mbxMNcKo', 'name': 'Billing', 'id': 'user_mbxMNcKo'}
+  actor: {'user_id': 'user_vPLy7bjY', 'name': 'Hana Torres', 'id': 'user_vPLy7bjY'}
+  actor: {'user_id': 'user_kVDYF6hO', 'name': 'Nadia Moreno', 'id': 'user_kVDYF6hO'}
+  actor: {'user_id': 'user_yXFH74Ck', 'name': 'Rosa Kaur', 'id': 'user_yXFH74Ck'}
+  actor: {'user_id': 'user_DfDqkztn', 'name': 'Ravi Moreno', 'id': 'user_DfDqkztn'}
+  actor: {'user_id': 'user_avnyJuGB', 'name': 'Enzo Suarez', 'id': 'user_avnyJuGB'}
+  actor: {'user_id': 'user_vQjmRpkL', 'name': 'Noah Petrov', 'id': 'user_vQjmRpkL'}
+  actor: {'user_id': 'user_xOF7bjaH', 'name': 'Arjun Ivanov', 'id': 'user_xOF7bjaH'}
+  actor: {'user_id': 'user_vNj9gW3D', 'name': 'Hana Ramos', 'id': 'user_vNj9gW3D'}
+  actor: {'user_id': 'user_aIGiHXES', 'name': 'Hana Diaz', 'id': 'user_aIGiHXES'}
+  actor: {'user_id': 'user_DQviod2X', 'name': 'Iker Fisher', 'id': 'user_DQviod2X'}
+  actor: {'user_id': 'user_yzbldXo6', 'name': 'Scheduling', 'id': 'user_yzbldXo6'}
+  actor: {'user_id': 'user_jwDIMFbL', 'name': 'Yara Sato', 'id': 'user_jwDIMFbL'}
+  actor: {'user_id': 'user_sZb6Mphx', 'name': 'Ava Nash', 'id': 'user_sZb6Mphx'}
+  actor: {'user_id': 'user_THeNfSBe', 'name': 'Sana Bauer', 'id': 'user_THeNfSBe'}
+  actor: {'user_id': 'user_nN5brDNG', 'name': 'Providers', 'id': 'user_nN5brDNG'}
+  actor: {'user_id': 'user_tlCwM23v', 'name': 'Ava Maric', 'id': 'user_tlCwM23v'}
+  actor: {'user_id': 'user_ti3fMqTa', 'name': 'Milan Maric', 'id': 'user_ti3fMqTa'}
+  actor: {'user_id': 'user_6L2FRdq6', 'name': 'Ivan Kaur', 'id': 'user_6L2FRdq6'}
+  actor: {'user_id': 'user_v3RR4jMM', 'name': 'Tomas Costa', 'id': 'user_v3RR4jMM'}
+  actor: {'user_id': 'user_Bbz5h3Zg', 'name': 'Iker Suarez', 'id': 'user_Bbz5h3Zg'}
+  actor: {'user_id': 'user_DsjsFsqM', 'name': 'Emma Blum', 'id': 'user_DsjsFsqM'}
+  actor: {'user_id': 'user_wbPmzrzN', 'name': 'Priya Novak', 'id': 'user_wbPmzrzN'}
+  actor: {'user_id': 'user_1ArKlBkU', 'name': 'Rosa Fisher', 'id': 'user_1ArKlBkU'}
+  actor: {'user_id': 'user_ZNwcKwBu', 'name': 'Bo Petrov', 'id': 'user_ZNwcKwBu'}
+  actor: {'user_id': 'user_p1vrutmr', 'name': 'Omar Farah', 'id': 'user_p1vrutmr'}
+  actor: {'user_id': 'user_qx8xd34p', 'name': 'Noah Maric', 'id': 'user_qx8xd34p'}
+  actor: {'user_id': 'user_6jcvJLr9', 'name': 'Nina Adler', 'id': 'user_6jcvJLr9'}
+  actor: {'user_id': 'user_uschAZ1c', 'name': 'Lena Nash', 'id': 'user_uschAZ1c'}
+  actor: {'user_id': 'user_VJDbSl47', 'name': 'Enzo Marsh', 'id': 'user_VJDbSl47'}
+  actor: {'user_id': 'user_VQkiACmy', 'name': 'Mateo Kovac', 'id': 'user_VQkiACmy'}
+  actor: {'user_id': 'user_ctMDtKzC', 'name': 'Dora Lowe', 'id': 'user_ctMDtKzC'}
+  actor: {'user_id': 'user_6ScbuCZx', 'name': 'Ava Sato', 'id': 'user_6ScbuCZx'}
+  actor: {'user_id': 'user_tbENLE2G', 'name': 'Elena Nash', 'id': 'user_tbENLE2G'}
+  actor: {'user_id': 'user_UzMUXfVl', 'name': 'Diego Lowe', 'id': 'user_UzMUXfVl'}
+  actor: {'user_id': 'user_xyBRHxd7', 'name': 'Omar Ivanov', 'id': 'user_xyBRHxd7'}
+  actor: {'user_id': 'user_b0bu9l4n', 'name': 'Samir Nguyen', 'id': 'user_b0bu9l4n'}
+  actor: {'user_id': 'user_cGBS7JoK', 'name': 'Leo Ivanov', 'id': 'user_cGBS7JoK'}
+  actor: {'user_id': 'user_xiPvoRxU', 'name': 'Mira Suarez', 'id': 'user_xiPvoRxU'}
+  actor: {'user_id': 'user_CVD31ZTB', 'name': 'Elena Nguyen', 'id': 'user_CVD31ZTB'}
+  actor: {'user_id': 'user_9LqfmDdS', 'name': 'Samir Bauer', 'id': 'user_9LqfmDdS'}
+  actor: {'user_id': 'user_AvFCLBBh', 'name': 'Omar Petrov', 'id': 'user_AvFCLBBh'}
+  actor: {'user_id': 'user_9UyU8aZA', 'name': 'Bruno Weiss', 'id': 'user_9UyU8aZA'}
+  actor: {'user_id': 'user_A3tXO1tX', 'name': 'Gita Reyes', 'id': 'user_A3tXO1tX'}
+  actor: {'user_id': 'user_pZsI6SIv', 'name': 'Rhea Perez', 'id': 'user_pZsI6SIv'}
+  actor: {'user_id': 'user_gLojhdOz', 'name': 'Ivan Petrov', 'id': 'user_gLojhdOz'}
+  actor: {'user_id': 'user_GjGKR6VR', 'name': 'Felix Torres', 'id': 'user_GjGKR6VR'}
+  actor: {'user_id': 'user_fEgWmFPV', 'name': 'Emma Khan', 'id': 'user_fEgWmFPV'}
+  actor: {'user_id': 'user_rHlGwTI5', 'name': 'Noor Adler', 'id': 'user_rHlGwTI5'}
+  actor: {'user_id': 'user_pUQyDdKs', 'name': 'Sana Holt', 'id': 'user_pUQyDdKs'}
+  actor: {'user_id': 'user_MsMCIa6u', 'name': 'Vendors', 'id': 'user_MsMCIa6u'}
+  actor: {'user_id': 'user_vd4V8VuH', 'name': 'Priya Ramos', 'id': 'user_vd4V8VuH'}
+  actor: {'user_id': 'user_OZFex8Df', 'name': 'Omar Haddad', 'id': 'user_OZFex8Df'}
+  actor: {'user_id': 'user_9qQiNZTt', 'name': 'Leo Khan', 'id': 'user_9qQiNZTt'}
+  actor: {'user_id': 'user_1mJHHjnG', 'name': 'Kai Rivera', 'id': 'user_1mJHHjnG'}
+  actor: {'user_id': 'user_CGlM0zon', 'name': 'Accounting', 'id': 'user_CGlM0zon'}
+  actor: {'user_id': 'user_H4fxIPjs', 'name': 'Enzo Nguyen', 'id': 'user_H4fxIPjs'}
+  actor: {'user_id': 'user_MN5r0t2N', 'name': 'Liam Roy', 'id': 'user_MN5r0t2N'}
+  actor: {'user_id': 'user_B9IqwKwD', 'name': 'Enzo Weiss', 'id': 'user_B9IqwKwD'}
+  actor: {'user_id': 'user_HTdx53dX', 'name': 'Milan Roy', 'id': 'user_HTdx53dX'}
+  actor: {'user_id': 'user_7gYVTzEI', 'name': 'Noor Vega', 'id': 'user_7gYVTzEI'}
+  actor: {'user_id': 'user_ubRRJ4pv', 'name': 'Rhea Blum', 'id': 'user_ubRRJ4pv'}
+  actor: {'user_id': 'user_69kipcJg', 'name': 'Customer Care', 'id': 'user_69kipcJg'}
+  actor: {'user_id': 'user_ky51DgGD', 'name': 'Ines Popa', 'id': 'user_ky51DgGD'}
+  actor: {'user_id': 'user_2Hef1X03', 'name': 'Quality', 'id': 'user_2Hef1X03'}
+  actor: {'user_id': 'user_HcvsKijC', 'name': 'Noah Haddad', 'id': 'user_HcvsKijC'}
+  actor: {'user_id': 'user_UstteaC5', 'name': 'Diego Ortiz', 'id': 'user_UstteaC5'}
+  actor: {'user_id': 'user_rqWCsbcr', 'name': 'Notifications', 'id': 'user_rqWCsbcr'}
+  actor: {'user_id': 'user_hHnhiiuF', 'name': 'Omar Nguyen', 'id': 'user_hHnhiiuF'}
+  actor: {'user_id': 'user_iuA0lB3W', 'name': 'Otto Ramos', 'id': 'user_iuA0lB3W'}
+  actor: {'user_id': 'user_3BzY22s8', 'name': 'Kai Jensen', 'id': 'user_3BzY22s8'}
+  actor: {'user_id': 'user_XQeSeCbY', 'name': 'Sofia Ilic', 'id': 'user_XQeSeCbY'}
+  actor: {'user_id': 'user_JI8l5WOs', 'name': 'Priya Vega', 'id': 'user_JI8l5WOs'}
+  actor: {'user_id': 'user_oTpgLV2u', 'name': 'Liam Suarez', 'id': 'user_oTpgLV2u'}
+  actor: {'user_id': 'user_aIkMfudB', 'name': 'Iker Farah', 'id': 'user_aIkMfudB'}
+  actor: {'user_id': 'user_hFJGTmm3', 'name': 'Aisha Rivera', 'id': 'user_hFJGTmm3'}
+  actor: {'user_id': 'user_8wbGfBgp', 'name': 'Marco Reyes', 'id': 'user_8wbGfBgp'}
+  actor: {'user_id': 'user_x90ObH7K', 'name': 'Diego Ramos', 'id': 'user_x90ObH7K'}
+  actor: {'user_id': 'user_z3IYBA7l', 'name': 'Sana Ortiz', 'id': 'user_z3IYBA7l'}
+  actor: {'user_id': 'user_L92FWOlu', 'name': 'Theo Mancia', 'id': 'user_L92FWOlu'}
+  actor: {'user_id': 'user_KIRGx8BK', 'name': 'Dora Moreno', 'id': 'user_KIRGx8BK'}
+  actor: {'user_id': 'user_y3xfq9gF', 'name': 'Ava Holt', 'id': 'user_y3xfq9gF'}
+  actor: {'user_id': 'user_mXGDTEb7', 'name': 'Hana Bauer', 'id': 'user_mXGDTEb7'}
+  actor: {'user_id': 'user_uScwosQZ', 'name': 'Maya Ivanov', 'id': 'user_uScwosQZ'}
+  actor: {'user_id': 'user_fUtkrWQr', 'name': 'Freya Kovac', 'id': 'user_fUtkrWQr'}
+  actor: {'user_id': 'user_fv4RaIOp', 'name': 'Receivables', 'id': 'user_fv4RaIOp'}
+  actor: {'user_id': 'user_Dsxqecui', 'name': 'Payables', 'id': 'user_Dsxqecui'}
+  actor: {'user_id': 'user_bzpFxx3t', 'name': 'Emma Ilic', 'id': 'user_bzpFxx3t'}
+  actor: {'user_id': 'user_FVHJKaZB', 'name': 'Ivan Marsh', 'id': 'user_FVHJKaZB'}
+  actor: {'user_id': 'user_P10lxQLr', 'name': 'Leo Blum', 'id': 'user_P10lxQLr'}
+  actor: {'user_id': 'user_pugOBlNX', 'name': 'Emma Costa', 'id': 'user_pugOBlNX'}
+  actor: {'user_id': 'user_ahvfshQM', 'name': 'Zoe Petrov', 'id': 'user_ahvfshQM'}
+  actor: {'user_id': 'user_yhsC0ANv', 'name': 'Escalations', 'id': 'user_yhsC0ANv'}
+  actor: {'user_id': 'user_zpHtNvbr', 'name': 'Rosa Petrov', 'id': 'user_zpHtNvbr'}
+  actor: {'user_id': 'user_hWjPG6Yn', 'name': 'Ivan Silva', 'id': 'user_hWjPG6Yn'}
+  actor: {'user_id': 'user_oifDeSwL', 'name': 'Nina Suarez', 'id': 'user_oifDeSwL'}
+  actor: {'user_id': 'user_m5YmyJLV', 'name': 'Rhea Nguyen', 'id': 'user_m5YmyJLV'}
+  actor: {'user_id': 'user_t7q5WqcE', 'name': 'Travel', 'id': 'user_t7q5WqcE'}
+  actor: {'user_id': 'user_BC5p0YXB', 'name': 'Vera Silva', 'id': 'user_BC5p0YXB'}
+  actor: {'user_id': 'user_Uwcrol80', 'name': 'Bruno Jensen', 'id': 'user_Uwcrol80'}
+  actor: {'user_id': 'user_Zz3YWR0q', 'name': 'Onboarding', 'id': 'user_Zz3YWR0q'}
+  actor: {'user_id': 'user_lS4ERvLO', 'name': 'Talia Farah', 'id': 'user_lS4ERvLO'}
+  actor: {'user_id': 'user_57NcevDe', 'name': 'Talia Adler', 'id': 'user_57NcevDe'}
+  actor: {'user_id': 'user_hBlkdfdI', 'name': 'Claims', 'id': 'user_hBlkdfdI'}
+mailbox key present: True mailboxes key present: False
+num mailbox entries: 5
+  mailbox entry non-list fields: {'name': 'Returns', 'id': 'ACf0kWdEPNiYSou98PwFYiKQfWq9c0T', 'mailbox_id': 'ACf0kWdEPNiYSou98PwFYiKQfWq9c0T'}
+  nested actor-like keys in mailbox entry: []
+  mailbox entry non-list fields: {'name': 'Partnerships', 'id': 'ACqMGljMqLCOAZJ9ZYNz4oNZkF91D0T', 'mailbox_id': 'ACqMGljMqLCOAZJ9ZYNz4oNZkF91D0T'}
+  nested actor-like keys in mailbox entry: []
+  mailbox entry non-list fields: {'name': 'Compliance', 'id': 'ACpw3ge04EDYzOsUMhVHgYGqpn2wq0T', 'mailbox_id': 'ACpw3ge04EDYzOsUMhVHgYGqpn2wq0T'}
+  nested actor-like keys in mailbox entry: []
+  mailbox entry non-list fields: {'name': 'Fax', 'id': 'ACn0hYoSiro8YwtJVsN48DFDtyHyQ0T', 'mailbox_id': 'ACn0hYoSiro8YwtJVsN48DFDtyHyQ0T'}
+  nested actor-like keys in mailbox entry: []
+  mailbox entry non-list fields: {'name': 'Outbound', 'id': 'ACSzkQ6eDUuigSwb0AFR4r7Z19wog0T', 'mailbox_id': 'ACSzkQ6eDUuigSwb0AFR4r7Z19wog0T'}
+  nested actor-like keys in mailbox entry: []
+nested mailbox-like keys inside actor[0]: []
+
+########## Q2: units mystery (day vs hour bucket, 1-day window) ##########
+=== Q2 day-bucket 1-day window === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q2-day-bucket.json
+=== Q2 hour-bucket 1-day window === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q2-hour-bucket.json
+day ticks: ['2026-07-15T00:00:00Z', '2026-07-16T00:00:00Z', '2026-07-17T00:00:00Z']
+hour ticks count: 3
+
+-- metric: handle_time --
+  day value: [10.537009722222223, 9.249631944444445]  day_count: [746, 674]
+  hour values: [10.537009722222223, 9.249631944444445]
+  hour_count: [746, 674]
+  sum(hour values): 19.786641666666668
+  sum(hour_count): 1420
+  day / sum(hour) ratio: 0.5325314876436698
+
+-- metric: resolve_time --
+  day value: [11548.074940277776, 17920.9593375]  day_count: [1701, 1586]
+  hour values: [11548.074940277776, 17920.9593375]
+  hour_count: [1701, 1586]
+  sum(hour values): 29469.034277777777
+  sum(hour_count): 3287
+  day / sum(hour) ratio: 0.39187150930785786
+
+-- metric: response_time --
+  day value: [22758.19416861111, 35891.13775722222]  day_count: [704, 611]
+  hour values: [22758.19416861111, 35891.13775722222]
+  hour_count: [704, 611]
+  sum(hour values): 58649.33192583333
+  sum(hour_count): 1315
+  day / sum(hour) ratio: 0.3880384212626774
+
+-- metric: time_to_first_reply --
+  day value: [18667.551945833333, 27167.339764444445]  day_count: [522, 445]
+  hour values: [18667.551945833333, 27167.339764444445]
+  hour_count: [522, 445]
+  sum(hour values): 45834.89171027778
+  sum(hour_count): 967
+  day / sum(hour) ratio: 0.40727819460839737
+
+########## Q3: does event_types filtering do anything? ##########
+=== Q3 all event_types === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q3-all-event-types.json
+=== Q3 only resolved === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q3-only-resolved.json
+keys (all): ['actioned_emails', 'actors', 'categories', 'handle_time', 'handle_time_count', 'labels', 'mailbox', 'new_emails', 'new_tickets', 'open', 'replies', 'replies_to_resolve', 'replies_to_resolve_count', 'resolve_time', 'resolve_time_business_hours', 'resolve_time_business_hours_count', 'resolve_time_count', 'resolved', 'response_time', 'response_time_business_hours', 'response_time_business_hours_count', 'response_time_count', 'sla_breaches', 'ticks', 'time_to_first_reply', 'time_to_first_reply_business_hours', 'time_to_first_reply_business_hours_count', 'time_to_first_reply_count', 'topics']
+keys (only resolved): ['actioned_emails', 'actors', 'categories', 'handle_time', 'handle_time_count', 'labels', 'mailbox', 'new_emails', 'new_tickets', 'open', 'replies', 'replies_to_resolve', 'replies_to_resolve_count', 'resolve_time', 'resolve_time_business_hours', 'resolve_time_business_hours_count', 'resolve_time_count', 'resolved', 'response_time', 'response_time_business_hours', 'response_time_business_hours_count', 'response_time_count', 'sla_breaches', 'ticks', 'time_to_first_reply', 'time_to_first_reply_business_hours', 'time_to_first_reply_business_hours_count', 'time_to_first_reply_count', 'topics']
+keys only in 'all': []
+keys only in 'resolved-only': []
+resolved values equal?: True
+
+########## Q4: does scope filter anything? ##########
+=== Q4 no scope === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q4-no-scope.json
+=== Q4 1 real mailbox === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q4-1-mailbox.json
+=== Q4 fake mailbox === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q4-fake-mailbox.json
+resolved (no scope): [1467, 84, 111, 1478, 1675, 1701, 1586, 1557, 124, 75, 1767, 1883, 2534, 330]
+resolved (1 mailbox): [1467, 84, 111, 1478, 1675, 1701, 1586, 1557, 124, 75, 1767, 1883, 2534, 330]
+resolved (fake mailbox): [1467, 84, 111, 1478, 1675, 1701, 1586, 1557, 124, 75, 1767, 1883, 2534, 330]
+=== Q4 probe actors === status=200
+using real user_id: user_yoJRgsMu
+=== Q4 user scope === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q4-user-scope.json
+resolved (user scope): [1467, 84, 111, 1478, 1675, 1701, 1586, 1557, 124, 75, 1767, 1883, 2534, 330]
+num actors returned (user scope): 108
+
+########## Q5: community_id / timezone / time_type ##########
+=== Q5 community=demo-community === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q5-community1.json
+=== Q5 community=other === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q5-community2.json
+resolved (community1): [1467, 84, 111, 1478, 1675, 1701, 1586, 1557, 124, 75, 1767, 1883, 2534, 330]
+resolved (community2): [1467, 84, 111, 1478, 1675, 1701, 1586, 1557, 124, 75, 1767, 1883, 2534, 330]
+identical response?: True
+=== Q5 timezone=America/New_York === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q5-tz1.json
+=== Q5 timezone=Asia/Tokyo === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q5-tz2.json
+ticks (NY): ['2026-07-10T00:00:00Z', '2026-07-11T00:00:00Z', '2026-07-12T00:00:00Z', '2026-07-13T00:00:00Z', '2026-07-14T00:00:00Z', '2026-07-15T00:00:00Z', '2026-07-16T00:00:00Z', '2026-07-17T00:00:00Z', '2026-07-18T00:00:00Z', '2026-07-19T00:00:00Z', '2026-07-20T00:00:00Z', '2026-07-21T00:00:00Z', '2026-07-22T00:00:00Z', '2026-07-23T00:00:00Z', '2026-07-24T00:00:00Z']
+ticks (Tokyo): ['2026-07-10T00:00:00Z', '2026-07-11T00:00:00Z', '2026-07-12T00:00:00Z', '2026-07-13T00:00:00Z', '2026-07-14T00:00:00Z', '2026-07-15T00:00:00Z', '2026-07-16T00:00:00Z', '2026-07-17T00:00:00Z', '2026-07-18T00:00:00Z', '2026-07-19T00:00:00Z', '2026-07-20T00:00:00Z', '2026-07-21T00:00:00Z', '2026-07-22T00:00:00Z', '2026-07-23T00:00:00Z', '2026-07-24T00:00:00Z']
+ticks identical?: True
+resolved identical?: True
+=== Q5 time_type=7d (with from/to present) === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q5-7d.json
+ticks (7d preset, dates given): ['2026-07-10T00:00:00Z', '2026-07-11T00:00:00Z', '2026-07-12T00:00:00Z', '2026-07-13T00:00:00Z', '2026-07-14T00:00:00Z', '2026-07-15T00:00:00Z', '2026-07-16T00:00:00Z', '2026-07-17T00:00:00Z', '2026-07-18T00:00:00Z', '2026-07-19T00:00:00Z', '2026-07-20T00:00:00Z', '2026-07-21T00:00:00Z', '2026-07-22T00:00:00Z', '2026-07-23T00:00:00Z', '2026-07-24T00:00:00Z']
+=== Q5 time_type=custom === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q5-custom.json
+ticks (custom): ['2026-07-10T00:00:00Z', '2026-07-11T00:00:00Z', '2026-07-12T00:00:00Z', '2026-07-13T00:00:00Z', '2026-07-14T00:00:00Z', '2026-07-15T00:00:00Z', '2026-07-16T00:00:00Z', '2026-07-17T00:00:00Z', '2026-07-18T00:00:00Z', '2026-07-19T00:00:00Z', '2026-07-20T00:00:00Z', '2026-07-21T00:00:00Z', '2026-07-22T00:00:00Z', '2026-07-23T00:00:00Z', '2026-07-24T00:00:00Z']
+=== Q5 time_type=7d (no dates) === status=422
+  saved -> /home/timop/work/loopai/scratch/resp-q5-7d-nodates.json
+
+########## Q6: date coverage & determinism ##########
+=== Q6 wide range weekly === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q6-wide-range.json
+num ticks: 15
+resolved nonzero for 14/14 buckets
+first nonzero bucket tick range: 2026-07-10T00:00:00Z - 2026-07-11T00:00:00Z
+last nonzero bucket tick range: 2026-07-23T00:00:00Z - 2026-07-24T00:00:00Z
+sample resolved values: [1467, 84, 111, 1478, 1675, 1701, 1586, 1557, 124, 75] ... [1675, 1701, 1586, 1557, 124, 75, 1767, 1883, 2534, 330]
+=== Q6 determinism call 1 === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q6-determinism-1.json
+=== Q6 determinism call 2 === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q6-determinism-2.json
+identical responses across 2 identical calls?: True
+
+########## Q7: weird inputs ##########
+=== Q7 time_unit=week === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q7-week.json
+  -> OK, 15 ticks
+=== Q7 time_unit=month === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q7-month.json
+  -> OK, 15 ticks
+=== Q7 invalid event_type === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q7-invalid-event-type.json
+  -> OK, 15 ticks
+=== Q7 from_date after to_date === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q7-inverted-dates.json
+  -> OK, 2 ticks
+=== Q7 huge range, minute buckets === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q7-huge-minute.json
+  -> OK, 15 ticks
+=== Q7 missing from_date === status=422
+  saved -> /home/timop/work/loopai/scratch/resp-q7-missing-fromdate.json
+  -> body: Failed to deserialize the JSON body into the target type: missing field `from_date`
+=== Q7 invalid time_type === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q7-invalid-timetype.json
+  -> OK, 15 ticks
+=== Q7 time_period=3 === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q7-time-period-3.json
+  -> OK, 15 ticks
+=== Q7 time_period=-1 === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q7-time-period-neg1.json
+  -> OK, 15 ticks
+
+DONE

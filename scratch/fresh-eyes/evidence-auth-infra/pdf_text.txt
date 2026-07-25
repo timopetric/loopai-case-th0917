@@ -1,0 +1,128 @@
+Reporting API
+How to request report data — a quick start guide.
+1. The endpoint
+Send a POST request with a JSON body to:
+POST https:///reporting_api/v1/reporting/stats/json
+The response is a JSON object with your requested metrics, described in section 5.
+2. Authentication & headers
+Authenticate with an API key sent as a Bearer token.
+HEADER VALUE
+Authorization Bearer <your API key>
+Content-Type application/json
+Accept application/json
+3. The request body
+The body tells the API what to measure, over what period, and for which mailboxes/people.
+FIELD REQUIRED DESCRIPTION
+community_idYes Your workspace / community ID.
+event_types Yes List of metrics to return, e.g. ["resolved","new_tickets"]. See
+3a.
+
+---PAGE BREAK---
+
+time_type Yes Period preset: today, yesterday, all, custom, or a dynamic
+value like 7d.
+time_unit Yes Bucket size: minute, hour, day, week, or month.
+time_period Yes How many time_units per bucket (usually 1 ).
+from_date Yes Start of the window (ISO 8601 UTC), e.g.
+2026-07-18T04:00:00.000Z.
+to_date Yes End of the window (ISO 8601 UTC).
+timezone Yes IANA timezone used to align buckets, e.g. America/New_York.
+scope No The main set of mailboxes/people to report on. See 3b.
+filters No Additional filters, same shape as scope. Empty list [] for none.
+3A. AVAILABLE METRICS (EVENT_TYPES)
+Pass any combination of these values. Counts are whole numbers; time metrics are in seconds.
+actioned_emails, resolved, new_tickets, open, replies, new_emails,
+replies_to_resolve, resolve_time, response_time, time_to_first_reply,
+resolve_time_business_hours, response_time_business_hours,
+time_to_first_reply_business_hours, sla_breaches, handle_time
+3B. SCOPE & FILTERS
+A scope (or filter) narrows the report to specific mailboxes, tags, people, or customers. It has an
+id (what to filter on), an operator, and a list of values:
+"scope": {
+  "id": "mailboxes",
+  "operator": { "id": "is" },
+  "values": [
+    { "id": "ACf0kWdEPNiYSou98PwFYiKQfWq9c0T", "name": "Returns" },
+    { "id": "ACqMGljMqLCOAZJ9ZYNz4oNZkF91D0T", "name": "Partnerships" }
+
+---PAGE BREAK---
+
+  ]
+}
+FILTER ID OPERATOR ID
+user, labels, topics, categories, allMailboxes,
+mailbox, mailboxes, privateMailboxes, customerEmail,
+customerDomain
+is, is_not, or,
+or_not, and,
+and_not
+4. Full example request
+Resolved tickets for a custom inbox:
+{
+  "community_id": "demo-community",
+  "event_types": ["resolved"],
+  "time_type": "today",
+  "time_unit": "day",
+  "time_period": 1,
+  "timezone": "America/New_York",
+  "from_date": "2026-07-18T04:00:00.000Z",
+  "to_date":   "2026-07-20T03:59:59.999Z",
+  "filters": [],
+  "scope": {
+    "id": "mailboxes",
+    "operator": { "id": "is" },
+    "values": [
+      { "id": "ACf0kWdEPNiYSou98PwFYiKQfWq9c0T", "name": "Returns" }
+    ]
+  }
+}
+4B. EXAMPLE: YEAR-TO-DATE SCORECARD
+A custom date range for replies, resolved and handle time, across several shared inboxes. Agent-
+level numbers come back in the actors array.
+{
+  "community_id": "demo-community",
+
+---PAGE BREAK---
+
+  "event_types": ["replies", "resolved", "handle_time"],
+  "time_type": "custom",
+  "time_unit": "day",
+  "time_period": 1,
+  "timezone": "America/New_York",
+  "from_date": "2026-07-10T05:00:00.000Z",
+  "to_date":   "2026-07-23T03:59:59.999Z",
+  "filters": [],
+  "scope": {
+    "id": "mailboxes",
+    "operator": { "id": "is" },
+    "values": [
+      { "id": "ACf0kWdEPNiYSou98PwFYiKQfWq9c0T", "name": "Returns" },
+      { "id": "ACqMGljMqLCOAZJ9ZYNz4oNZkF91D0T", "name": "Partnerships" },
+      { "id": "ACpw3ge04EDYzOsUMhVHgYGqpn2wq0T", "name": "Compliance" },
+      { "id": "ACn0hYoSiro8YwtJVsN48DFDtyHyQ0T", "name": "Fax" },
+      { "id": "ACSzkQ6eDUuigSwb0AFR4r7Z19wog0T", "name": "Outbound" }
+    ]
+  }
+}
+5. Understanding the response
+The response contains a ticks array (bucket boundaries) and one array per requested metric.
+Each value sits between two ticks, so there is always one more tick than there are metric
+values. Time metrics also return a matching <metric>_count array so you can compute weighted
+averages.
+{
+  "ticks": ["2026-07-16T22:00:00Z", "2026-07-17T22:00:00Z"],
+  "resolved": [3],
+  "new_tickets": [5],
+  "actors": [ ... per-user breakdown ... ],
+  "mailbox": [ ... per-inbox breakdown ... ]
+}
+Alongside the top-level totals, the response breaks the same metrics down by actors (people)
+and mailbox.
+
+---PAGE BREAK---
+
+Tip: all dates are UTC (ISO 8601). Use the timezone field to control how days and weeks are bucketed
+for your team.
+
+---PAGE BREAK---
+

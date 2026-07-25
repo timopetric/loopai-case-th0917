@@ -1,0 +1,13 @@
+STATUS: 404
+HEADERS: {'access-control-allow-headers': 'authorization, content-type', 'access-control-allow-methods': 'POST, GET, OPTIONS', 'access-control-allow-origin': '*', 'content-security-policy': "default-src 'none'", 'content-type': 'text/html; charset=utf-8', 'date': 'Sat, 25 Jul 2026 13:37:11 GMT', 'server': 'railway-hikari', 'x-content-type-options': 'nosniff', 'x-powered-by': 'Express', 'x-railway-request-id': 'G4L3h1nTQB2axw036WHkDg', 'content-length': '176', 'x-hikari-trace': 'ams1.aydy', 'x-railway-edge': 'ams1', 'connection': 'keep-alive'}
+BODY:
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot GET /reporting_api/v1/reporting/stats/json</pre>
+</body>
+</html>

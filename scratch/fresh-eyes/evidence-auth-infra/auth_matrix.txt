@@ -1,0 +1,72 @@
+=== AUTH:no_auth_header ===
+status=401 headers={'access-control-allow-headers': 'authorization, content-type', 'access-control-allow-methods': 'POST, GET, OPTIONS', 'access-control-allow-origin': '*', 'content-type': 'application/json; charset=utf-8', 'date': 'Sat, 25 Jul 2026 13:38:28 GMT', 'etag': 'W/"1c-upIIW2POBLkJc0sIDnJhtP8HCvE"', 'server': 'railway-hikari', 'x-powered-by': 'Express', 'x-railway-request-id': 'stntExDRTXe9icQ5xtoGcA', 'content-length': '28', 'x-hikari-trace': 'ams1.aydy', 'x-railway-edge': 'ams1', 'connection': 'keep-alive'}
+body={"error":"No auth provided"}
+
+=== AUTH:empty_auth_header ===
+status=401 headers={'access-control-allow-headers': 'authorization, content-type', 'access-control-allow-methods': 'POST, GET, OPTIONS', 'access-control-allow-origin': '*', 'content-type': 'application/json; charset=utf-8', 'date': 'Sat, 25 Jul 2026 13:38:28 GMT', 'etag': 'W/"1c-upIIW2POBLkJc0sIDnJhtP8HCvE"', 'server': 'railway-hikari', 'x-powered-by': 'Express', 'x-railway-request-id': 'WjjdDIqkQTqoK-Rsjq4OvQ', 'content-length': '28', 'x-hikari-trace': 'ams1.aydy', 'x-railway-edge': 'ams1', 'connection': 'keep-alive'}
+body={"error":"No auth provided"}
+
+=== AUTH:bearer_no_token ===
+status=401 headers={'access-control-allow-headers': 'authorization, content-type', 'access-control-allow-methods': 'POST, GET, OPTIONS', 'access-control-allow-origin': '*', 'content-type': 'application/json; charset=utf-8', 'date': 'Sat, 25 Jul 2026 13:38:28 GMT', 'etag': 'W/"1c-upIIW2POBLkJc0sIDnJhtP8HCvE"', 'server': 'railway-hikari', 'x-powered-by': 'Express', 'x-railway-request-id': 'wLA9c-yUTM2HkFQb9o6EoQ', 'content-length': '28', 'x-hikari-trace': 'ams1.aydy', 'x-railway-edge': 'ams1', 'connection': 'keep-alive'}
+body={"error":"No auth provided"}
+
+=== AUTH:bearer_space_no_token ===
+EXCEPTION: Illegal header value b'Bearer '
+
+=== AUTH:bearer_random_junk ===
+status=200 headers={'access-control-allow-headers': 'authorization, content-type', 'access-control-allow-methods': 'POST, GET, OPTIONS', 'access-control-allow-origin': '*', 'content-type': 'application/json; charset=utf-8', 'date': 'Sat, 25 Jul 2026 13:38:29 GMT', 'etag': 'W/"5867d-GwHdE4ImpE5AJo3H/f+WxME0bJg"', 'server': 'railway-hikari', 'x-powered-by': 'Express', 'x-railway-request-id': '6o-i3N5ISVGflIVrljLL4A', 'content-encoding': 'gzip', 'x-hikari-trace': 'ams1.b55h', 'x-railway-edge': 'ams1', 'vary': 'accept-encoding', 'transfer-encoding': 'chunked', 'connection': 'keep-alive'}
+body={"ticks":["2026-07-10T00:00:00Z","2026-07-11T00:00:00Z","2026-07-12T00:00:00Z","2026-07-13T00:00:00Z","2026-07-14T00:00:00Z","2026-07-15T00:00:00Z","2026-07-16T00:00:00Z","2026-07-17T00:00:00Z","2026-07-18T00:00:00Z","2026-07-19T00:00:00Z","2026-07-20T00:00:00Z","2026-07-21T00:00:00Z","2026-07-22T00:00:00Z","2026-07-23T00:00:00Z","2026-07-24T00:00:00Z"],"actioned_emails":[1638,138,144,1841,1950,1898,1808,1729,150,87,2118,2295,2824,404],"resolved":[1467,84,111,1478,1675,1701,1586,1557,124,75,1767
+
+=== AUTH:basic_xyz ===
+status=401 headers={'access-control-allow-headers': 'authorization, content-type', 'access-control-allow-methods': 'POST, GET, OPTIONS', 'access-control-allow-origin': '*', 'content-type': 'application/json; charset=utf-8', 'date': 'Sat, 25 Jul 2026 13:38:29 GMT', 'etag': 'W/"1c-upIIW2POBLkJc0sIDnJhtP8HCvE"', 'server': 'railway-hikari', 'x-powered-by': 'Express', 'x-railway-request-id': '5m-sKm6dRBKWvAOSYqVb7A', 'content-length': '28', 'x-hikari-trace': 'ams1.b55h', 'x-railway-edge': 'ams1', 'connection': 'keep-alive'}
+body={"error":"No auth provided"}
+
+=== AUTH:weird_chars_token ===
+status=200 headers={'access-control-allow-headers': 'authorization, content-type', 'access-control-allow-methods': 'POST, GET, OPTIONS', 'access-control-allow-origin': '*', 'content-type': 'application/json; charset=utf-8', 'date': 'Sat, 25 Jul 2026 13:38:29 GMT', 'etag': 'W/"5867d-GwHdE4ImpE5AJo3H/f+WxME0bJg"', 'server': 'railway-hikari', 'x-powered-by': 'Express', 'x-railway-request-id': '6-a4CdZ6RFaknm7bxtoGcA', 'content-encoding': 'gzip', 'x-hikari-trace': 'ams1.b55h', 'x-railway-edge': 'ams1', 'vary': 'accept-encoding', 'transfer-encoding': 'chunked', 'connection': 'keep-alive'}
+body={"ticks":["2026-07-10T00:00:00Z","2026-07-11T00:00:00Z","2026-07-12T00:00:00Z","2026-07-13T00:00:00Z","2026-07-14T00:00:00Z","2026-07-15T00:00:00Z","2026-07-16T00:00:00Z","2026-07-17T00:00:00Z","2026-07-18T00:00:00Z","2026-07-19T00:00:00Z","2026-07-20T00:00:00Z","2026-07-21T00:00:00Z","2026-07-22T00:00:00Z","2026-07-23T00:00:00Z","2026-07-24T00:00:00Z"],"actioned_emails":[1638,138,144,1841,1950,1898,1808,1729,150,87,2118,2295,2824,404],"resolved":[1467,84,111,1478,1675,1701,1586,1557,124,75,1767
+
+=== AUTH:very_long_token ===
+status=200 headers={'access-control-allow-headers': 'authorization, content-type', 'access-control-allow-methods': 'POST, GET, OPTIONS', 'access-control-allow-origin': '*', 'content-type': 'application/json; charset=utf-8', 'date': 'Sat, 25 Jul 2026 13:38:29 GMT', 'etag': 'W/"5867d-GwHdE4ImpE5AJo3H/f+WxME0bJg"', 'server': 'railway-hikari', 'x-powered-by': 'Express', 'x-railway-request-id': 'XGZYdnb2Rk6ur9wjxtoGcA', 'content-encoding': 'gzip', 'x-hikari-trace': 'ams1.b55h', 'x-railway-edge': 'ams1', 'vary': 'accept-encoding', 'transfer-encoding': 'chunked', 'connection': 'keep-alive'}
+body={"ticks":["2026-07-10T00:00:00Z","2026-07-11T00:00:00Z","2026-07-12T00:00:00Z","2026-07-13T00:00:00Z","2026-07-14T00:00:00Z","2026-07-15T00:00:00Z","2026-07-16T00:00:00Z","2026-07-17T00:00:00Z","2026-07-18T00:00:00Z","2026-07-19T00:00:00Z","2026-07-20T00:00:00Z","2026-07-21T00:00:00Z","2026-07-22T00:00:00Z","2026-07-23T00:00:00Z","2026-07-24T00:00:00Z"],"actioned_emails":[1638,138,144,1841,1950,1898,1808,1729,150,87,2118,2295,2824,404],"resolved":[1467,84,111,1478,1675,1701,1586,1557,124,75,1767
+
+=== AUTH:lowercase_bearer ===
+status=200 headers={'access-control-allow-headers': 'authorization, content-type', 'access-control-allow-methods': 'POST, GET, OPTIONS', 'access-control-allow-origin': '*', 'content-type': 'application/json; charset=utf-8', 'date': 'Sat, 25 Jul 2026 13:38:30 GMT', 'etag': 'W/"5867d-GwHdE4ImpE5AJo3H/f+WxME0bJg"', 'server': 'railway-hikari', 'x-powered-by': 'Express', 'x-railway-request-id': 'uL3XOoD_QTqWP29I2prcFg', 'content-encoding': 'gzip', 'x-hikari-trace': 'ams1.b55h', 'x-railway-edge': 'ams1', 'vary': 'accept-encoding', 'transfer-encoding': 'chunked', 'connection': 'keep-alive'}
+body={"ticks":["2026-07-10T00:00:00Z","2026-07-11T00:00:00Z","2026-07-12T00:00:00Z","2026-07-13T00:00:00Z","2026-07-14T00:00:00Z","2026-07-15T00:00:00Z","2026-07-16T00:00:00Z","2026-07-17T00:00:00Z","2026-07-18T00:00:00Z","2026-07-19T00:00:00Z","2026-07-20T00:00:00Z","2026-07-21T00:00:00Z","2026-07-22T00:00:00Z","2026-07-23T00:00:00Z","2026-07-24T00:00:00Z"],"actioned_emails":[1638,138,144,1841,1950,1898,1808,1729,150,87,2118,2295,2824,404],"resolved":[1467,84,111,1478,1675,1701,1586,1557,124,75,1767
+
+=== AUTH:known_good_1 ===
+status=200 headers={'access-control-allow-headers': 'authorization, content-type', 'access-control-allow-methods': 'POST, GET, OPTIONS', 'access-control-allow-origin': '*', 'content-type': 'application/json; charset=utf-8', 'date': 'Sat, 25 Jul 2026 13:38:30 GMT', 'etag': 'W/"5867d-GwHdE4ImpE5AJo3H/f+WxME0bJg"', 'server': 'railway-hikari', 'x-powered-by': 'Express', 'x-railway-request-id': 'xJB61lYkQ-Sl0uKg2prcFg', 'content-encoding': 'gzip', 'x-hikari-trace': 'ams1.b55h', 'x-railway-edge': 'ams1', 'vary': 'accept-encoding', 'transfer-encoding': 'chunked', 'connection': 'keep-alive'}
+body={"ticks":["2026-07-10T00:00:00Z","2026-07-11T00:00:00Z","2026-07-12T00:00:00Z","2026-07-13T00:00:00Z","2026-07-14T00:00:00Z","2026-07-15T00:00:00Z","2026-07-16T00:00:00Z","2026-07-17T00:00:00Z","2026-07-18T00:00:00Z","2026-07-19T00:00:00Z","2026-07-20T00:00:00Z","2026-07-21T00:00:00Z","2026-07-22T00:00:00Z","2026-07-23T00:00:00Z","2026-07-24T00:00:00Z"],"actioned_emails":[1638,138,144,1841,1950,1898,1808,1729,150,87,2118,2295,2824,404],"resolved":[1467,84,111,1478,1675,1701,1586,1557,124,75,1767
+
+=== AUTH:known_good_2 ===
+status=200 headers={'access-control-allow-headers': 'authorization, content-type', 'access-control-allow-methods': 'POST, GET, OPTIONS', 'access-control-allow-origin': '*', 'content-type': 'application/json; charset=utf-8', 'date': 'Sat, 25 Jul 2026 13:38:30 GMT', 'etag': 'W/"5867d-GwHdE4ImpE5AJo3H/f+WxME0bJg"', 'server': 'railway-hikari', 'x-powered-by': 'Express', 'x-railway-request-id': 'WY-toWzgQ5SbfzI_n6XIxQ', 'content-encoding': 'gzip', 'x-hikari-trace': 'ams1.b55h', 'x-railway-edge': 'ams1', 'vary': 'accept-encoding', 'transfer-encoding': 'chunked', 'connection': 'keep-alive'}
+body={"ticks":["2026-07-10T00:00:00Z","2026-07-11T00:00:00Z","2026-07-12T00:00:00Z","2026-07-13T00:00:00Z","2026-07-14T00:00:00Z","2026-07-15T00:00:00Z","2026-07-16T00:00:00Z","2026-07-17T00:00:00Z","2026-07-18T00:00:00Z","2026-07-19T00:00:00Z","2026-07-20T00:00:00Z","2026-07-21T00:00:00Z","2026-07-22T00:00:00Z","2026-07-23T00:00:00Z","2026-07-24T00:00:00Z"],"actioned_emails":[1638,138,144,1841,1950,1898,1808,1729,150,87,2118,2295,2824,404],"resolved":[1467,84,111,1478,1675,1701,1586,1557,124,75,1767
+
+=== AUTH:known_good_3 ===
+status=200 headers={'access-control-allow-headers': 'authorization, content-type', 'access-control-allow-methods': 'POST, GET, OPTIONS', 'access-control-allow-origin': '*', 'content-type': 'application/json; charset=utf-8', 'date': 'Sat, 25 Jul 2026 13:38:30 GMT', 'etag': 'W/"5867d-GwHdE4ImpE5AJo3H/f+WxME0bJg"', 'server': 'railway-hikari', 'x-powered-by': 'Express', 'x-railway-request-id': 'L0LguSXpQx6rg1C6xtoGcA', 'content-encoding': 'gzip', 'x-hikari-trace': 'ams1.b55h', 'x-railway-edge': 'ams1', 'vary': 'accept-encoding', 'transfer-encoding': 'chunked', 'connection': 'keep-alive'}
+body={"ticks":["2026-07-10T00:00:00Z","2026-07-11T00:00:00Z","2026-07-12T00:00:00Z","2026-07-13T00:00:00Z","2026-07-14T00:00:00Z","2026-07-15T00:00:00Z","2026-07-16T00:00:00Z","2026-07-17T00:00:00Z","2026-07-18T00:00:00Z","2026-07-19T00:00:00Z","2026-07-20T00:00:00Z","2026-07-21T00:00:00Z","2026-07-22T00:00:00Z","2026-07-23T00:00:00Z","2026-07-24T00:00:00Z"],"actioned_emails":[1638,138,144,1841,1950,1898,1808,1729,150,87,2118,2295,2824,404],"resolved":[1467,84,111,1478,1675,1701,1586,1557,124,75,1767
+
+=== AUTH:known_good_4 ===
+status=200 headers={'access-control-allow-headers': 'authorization, content-type', 'access-control-allow-methods': 'POST, GET, OPTIONS', 'access-control-allow-origin': '*', 'content-type': 'application/json; charset=utf-8', 'date': 'Sat, 25 Jul 2026 13:38:31 GMT', 'etag': 'W/"5867d-GwHdE4ImpE5AJo3H/f+WxME0bJg"', 'server': 'railway-hikari', 'x-powered-by': 'Express', 'x-railway-request-id': 'jzCt-71rQGeMEsXUn6XIxQ', 'content-encoding': 'gzip', 'x-hikari-trace': 'ams1.b55h', 'x-railway-edge': 'ams1', 'vary': 'accept-encoding', 'transfer-encoding': 'chunked', 'connection': 'keep-alive'}
+body={"ticks":["2026-07-10T00:00:00Z","2026-07-11T00:00:00Z","2026-07-12T00:00:00Z","2026-07-13T00:00:00Z","2026-07-14T00:00:00Z","2026-07-15T00:00:00Z","2026-07-16T00:00:00Z","2026-07-17T00:00:00Z","2026-07-18T00:00:00Z","2026-07-19T00:00:00Z","2026-07-20T00:00:00Z","2026-07-21T00:00:00Z","2026-07-22T00:00:00Z","2026-07-23T00:00:00Z","2026-07-24T00:00:00Z"],"actioned_emails":[1638,138,144,1841,1950,1898,1808,1729,150,87,2118,2295,2824,404],"resolved":[1467,84,111,1478,1675,1701,1586,1557,124,75,1767
+
+=== AUTH:known_good_5 ===
+status=200 headers={'access-control-allow-headers': 'authorization, content-type', 'access-control-allow-methods': 'POST, GET, OPTIONS', 'access-control-allow-origin': '*', 'content-type': 'application/json; charset=utf-8', 'date': 'Sat, 25 Jul 2026 13:38:31 GMT', 'etag': 'W/"5867d-GwHdE4ImpE5AJo3H/f+WxME0bJg"', 'server': 'railway-hikari', 'x-powered-by': 'Express', 'x-railway-request-id': 'VNDRVX2UT5GAshqun6XIxQ', 'content-encoding': 'gzip', 'x-hikari-trace': 'ams1.b55h', 'x-railway-edge': 'ams1', 'vary': 'accept-encoding', 'transfer-encoding': 'chunked', 'connection': 'keep-alive'}
+body={"ticks":["2026-07-10T00:00:00Z","2026-07-11T00:00:00Z","2026-07-12T00:00:00Z","2026-07-13T00:00:00Z","2026-07-14T00:00:00Z","2026-07-15T00:00:00Z","2026-07-16T00:00:00Z","2026-07-17T00:00:00Z","2026-07-18T00:00:00Z","2026-07-19T00:00:00Z","2026-07-20T00:00:00Z","2026-07-21T00:00:00Z","2026-07-22T00:00:00Z","2026-07-23T00:00:00Z","2026-07-24T00:00:00Z"],"actioned_emails":[1638,138,144,1841,1950,1898,1808,1729,150,87,2118,2295,2824,404],"resolved":[1467,84,111,1478,1675,1701,1586,1557,124,75,1767
+
+=== AUTH:token_in_query_no_header ===
+status=401 body={"error":"No auth provided"}
+
+=== AUTH:diff_check ===
+Comparing bodies for known_good_1..5
+
+=== AUTH:diff_check_result ===
+All 5 token responses identical: True
+
+=== AUTH:page:/spec ===
+no_auth status=200 len=10208 | with_auth status=200 len=10208
+
+=== AUTH:page:/reporting-api-guide.pdf ===
+no_auth status=200 len=530705 | with_auth status=200 len=530705
+
+=== AUTH:page:/ ===
+no_auth status=200 len=8592 | with_auth status=200 len=8592

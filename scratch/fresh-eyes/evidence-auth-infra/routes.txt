@@ -1,0 +1,71 @@
+/reporting_api/v1/reporting/stats/csv | GET | 404 | 175 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /reporting_api/v1/reporting/stats/c
+/reporting_api/v1/reporting/stats/xlsx | GET | 404 | 176 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /reporting_api/v1/reporting/stats/x
+/reporting_api/v1/reporting/stats/excel | GET | 404 | 177 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /reporting_api/v1/reporting/stats/e
+/reporting_api/v1/reporting/stats/json/ | GET | 404 | 177 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /reporting_api/v1/reporting/stats/j
+/reporting_api/v1/reporting/stats | GET | 404 | 171 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /reporting_api/v1/reporting/stats</
+/reporting_api/v1/reporting/ | GET | 404 | 166 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /reporting_api/v1/reporting/</pre> 
+/reporting_api/v1/reporting | GET | 404 | 165 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /reporting_api/v1/reporting</pre> <
+/reporting_api/v1/ | GET | 404 | 156 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /reporting_api/v1/</pre> </body> </
+/reporting_api/v1 | GET | 404 | 155 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /reporting_api/v1</pre> </body> </h
+/reporting_api/ | GET | 404 | 153 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /reporting_api/</pre> </body> </htm
+/reporting_api | GET | 404 | 152 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /reporting_api</pre> </body> </html
+/openapi.json | GET | 404 | 151 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /openapi.json</pre> </body> </html>
+/docs | GET | 404 | 143 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /docs</pre> </body> </html> 
+/redoc | GET | 404 | 144 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /redoc</pre> </body> </html> 
+/swagger | GET | 404 | 146 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /swagger</pre> </body> </html> 
+/swagger.json | GET | 404 | 151 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /swagger.json</pre> </body> </html>
+/health | GET | 200 | 151 | application/json; charset=utf-8 | {"ok":true,"service":"reporting-stats-api","endpoint":"POST /reporting_api/v1/reporting/stats/json","coverage":{"from":"2026-07-10","to":"2026-07-23"}
+/healthz | GET | 404 | 146 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /healthz</pre> </body> </html> 
+/api | GET | 404 | 142 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /api</pre> </body> </html> 
+/api/v1 | GET | 404 | 145 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /api/v1</pre> </body> </html> 
+/v1 | GET | 404 | 141 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /v1</pre> </body> </html> 
+/reporting_api/v1/reporting/mailboxes | GET | 404 | 175 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /reporting_api/v1/reporting/mailbox
+/users | GET | 404 | 144 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /users</pre> </body> </html> 
+/actors | GET | 404 | 145 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /actors</pre> </body> </html> 
+/agents | GET | 404 | 145 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /agents</pre> </body> </html> 
+/communities | GET | 404 | 150 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /communities</pre> </body> </html> 
+/metrics | GET | 404 | 146 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /metrics</pre> </body> </html> 
+/reporting_api/v2/reporting/stats/json | GET | 404 | 176 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /reporting_api/v2/reporting/stats/j
+/.well-known/ | GET | 404 | 151 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /.well-known/</pre> </body> </html>
+/.well-known/security.txt | GET | 404 | 163 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /.well-known/security.txt</pre> </b
+/favicon.ico | GET | 404 | 150 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /favicon.ico</pre> </body> </html> 
+/robots.txt | GET | 404 | 149 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /robots.txt</pre> </body> </html> 
+/spec | GET | 200 | 10208 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8" /> <meta name="viewport" content="width=device-width, initial-scale=1" /> <title>Reporti
+/reporting-api-guide.pdf | GET | 200 | 530705 | application/pdf | %PDF-1.4 %���� 1 0 obj <</Title <FEFF005200650070006F007200740069006E006700200041005000490020201400200051007500690063006B00200073007400610072007400200
+/nonexistent-route-xyz-123 | GET | 404 | 164 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /nonexistent-route-xyz-123</pre> </
+/reporting_api/v1/reporting/stats/json | GET | 404 | 176 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot GET /reporting_api/v1/reporting/stats/j
+/reporting_api/v1/reporting/stats/json | HEAD | 404 | 0 | text/html; charset=utf-8 | 
+/reporting_api/v1/reporting/stats/json | OPTIONS | 200 | 2 | text/plain; charset=utf-8 | OK
+/reporting_api/v1/reporting/stats/json | PUT | 404 | 176 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot PUT /reporting_api/v1/reporting/stats/j
+/reporting_api/v1/reporting/stats/json | PATCH | 404 | 178 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot PATCH /reporting_api/v1/reporting/stats
+/reporting_api/v1/reporting/stats/json | DELETE | 404 | 179 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot DELETE /reporting_api/v1/reporting/stat
+/reporting_api/v1/reporting/stats/json | TRACE | 404 | 178 | text/html; charset=utf-8 | <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>Cannot TRACE /reporting_api/v1/reporting/stats
+/nonexistent-route-xyz-123 | POST-noauth | 404 | 165 | text/html; charset=utf-8 | <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /nonexistent-route-xyz-123</pre>
+<
+/reporting_api/v1/reporting/stats/csv | POST-noauth | 404 | 176 | text/html; charset=utf-8 | <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /reporting_api/v1/reporting/stats/
+/reporting_api/v1/reporting/stats/json | POST-badjson | 400 | 138 | text/html; charset=utf-8 | <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Bad Request</pre>
+</body>
+</html>
+
+/reporting_api/v1/reporting/stats/json | POST-missingfields | 422 | 83 | text/plain; charset=utf-8 | Failed to deserialize the JSON body into the target type: missing field `from_date`

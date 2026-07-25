@@ -1,0 +1,20 @@
+{
+  "status_code": 422,
+  "label": "scope_as_array",
+  "request_body": [
+    {
+      "id": "mailboxes",
+      "operator": {
+        "id": "is"
+      },
+      "values": [
+        {
+          "id": "ACf0kWdEPNiYSou98PwFYiKQfWq9c0T",
+          "name": "Returns"
+        }
+      ]
+    }
+  ],
+  "response_text": "Failed to deserialize the JSON body into the target type: missing field `from_date`",
+  "parse_error": "Expecting value: line 1 column 1 (char 0)"
+}

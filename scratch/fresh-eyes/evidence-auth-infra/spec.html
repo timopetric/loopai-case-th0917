@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Reporting API — Quick start guide</title>
+<style>
+  :root { --paper:#f4f1ea; --paper2:#ebe6da; --ink:#1c1a17; --faint:#6b655c; --rule:#d6cfc0; --red:#b23a2e; --accent:#5b3fb0; --green:#2e7d32; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:'Georgia','Times New Roman',serif; color:var(--ink); line-height:1.7; background:var(--paper);
+    background-image:radial-gradient(circle at 20% 6%, rgba(255,255,255,.5), transparent 40%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='40' height='40' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E"); }
+  .mono { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+  .wrap { max-width:820px; margin:0 auto; padding:clamp(28px,6vw,44px) clamp(16px,5vw,24px) 96px; }
+  .topnav { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:26px; font-family:ui-monospace,monospace; font-size:12.5px; letter-spacing:.04em; }
+  .topnav a { color:var(--accent); text-decoration:none; font-weight:700; }
+  .topnav a:hover { opacity:.8; }
+  h1 { font-size:clamp(30px,7vw,38px); letter-spacing:-.01em; margin:0 0 4px; font-weight:700; }
+  .sub { color:var(--faint); font-size:clamp(16px,4vw,18px); font-style:italic; margin:0 0 28px; }
+  h2 { font-size:22px; margin:34px 0 12px; letter-spacing:-.01em; color:#000; }
+  h3 { font-size:16px; margin:24px 0 8px; color:var(--red); font-family:ui-monospace,monospace; letter-spacing:.06em; text-transform:uppercase; }
+  p { margin:0 0 12px; color:var(--ink); }
+  code { background:#fff; border:1px solid var(--rule); padding:1px 6px; border-radius:3px; font-family:'Courier New',ui-monospace,monospace; font-size:13px; color:var(--accent); }
+  pre { background:#fff; color:#2a2530; padding:16px 18px; border-radius:4px; overflow-x:auto; font-size:13px; line-height:1.6; font-family:'Courier New',ui-monospace,monospace; border:1px solid var(--rule); border-left:3px solid var(--accent); }
+  table { width:100%; border-collapse:collapse; margin:8px 0 18px; font-size:14.5px; background:#fff; border:1px solid var(--rule); }
+  th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--rule); vertical-align:top; color:var(--ink); }
+  th { color:var(--faint); font-weight:700; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; font-family:ui-monospace,monospace; background:var(--paper2); }
+  td code { white-space:nowrap; }
+  .endpoint { background:#fff; color:#2a2530; padding:13px 16px; border-radius:4px; font-family:'Courier New',ui-monospace,monospace; font-size:14px; border:1px solid var(--rule); border-left:3px solid var(--accent); word-break:break-all; }
+  .dl { display:inline-flex; gap:8px; align-items:center; padding:10px 16px; background:var(--accent); color:#fff; border-radius:4px; text-decoration:none; font-weight:700; font-size:13px; font-family:ui-monospace,monospace; text-transform:uppercase; letter-spacing:.04em; min-height:44px; }
+  .dl:hover { filter:brightness(1.08); }
+  .note { background:#fff; border:1px solid var(--rule); border-left:3px solid var(--accent); border-radius:4px; padding:12px 16px; color:var(--faint); font-size:14px; font-style:italic; margin:16px 0; }
+  .req { color:var(--green); font-weight:700; } .opt { color:var(--faint); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav mono">
+    <a href="/">← Back to the case file</a>
+    <a class="dl" href="/reporting-api-guide.pdf" download>⬇︎ Download PDF</a>
+  </div>
+
+  <h1>Reporting API</h1>
+  <p class="sub">How to request report data — a quick start guide.</p>
+
+  <h2>1. The endpoint</h2>
+  <p>Send a <strong>POST</strong> request with a JSON body to:</p>
+  <div class="endpoint">POST https://ai-homework-production-2423.up.railway.app/reporting_api/v1/reporting/stats/json</div>
+  <p style="margin-top:12px">The response is a JSON object with your requested metrics, described in section 5.</p>
+
+  <h2>2. Authentication &amp; headers</h2>
+  <p>Authenticate with an API key sent as a Bearer token.</p>
+  <table>
+    <tr><th>Header</th><th>Value</th></tr>
+    <tr><td><code>Authorization</code></td><td><code>Bearer &lt;your API key&gt;</code></td></tr>
+    <tr><td><code>Content-Type</code></td><td><code>application/json</code></td></tr>
+    <tr><td><code>Accept</code></td><td><code>application/json</code></td></tr>
+  </table>
+
+  <h2>3. The request body</h2>
+  <p>The body tells the API <em>what</em> to measure, <em>over what period</em>, and <em>for which mailboxes/people</em>.</p>
+  <table>
+    <tr><th>Field</th><th>Required</th><th>Description</th></tr>
+    <tr><td><code>community_id</code></td><td class="req">Yes</td><td>Your workspace / community ID.</td></tr>
+    <tr><td><code>event_types</code></td><td class="req">Yes</td><td>List of metrics to return, e.g. <code>["resolved","new_tickets"]</code>. See 3a.</td></tr>
+    <tr><td><code>time_type</code></td><td class="req">Yes</td><td>Period preset: <code>today</code>, <code>yesterday</code>, <code>all</code>, <code>custom</code>, or a dynamic value like <code>7d</code>.</td></tr>
+    <tr><td><code>time_unit</code></td><td class="req">Yes</td><td>Bucket size: <code>minute</code>, <code>hour</code>, <code>day</code>, <code>week</code>, or <code>month</code>.</td></tr>
+    <tr><td><code>time_period</code></td><td class="req">Yes</td><td>How many time_units per bucket (usually <code>1</code>).</td></tr>
+    <tr><td><code>from_date</code></td><td class="req">Yes</td><td>Start of the window (ISO 8601 UTC), e.g. <code>2026-07-18T04:00:00.000Z</code>.</td></tr>
+    <tr><td><code>to_date</code></td><td class="req">Yes</td><td>End of the window (ISO 8601 UTC).</td></tr>
+    <tr><td><code>timezone</code></td><td class="req">Yes</td><td>IANA timezone used to align buckets, e.g. <code>America/New_York</code>.</td></tr>
+    <tr><td><code>scope</code></td><td class="opt">No</td><td>The main set of mailboxes/people to report on. See 3b.</td></tr>
+    <tr><td><code>filters</code></td><td class="opt">No</td><td>Additional filters, same shape as scope. Empty list <code>[]</code> for none.</td></tr>
+  </table>
+
+  <h3>3a. Available metrics (event_types)</h3>
+  <p>Pass any combination of these values. Counts are whole numbers; time metrics are in seconds.</p>
+  <pre>actioned_emails, resolved, new_tickets, open, replies, new_emails,
+replies_to_resolve, resolve_time, response_time, time_to_first_reply,
+resolve_time_business_hours, response_time_business_hours,
+time_to_first_reply_business_hours, sla_breaches, handle_time</pre>
+
+  <h3>3b. Scope &amp; filters</h3>
+  <p>A scope (or filter) narrows the report to specific mailboxes, tags, people, or customers. It has an <code>id</code> (what to filter on), an <code>operator</code>, and a list of <code>values</code>:</p>
+  <pre>"scope": {
+  "id": "mailboxes",
+  "operator": { "id": "is" },
+  "values": [
+    { "id": "ACf0kWdEPNiYSou98PwFYiKQfWq9c0T", "name": "Returns" },
+    { "id": "ACqMGljMqLCOAZJ9ZYNz4oNZkF91D0T", "name": "Partnerships" }
+  ]
+}</pre>
+  <table>
+    <tr><th>Filter id</th><th>Operator id</th></tr>
+    <tr>
+      <td><code>user</code>, <code>labels</code>, <code>topics</code>, <code>categories</code>, <code>allMailboxes</code>, <code>mailbox</code>, <code>mailboxes</code>, <code>privateMailboxes</code>, <code>customerEmail</code>, <code>customerDomain</code></td>
+      <td><code>is</code>, <code>is_not</code>, <code>or</code>, <code>or_not</code>, <code>and</code>, <code>and_not</code></td>
+    </tr>
+  </table>
+
+  <h2>4. Full example request</h2>
+  <p>Resolved tickets for a custom inbox:</p>
+  <pre>{
+  "community_id": "demo-community",
+  "event_types": ["resolved"],
+  "time_type": "today",
+  "time_unit": "day",
+  "time_period": 1,
+  "timezone": "America/New_York",
+  "from_date": "2026-07-18T04:00:00.000Z",
+  "to_date":   "2026-07-20T03:59:59.999Z",
+  "filters": [],
+  "scope": {
+    "id": "mailboxes",
+    "operator": { "id": "is" },
+    "values": [
+      { "id": "ACf0kWdEPNiYSou98PwFYiKQfWq9c0T", "name": "Returns" }
+    ]
+  }
+}</pre>
+
+  <h3>4b. Example: year-to-date scorecard</h3>
+  <p>A custom date range for replies, resolved and handle time, across several shared inboxes. Agent-level numbers come back in the <code>actors</code> array.</p>
+  <pre>{
+  "community_id": "demo-community",
+  "event_types": ["replies", "resolved", "handle_time"],
+  "time_type": "custom",
+  "time_unit": "day",
+  "time_period": 1,
+  "timezone": "America/New_York",
+  "from_date": "2026-07-10T05:00:00.000Z",
+  "to_date":   "2026-07-23T03:59:59.999Z",
+  "filters": [],
+  "scope": {
+    "id": "mailboxes",
+    "operator": { "id": "is" },
+    "values": [
+      { "id": "ACf0kWdEPNiYSou98PwFYiKQfWq9c0T", "name": "Returns" },
+      { "id": "ACqMGljMqLCOAZJ9ZYNz4oNZkF91D0T", "name": "Partnerships" },
+      { "id": "ACpw3ge04EDYzOsUMhVHgYGqpn2wq0T", "name": "Compliance" },
+      { "id": "ACn0hYoSiro8YwtJVsN48DFDtyHyQ0T", "name": "Fax" },
+      { "id": "ACSzkQ6eDUuigSwb0AFR4r7Z19wog0T", "name": "Outbound" }
+    ]
+  }
+}</pre>
+
+  <h2>5. Understanding the response</h2>
+  <p>The response contains a <code>ticks</code> array (bucket boundaries) and one array per requested metric. Each value sits <em>between</em> two ticks, so there is always <strong>one more tick than there are metric values</strong>. Time metrics also return a matching <code>&lt;metric&gt;_count</code> array so you can compute weighted averages.</p>
+  <pre>{
+  "ticks": ["2026-07-16T22:00:00Z", "2026-07-17T22:00:00Z"],
+  "resolved": [3],
+  "new_tickets": [5],
+  "actors": [ ... per-user breakdown ... ],
+  "mailbox": [ ... per-inbox breakdown ... ]
+}</pre>
+  <p>Alongside the top-level totals, the response breaks the same metrics down by <code>actors</code> (people) and <code>mailbox</code>.</p>
+  <div class="note">Tip: all dates are UTC (ISO 8601). Use the <code>timezone</code> field to control how days and weeks are bucketed for your team.</div>
+</div>
+</body>
+</html>

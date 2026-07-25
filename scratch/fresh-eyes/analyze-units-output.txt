@@ -1,0 +1,262 @@
+N daily buckets = 14
+
+====================================================================================================
+SECTION 0: bucketing param behavior (time_unit / time_period)
+====================================================================================================
+time_unit=day  ticks: ['2026-07-10T00:00:00Z', '2026-07-11T00:00:00Z', '2026-07-12T00:00:00Z', '2026-07-13T00:00:00Z', '2026-07-14T00:00:00Z', '2026-07-15T00:00:00Z', '2026-07-16T00:00:00Z', '2026-07-17T00:00:00Z', '2026-07-18T00:00:00Z', '2026-07-19T00:00:00Z', '2026-07-20T00:00:00Z', '2026-07-21T00:00:00Z', '2026-07-22T00:00:00Z', '2026-07-23T00:00:00Z', '2026-07-24T00:00:00Z']
+time_unit=week ticks: ['2026-07-10T00:00:00Z', '2026-07-11T00:00:00Z', '2026-07-12T00:00:00Z', '2026-07-13T00:00:00Z', '2026-07-14T00:00:00Z', '2026-07-15T00:00:00Z', '2026-07-16T00:00:00Z', '2026-07-17T00:00:00Z', '2026-07-18T00:00:00Z']
+time_unit=hour ticks: ['2026-07-15T00:00:00Z', '2026-07-16T00:00:00Z', '2026-07-17T00:00:00Z']
+time_unit=day,time_period=7 ticks: ['2026-07-10T00:00:00Z', '2026-07-11T00:00:00Z', '2026-07-12T00:00:00Z', '2026-07-13T00:00:00Z', '2026-07-14T00:00:00Z', '2026-07-15T00:00:00Z', '2026-07-16T00:00:00Z', '2026-07-17T00:00:00Z', '2026-07-18T00:00:00Z']
+weekly resolve_time array == daily prefix? True
+hourly resolve_time array == daily slice (day 07-15,07-16)? True
+time_period=7 resolve_time array == daily prefix? True
+CONCLUSION: time_unit and time_period are IGNORED by the server. Every request,
+regardless of requested granularity, returns ONE BUCKET PER CALENDAR DAY covering
+[from_date, to_date]. There is no server-side weekly/hourly aggregation to compare
+against, so the prescribed 'day-bucket vs week-bucket' cross-check is NOT POSSIBLE
+empirically -- this is itself a finding, not a gap in method.
+
+====================================================================================================
+SECTION 1: MEAN vs SUM -- magnitude/count consistency test (since real weekly
+buckets do not exist, we test internal consistency: does time_metric look like a
+per-ticket mean (comparable magnitude to its own _count denominator), or a SUM
+(which would need to be ~count times larger)?
+====================================================================================================
+
+--- resolve_time ---
+  day0: value=9384.0846 count=1467 denom(resolved)=1467 | if SUM: per-ticket=6.3967856716276605
+  day1: value=670.7369 count=84 denom(resolved)=84 | if SUM: per-ticket=7.984962873677249
+  day2: value=1370.7548 count=111 denom(resolved)=111 | if SUM: per-ticket=12.34914273023023
+  day13: value=2975.6056 count=330 denom(resolved)=330 | if SUM: per-ticket=9.016986692760943
+  SUM-of-all-14-days = 187974.10
+  MEAN-of-all-14-days (unweighted) = 13426.72
+  count-weighted-MEAN-of-means = 20581.80558558172
+  -> single day value (e.g. day0=9384.08) is same order of magnitude as the weighted mean (20581.80558558172), NOT the running total (187974.10). This is consistent with each day's value already being a MEAN, not a running SUM.
+
+--- response_time ---
+  day0: value=17634.1510 count=529 denom(replies)=1144 | if SUM: per-ticket=33.334878957151865
+  day1: value=210.4503 count=32 denom(replies)=104 | if SUM: per-ticket=6.576573428819444
+  day2: value=399.3845 count=29 denom(replies)=113 | if SUM: per-ticket=13.771879961685823
+  day13: value=599.9432 count=139 denom(replies)=254 | if SUM: per-ticket=4.31613823541167
+  SUM-of-all-14-days = 209110.77
+  MEAN-of-all-14-days (unweighted) = 14936.48
+  count-weighted-MEAN-of-means = 22219.73377182301
+  -> single day value (e.g. day0=17634.15) is same order of magnitude as the weighted mean (22219.73377182301), NOT the running total (209110.77). This is consistent with each day's value already being a MEAN, not a running SUM.
+
+--- time_to_first_reply ---
+  day0: value=15743.9929 count=404 denom(new_tickets)=5594 | if SUM: per-ticket=38.97027949119912
+  day1: value=207.0699 count=29 denom(new_tickets)=834 | if SUM: per-ticket=7.140343093869732
+  day2: value=377.4444 count=26 denom(new_tickets)=736 | if SUM: per-ticket=14.517090961538461
+  day13: value=531.9733 count=117 denom(new_tickets)=1622 | if SUM: per-ticket=4.546780474833809
+  SUM-of-all-14-days = 182526.74
+  MEAN-of-all-14-days (unweighted) = 13037.62
+  count-weighted-MEAN-of-means = 19357.23246664788
+  -> single day value (e.g. day0=15743.99) is same order of magnitude as the weighted mean (19357.23246664788), NOT the running total (182526.74). This is consistent with each day's value already being a MEAN, not a running SUM.
+
+--- resolve_time_business_hours ---
+  day0: value=6376.1608 count=1467 denom(resolved)=1467 | if SUM: per-ticket=4.34639455426797
+  day1: value=436.8686 count=84 denom(resolved)=84 | if SUM: per-ticket=5.20081708994709
+  day2: value=921.2336 count=111 denom(resolved)=111 | if SUM: per-ticket=8.299401961961962
+  day13: value=2349.7309 count=330 denom(resolved)=330 | if SUM: per-ticket=7.120396777777777
+  SUM-of-all-14-days = 125344.54
+  MEAN-of-all-14-days (unweighted) = 8953.18
+  count-weighted-MEAN-of-means = 13699.865048588119
+  -> single day value (e.g. day0=6376.16) is same order of magnitude as the weighted mean (13699.865048588119), NOT the running total (125344.54). This is consistent with each day's value already being a MEAN, not a running SUM.
+
+--- response_time_business_hours ---
+  day0: value=11740.1330 count=529 denom(replies)=1144 | if SUM: per-ticket=22.19306804872926
+  day1: value=130.9478 count=32 denom(replies)=104 | if SUM: per-ticket=4.092120303819445
+  day2: value=271.5862 count=29 denom(replies)=113 | if SUM: per-ticket=9.365042911877394
+  day13: value=486.8805 count=139 denom(replies)=254 | if SUM: per-ticket=3.502737256195044
+  SUM-of-all-14-days = 139410.74
+  MEAN-of-all-14-days (unweighted) = 9957.91
+  count-weighted-MEAN-of-means = 14811.135765725816
+  -> single day value (e.g. day0=11740.13) is same order of magnitude as the weighted mean (14811.135765725816), NOT the running total (139410.74). This is consistent with each day's value already being a MEAN, not a running SUM.
+
+--- time_to_first_reply_business_hours ---
+  day0: value=10479.5841 count=404 denom(new_tickets)=5594 | if SUM: per-ticket=25.939564630088007
+  day1: value=127.5674 count=29 denom(new_tickets)=834 | if SUM: per-ticket=4.398877576628353
+  day2: value=257.6461 count=26 denom(new_tickets)=736 | if SUM: per-ticket=9.90946502136752
+  day13: value=442.9106 count=117 denom(new_tickets)=1622 | if SUM: per-ticket=3.7855605080721744
+  SUM-of-all-14-days = 121831.72
+  MEAN-of-all-14-days (unweighted) = 8702.27
+  count-weighted-MEAN-of-means = 12919.47448697987
+  -> single day value (e.g. day0=10479.58) is same order of magnitude as the weighted mean (12919.47448697987), NOT the running total (121831.72). This is consistent with each day's value already being a MEAN, not a running SUM.
+
+--- handle_time ---
+  day0: value=7.9891 count=569 denom(None)=None | if SUM: per-ticket=0.014040670279242336
+  day1: value=0.3887 count=35 denom(None)=None | if SUM: per-ticket=0.011106190476190478
+  day2: value=0.3978 count=31 denom(None)=None | if SUM: per-ticket=0.012831012544802867
+  day13: value=1.8086 count=149 denom(None)=None | if SUM: per-ticket=0.012138122669649516
+  SUM-of-all-14-days = 85.07
+  MEAN-of-all-14-days (unweighted) = 6.08
+  count-weighted-MEAN-of-means = 8.902137358965021
+  -> single day value (e.g. day0=7.99) is same order of magnitude as the weighted mean (8.902137358965021), NOT the running total (85.07). This is consistent with each day's value already being a MEAN, not a running SUM.
+
+====================================================================================================
+SECTION 2: near-integer fractional test -- decisive unit test
+Multiply every time-metric value by 1, 60, 3600, 1000 and check how close to an
+integer the result is. If original unit is HOURS, value*3600 (seconds) should be
+near-integer IF underlying storage was integer seconds converted to hours.
+====================================================================================================
+Total nonzero time-metric samples (bucket-level): 98
+Total nonzero time-metric samples (actor-level): 3230
+Combined: 3328
+  x1 (as-is)  : mean frac-dist-to-int=0.23107  fraction<0.01=127/3328=0.038  fraction<0.001=20/3328=0.006
+  x60         : mean frac-dist-to-int=0.24709  fraction<0.01=68/3328=0.020  fraction<0.001=2/3328=0.001
+  x3600       : mean frac-dist-to-int=0.24862  fraction<0.01=108/3328=0.032  fraction<0.001=61/3328=0.018
+  x1000       : mean frac-dist-to-int=0.25904  fraction<0.01=56/3328=0.017  fraction<0.001=4/3328=0.001
+  /60         : mean frac-dist-to-int=0.17086  fraction<0.01=744/3328=0.224  fraction<0.001=203/3328=0.061
+  /3600       : mean frac-dist-to-int=0.03813  fraction<0.01=2021/3328=0.607  fraction<0.001=1098/3328=0.330
+
+Sample raw fractional tails (bucket-level, first 10 nonzero resolve_time values):
+   9384.084580277779
+   670.736881388889
+   1370.7548430555555
+   16425.71347
+   17371.57141388889
+   11548.074940277776
+   17920.9593375
+   16133.388155
+   603.0245777777777
+   234.44649444444445
+
+Hypothesis: value = (integer total seconds) / (count of tickets) [a MEAN of integer
+second-durations]. Test: value * count should be near-integer.
+  resolve_time: value*count near-integer fraction = 0/14 = 0.000  (mean dist=0.26055)
+  response_time: value*count near-integer fraction = 0/14 = 0.000  (mean dist=0.19489)
+  time_to_first_reply: value*count near-integer fraction = 0/14 = 0.000  (mean dist=0.22625)
+  resolve_time_business_hours: value*count near-integer fraction = 1/14 = 0.071  (mean dist=0.18571)
+  response_time_business_hours: value*count near-integer fraction = 1/14 = 0.071  (mean dist=0.23016)
+  time_to_first_reply_business_hours: value*count near-integer fraction = 1/14 = 0.071  (mean dist=0.26141)
+  handle_time: value*count near-integer fraction = 0/14 = 0.000  (mean dist=0.27342)
+
+====================================================================================================
+SECTION 3: business_hours vs plain -- always <= ? ratio distribution
+====================================================================================================
+resolve_time vs resolve_time_business_hours: violations(biz>plain)=0/14  ratio min=0.6513 max=0.7897 mean=0.6779
+   (8/24 = 0.3333 for reference -- an 8h business day out of 24h calendar day)
+response_time vs response_time_business_hours: violations(biz>plain)=0/14  ratio min=0.6222 max=0.8115 mean=0.6789
+   (8/24 = 0.3333 for reference -- an 8h business day out of 24h calendar day)
+time_to_first_reply vs time_to_first_reply_business_hours: violations(biz>plain)=0/14  ratio min=0.6161 max=0.8326 mean=0.6853
+   (8/24 = 0.3333 for reference -- an 8h business day out of 24h calendar day)
+
+====================================================================================================
+SECTION 4: handle_time -- presence, relation to other metrics
+====================================================================================================
+handle_time: [7.989141388888889, 0.3887166666666667, 0.3977613888888889, 7.250020277777778, 8.992759166666668, 10.537009722222223, 9.249631944444445, 7.861059444444444, 0.6869558333333334, 0.4788002777777778, 7.937342500000001, 9.515956666666668, 11.97318, 1.8085802777777777]
+handle_time_count: [569, 35, 31, 551, 706, 746, 674, 575, 46, 26, 624, 739, 936, 149]
+resolved: [1467, 84, 111, 1478, 1675, 1701, 1586, 1557, 124, 75, 1767, 1883, 2534, 330]
+actioned_emails: [1638, 138, 144, 1841, 1950, 1898, 1808, 1729, 150, 87, 2118, 2295, 2824, 404]
+  day0: handle_time=7.9891 handle_time_count=569 resolved=1467 actioned_emails=1638 resolve_time=9384.08
+  day1: handle_time=0.3887 handle_time_count=35 resolved=84 actioned_emails=138 resolve_time=670.74
+  day2: handle_time=0.3978 handle_time_count=31 resolved=111 actioned_emails=144 resolve_time=1370.75
+  day3: handle_time=7.2500 handle_time_count=551 resolved=1478 actioned_emails=1841 resolve_time=16425.71
+  day4: handle_time=8.9928 handle_time_count=706 resolved=1675 actioned_emails=1950 resolve_time=17371.57
+  day5: handle_time=10.5370 handle_time_count=746 resolved=1701 actioned_emails=1898 resolve_time=11548.07
+  day6: handle_time=9.2496 handle_time_count=674 resolved=1586 actioned_emails=1808 resolve_time=17920.96
+  day7: handle_time=7.8611 handle_time_count=575 resolved=1557 actioned_emails=1729 resolve_time=16133.39
+  day8: handle_time=0.6870 handle_time_count=46 resolved=124 actioned_emails=150 resolve_time=603.02
+  day9: handle_time=0.4788 handle_time_count=26 resolved=75 actioned_emails=87 resolve_time=234.45
+  day10: handle_time=7.9373 handle_time_count=624 resolved=1767 actioned_emails=2118 resolve_time=44654.59
+  day11: handle_time=9.5160 handle_time_count=739 resolved=1883 actioned_emails=2295 resolve_time=10616.38
+  day12: handle_time=11.9732 handle_time_count=936 resolved=2534 actioned_emails=2824 resolve_time=38064.77
+  day13: handle_time=1.8086 handle_time_count=149 resolved=330 actioned_emails=404 resolve_time=2975.61
+
+====================================================================================================
+SECTION 5: replies_to_resolve / replies_to_resolve_count -- mean replies per resolved ticket?
+====================================================================================================
+  day0: replies_to_resolve=1501 count=846 ratio(replies/resolved-ticket)=1.7742316784869976 replies=1144 resolved=1467
+  day1: replies_to_resolve=76 count=61 ratio(replies/resolved-ticket)=1.2459016393442623 replies=104 resolved=84
+  day2: replies_to_resolve=142 count=95 ratio(replies/resolved-ticket)=1.4947368421052631 replies=113 resolved=111
+  day3: replies_to_resolve=1410 count=889 ratio(replies/resolved-ticket)=1.5860517435320585 replies=1292 resolved=1478
+  day4: replies_to_resolve=2066 count=1089 ratio(replies/resolved-ticket)=1.8971533516988062 replies=1477 resolved=1675
+  day5: replies_to_resolve=2010 count=1098 ratio(replies/resolved-ticket)=1.830601092896175 replies=1445 resolved=1701
+  day6: replies_to_resolve=1889 count=1001 ratio(replies/resolved-ticket)=1.887112887112887 replies=1373 resolved=1586
+  day7: replies_to_resolve=1596 count=846 ratio(replies/resolved-ticket)=1.8865248226950355 replies=1168 resolved=1557
+  day8: replies_to_resolve=143 count=86 ratio(replies/resolved-ticket)=1.6627906976744187 replies=104 resolved=124
+  day9: replies_to_resolve=86 count=64 ratio(replies/resolved-ticket)=1.34375 replies=82 resolved=75
+  day10: replies_to_resolve=1835 count=986 ratio(replies/resolved-ticket)=1.8610547667342798 replies=1282 resolved=1767
+  day11: replies_to_resolve=1829 count=1084 ratio(replies/resolved-ticket)=1.687269372693727 replies=1644 resolved=1883
+  day12: replies_to_resolve=3024 count=1597 ratio(replies/resolved-ticket)=1.8935504070131497 replies=2197 resolved=2534
+  day13: replies_to_resolve=358 count=194 ratio(replies/resolved-ticket)=1.8453608247422681 replies=254 resolved=330
+
+====================================================================================================
+SECTION 6: which metrics have _count companions; count vs plausible denominator
+====================================================================================================
+Keys WITH _count companion: ['replies_to_resolve', 'resolve_time', 'response_time', 'time_to_first_reply', 'resolve_time_business_hours', 'response_time_business_hours', 'time_to_first_reply_business_hours', 'handle_time']
+Keys WITHOUT _count companion: ['actioned_emails', 'resolved', 'new_tickets', 'open', 'replies', 'new_emails', 'sla_breaches']
+
+Testing count vs candidate denominator equality per day:
+  resolve_time_count vs resolved: exact matches 13/14, diffs=[0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0]
+  response_time_count vs replies: exact matches 0/14, diffs=[-615, -72, -84, -779, -811, -741, -762, -628, -58, -51, -719, -950, -1326, -115]
+  time_to_first_reply_count vs new_tickets: exact matches 0/14, diffs=[-5190, -805, -710, -5578, -6031, -5588, -5462, -5715, -947, -530, -6939, -7983, -8765, -1505]
+  resolve_time_business_hours_count vs resolved: exact matches 13/14, diffs=[0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0]
+  response_time_business_hours_count vs replies: exact matches 0/14, diffs=[-615, -72, -84, -779, -811, -741, -762, -628, -58, -51, -719, -950, -1326, -115]
+  time_to_first_reply_business_hours_count vs new_tickets: exact matches 0/14, diffs=[-5190, -805, -710, -5578, -6031, -5588, -5462, -5715, -947, -530, -6939, -7983, -8765, -1505]
+
+====================================================================================================
+SECTION 7: are 'open' and 'sla_breaches' always zero?
+====================================================================================================
+open (bucket-level): [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  all-zero? True
+sla_breaches (bucket-level): [349, 17, 12, 286, 503, 443, 397, 284, 24, 7, 319, 589, 707, 136]  all-zero? False
+open: nonzero entries across all actors: 0
+sla_breaches per-actor present in actor objects? True
+{
+  "user_id": "user_yoJRgsMu",
+  "open": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "sla_breaches": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ]
+}
+
+====================================================================================================
+SECTION 9: per-actor unit cross-check
+====================================================================================================
+Per-actor value*count near-integer: 171/3230 = 0.053
+
+Example actor with most resolved tickets: user_nN5brDNG
+resolve_time: [363.5256802777778, 12.068792777777778, 52.392315277777776, 2529.0020427777777, 766.8980961111112, 593.7545383333334, 808.2901202777779, 654.1429558333333, 1.1353166666666665, 0.18945444444444443, 1545.4378222222222, 1152.8690322222221, 424.54936499999997, 21.10658916666667]
+resolve_time_count: [123, 4, 9, 129, 65, 110, 100, 74, 6, 2, 149, 192, 121, 12]
+   v=363.5256802777778 c=123 v*c=44713.65867416667 frac_dist=0.341326
+   v=12.068792777777778 c=4 v*c=48.27517111111111 frac_dist=0.275171
+   v=52.392315277777776 c=9 v*c=471.53083749999996 frac_dist=0.469163
+   v=2529.0020427777777 c=129 v*c=326241.2635183333 frac_dist=0.263518
+   v=766.8980961111112 c=65 v*c=49848.37624722222 frac_dist=0.376247
+   v=593.7545383333334 c=110 v*c=65312.99921666667 frac_dist=0.000783
+   v=808.2901202777779 c=100 v*c=80829.01202777779 frac_dist=0.012028
+   v=654.1429558333333 c=74 v*c=48406.57873166666 frac_dist=0.421268
+   v=1.1353166666666665 c=6 v*c=6.8119 frac_dist=0.188100
+   v=0.18945444444444443 c=2 v*c=0.37890888888888885 frac_dist=0.378909
+   v=1545.4378222222222 c=149 v*c=230270.2355111111 frac_dist=0.235511
+   v=1152.8690322222221 c=192 v*c=221350.85418666666 frac_dist=0.145813
+   v=424.54936499999997 c=121 v*c=51370.473164999996 frac_dist=0.473165
+   v=21.10658916666667 c=12 v*c=253.27907000000005 frac_dist=0.279070

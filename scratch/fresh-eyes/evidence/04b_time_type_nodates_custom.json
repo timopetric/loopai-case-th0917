@@ -1,0 +1,4 @@
+STATUS: 422
+HEADERS: {'access-control-allow-headers': 'authorization, content-type', 'access-control-allow-methods': 'POST, GET, OPTIONS', 'access-control-allow-origin': '*', 'content-type': 'text/plain; charset=utf-8', 'date': 'Sat, 25 Jul 2026 13:36:56 GMT', 'etag': 'W/"53-k7SU9PQkiUV4mwezCQhkOrJqvXY"', 'server': 'railway-hikari', 'x-powered-by': 'Express', 'x-railway-request-id': 'cNtjGtgeREmd7dwH9o6EoQ', 'content-length': '83', 'x-hikari-trace': 'ams1.aydy', 'x-railway-edge': 'ams1', 'connection': 'keep-alive'}
+BODY:
+Failed to deserialize the JSON body into the target type: missing field `from_date`

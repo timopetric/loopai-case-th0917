@@ -1,0 +1,29 @@
+### Sibling path probing (POST with normal body, and GET) ###
+/reporting_api/v1/reporting/stats/json                  POST=200 len=205509       GET=404 len=176
+    POST body snippet: '{"ticks":["2026-07-10T00:00:00Z","2026-07-11T00:00:00Z","2026-07-12T00:00:00Z","2026-07-13T00:00:00Z","2026-07-14T00:00:00Z","2026-07-15T00:00:00Z","2026-07-16T00:00:00Z","2026-07-17T00:00:00Z","2026-'
+/reporting_api/v1/reporting/stats/csv                   POST=404 len=176          GET=404 len=175
+/reporting_api/v1/reporting/stats/xlsx                  POST=404 len=177          GET=404 len=176
+/reporting_api/v1/reporting/stats/excel                 POST=404 len=178          GET=404 len=177
+/reporting_api/v1/reporting/stats/pdf                   POST=404 len=176          GET=404 len=175
+/reporting_api/v1/reporting/stats                       POST=404 len=172          GET=404 len=171
+/reporting_api/v1/reporting/                            POST=404 len=167          GET=404 len=166
+/reporting_api/v1/reporting                             POST=404 len=166          GET=404 len=165
+/reporting_api/v1/                                      POST=404 len=157          GET=404 len=156
+/reporting_api/v1                                       POST=404 len=156          GET=404 len=155
+/reporting_api/                                         POST=404 len=154          GET=404 len=153
+/reporting_api                                          POST=404 len=153          GET=404 len=152
+/reporting_api/v1/reporting/mailboxes                   POST=404 len=176          GET=404 len=175
+/reporting_api/v1/reporting/users                       POST=404 len=172          GET=404 len=171
+/reporting_api/v1/reporting/agents                      POST=404 len=173          GET=404 len=172
+/reporting_api/v1/reporting/metadata                    POST=404 len=175          GET=404 len=174
+/reporting_api/v1/reporting/export                      POST=404 len=173          GET=404 len=172
+/reporting_api/v1/reporting/stats/export                POST=404 len=179          GET=404 len=178
+
+### Verb probing on the known-good stats/json endpoint ###
+GET      status=404 len=176 Allow=None ACAO-methods=POST, GET, OPTIONS
+PUT      status=404 len=176 Allow=None ACAO-methods=POST, GET, OPTIONS
+DELETE   status=404 len=179 Allow=None ACAO-methods=POST, GET, OPTIONS
+PATCH    status=404 len=178 Allow=None ACAO-methods=POST, GET, OPTIONS
+OPTIONS  status=200 len=2 Allow=None ACAO-methods=POST, GET, OPTIONS
+    body snippet: 'OK'
+HEAD     status=404 len=0 Allow=None ACAO-methods=POST, GET, OPTIONS

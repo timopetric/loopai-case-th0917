@@ -1,0 +1,670 @@
+### 1 mailbox scope (Returns) ###
+=== 1 mailbox === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-y1-scope-1mailbox.json
+  mailbox entries: 1
+    id=ACf0kWdEPNiYSou98PwFYiKQfWq9c0T name=Returns resolved_sum=0 new_tickets_sum=9
+  labels: len=0 content=[]
+  topics: len=0 content=[]
+  categories: len=0 content=[]
+
+### 3 mailboxes scope (Returns, Partnerships, Compliance) ###
+=== 3 mailboxes === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-y2-scope-3mailboxes.json
+  mailbox entries: 3
+    id=ACf0kWdEPNiYSou98PwFYiKQfWq9c0T name=Returns resolved_sum=0 new_tickets_sum=9
+    id=ACqMGljMqLCOAZJ9ZYNz4oNZkF91D0T name=Partnerships resolved_sum=0 new_tickets_sum=276
+    id=ACpw3ge04EDYzOsUMhVHgYGqpn2wq0T name=Compliance resolved_sum=0 new_tickets_sum=103
+  labels: len=0 content=[]
+  topics: len=0 content=[]
+  categories: len=0 content=[]
+
+### no scope key at all ###
+=== no scope === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-y3-no-scope.json
+  mailbox entries: 103
+    id=ACf0kWdEPNiYSou98PwFYiKQfWq9c0T name=Returns resolved_sum=0 new_tickets_sum=9
+    id=ACqMGljMqLCOAZJ9ZYNz4oNZkF91D0T name=Partnerships resolved_sum=0 new_tickets_sum=276
+    id=ACpw3ge04EDYzOsUMhVHgYGqpn2wq0T name=Compliance resolved_sum=0 new_tickets_sum=103
+    id=ACn0hYoSiro8YwtJVsN48DFDtyHyQ0T name=Fax resolved_sum=0 new_tickets_sum=551
+    id=ACSzkQ6eDUuigSwb0AFR4r7Z19wog0T name=Outbound resolved_sum=0 new_tickets_sum=805
+    id=ACGb2yb8dEQA50hFC2zYC9JATHlvs0T name=Care Team resolved_sum=0 new_tickets_sum=7
+    id=AC8BbOFIXLmQFgXRpqrrnheJ1rmWC0T name=Front Desk resolved_sum=0 new_tickets_sum=15639
+    id=AC5BIZbkDJCPxvRCI7NYpIqoOifrk0T name=Dispatch resolved_sum=0 new_tickets_sum=163
+    id=ACyQ7z8G2TWPsbl3LsmjM3bNz4ZGU0T name=Records resolved_sum=6067 new_tickets_sum=3887
+    id=ACAqsyUBIX6gRjQuhJItE9Uq4hDsU0T name=Intake resolved_sum=0 new_tickets_sum=35
+    id=ACZ5tVuKTenVapUPgYcLOAbqczisH0T name=Renewals resolved_sum=0 new_tickets_sum=26
+    id=ACm1XVF199HqkdDhWyajEKw4E1DTI0T name=Disputes resolved_sum=0 new_tickets_sum=37
+    id=ACXFHG3X4FFRY0BGJLbmkdrsdNBQo0T name=Wholesale resolved_sum=0 new_tickets_sum=93
+    id=ACpccbJlT3PzAQpEtqYezABZFTH5F0T name=Logistics resolved_sum=0 new_tickets_sum=9
+    id=ACXxk6pvrbIjfkE2GFS3tEHRpAHcR0T name=Concierge resolved_sum=0 new_tickets_sum=185
+    id=ACeN6qZueKmyHk3N7qCycr0rQ4top0T name=Support 2 resolved_sum=0 new_tickets_sum=33
+    id=ACVvarVDPL30nN51iPm4MIxrpTOhr0T name=Billing 2 resolved_sum=0 new_tickets_sum=251
+    id=ACCbJJUxrhx2w6KOpOfkZrOLAh4cF0T name=Scheduling 2 resolved_sum=0 new_tickets_sum=66
+    id=AC1Zz7yPHDidgH5JcCwYKPyeOWHjd0T name=Providers 2 resolved_sum=0 new_tickets_sum=127
+    id=ACWOsH3fVRdIgT84M0rtGQrlWEDnG0T name=Vendors 2 resolved_sum=0 new_tickets_sum=156
+    id=ACUUzyR8oHLJvMMnMe1KcVSf2rZSo0T name=Accounting 2 resolved_sum=0 new_tickets_sum=26
+    id=ACGzRKFl9PFnV4AY4c2t7fd6Yqo900T name=Customer Care 2 resolved_sum=0 new_tickets_sum=12
+    id=ACdJWOZgryN8LYYEjoIMsRzlX7oyp0T name=Quality 2 resolved_sum=0 new_tickets_sum=13
+    id=ACeq4sbCB69gxAwyHSVJpq3mDO8cw0T name=Notifications 2 resolved_sum=0 new_tickets_sum=106
+    id=ACzqYN3MvvycW9z2EqCwJap0RRrAb0T name=Receivables 2 resolved_sum=0 new_tickets_sum=37
+    id=ACMNjE68f8khljnnQHfJh8pr7RtQj0T name=Payables 2 resolved_sum=0 new_tickets_sum=32
+    id=ACsuTSpfLoGN0vQpEI8B8i43ZyGC40T name=Escalations 2 resolved_sum=0 new_tickets_sum=349
+    id=AC76v2SjfP1ViwRntT019JKOxeyp00T name=Travel 2 resolved_sum=6 new_tickets_sum=159
+    id=ACCaSgVWdSz4qugj3BlpuLQqWAizS0T name=Onboarding 2 resolved_sum=99 new_tickets_sum=149
+    id=AC4qLm4U3oylT8jdsTfuMu7xm2THH0T name=Claims 2 resolved_sum=256 new_tickets_sum=2623
+    id=ACFi2eSUXF4j39JWlyQVkBuUIfzcY0T name=Returns 2 resolved_sum=0 new_tickets_sum=66
+    id=ACxdmkY9aOxCN5bqS1kC1mCV0bSVg0T name=Partnerships 2 resolved_sum=0 new_tickets_sum=1999
+    id=ACcaAESpsc5qu2bzA6Tx8RCD7fQxN0T name=Compliance 2 resolved_sum=0 new_tickets_sum=84
+    id=ACXGOhjSa8cOtazWSoOoEQ0IUu60Z0T name=Fax 2 resolved_sum=1 new_tickets_sum=131
+    id=ACHAWTP7rtJsQL23LMREZrNTDPfI80T name=Outbound 2 resolved_sum=0 new_tickets_sum=7479
+    id=ACDIAizKkfVvGfUVTb0dK11lIi6Ve0T name=Care Team 2 resolved_sum=0 new_tickets_sum=85
+    id=ACD5Hb6HnCWvKoTzObNPlkJWoxqLr0T name=Front Desk 2 resolved_sum=0 new_tickets_sum=111
+    id=ACaerMkO5YEqmjYjCAK3FKmOai5TC0T name=Dispatch 2 resolved_sum=0 new_tickets_sum=75
+    id=ACIHWKrivRq1JNTBk1Lb8WuEenLfo0T name=Records 2 resolved_sum=0 new_tickets_sum=46
+    id=AC8uZBdJ69H7pKhtUh6uDZbVT5vmJ0T name=Intake 2 resolved_sum=0 new_tickets_sum=29
+    id=ACbLcGijmXip8zolRvKh3riiyFmUG0T name=Renewals 2 resolved_sum=0 new_tickets_sum=20
+    id=ACR49PKwD86F6n1kuOvq47SOdoHiy0T name=Disputes 2 resolved_sum=0 new_tickets_sum=64
+    id=ACySy1R1RzOMqOj0uJJmVxDGoFKnn0T name=Wholesale 2 resolved_sum=0 new_tickets_sum=12
+    id=AC0PiCc1iUeI4f2Xuv4Hyj4ufDQcL0T name=Logistics 2 resolved_sum=0 new_tickets_sum=38
+    id=ACQvSc5ZM1ncwJWadkQrOOhT0wsAa0T name=Concierge 2 resolved_sum=0 new_tickets_sum=93
+    id=AComjGOCm8ZdO2T9Z9MfT2lcXqZMw0T name=Support 3 resolved_sum=0 new_tickets_sum=32
+    id=ACervITlweGwL9ETy8OuV1aaFvdJV0T name=Billing 3 resolved_sum=0 new_tickets_sum=7
+    id=ACGQtcw6pscvdqT72TuahiEbNqQ1j0T name=Scheduling 3 resolved_sum=0 new_tickets_sum=81
+    id=ACR3EnyIvargSSKrmd4ZkiSIefGtn0T name=Providers 3 resolved_sum=1 new_tickets_sum=55
+    id=ACSvkHl5MzJh9lX6pbDnjKW1BzBKh0T name=Vendors 3 resolved_sum=0 new_tickets_sum=104
+    id=ACjVisIfdQ5SEhflfjivyyEVOd8rf0T name=Accounting 3 resolved_sum=0 new_tickets_sum=14
+    id=ACyIzcOYotHoBapLrfT5nn5MiSP6K0T name=Customer Care 3 resolved_sum=0 new_tickets_sum=147
+    id=ACJzAufF0hkThOCHfXTQjY98163WU0T name=Quality 3 resolved_sum=5937 new_tickets_sum=5049
+    id=ACrIR2mA3CaNW3bSJ52Eptpl7SrhZ0T name=Notifications 3 resolved_sum=383 new_tickets_sum=622
+    id=ACjCZwJk6m7k1AKKbi4ZPaghTYVnQ0T name=Receivables 3 resolved_sum=239 new_tickets_sum=1201
+    id=ACdCjEnXGLcOax1eehLCaCrDujZb50T name=Payables 3 resolved_sum=793 new_tickets_sum=769
+    id=ACDN5rT3buFHL3KEjQeuRV8Z8hNsi0T name=Escalations 3 resolved_sum=42 new_tickets_sum=42
+    id=ACtMddzpyYUgiZKlndH1m6GAmbsGQ0T name=Travel 3 resolved_sum=1805 new_tickets_sum=6056
+    id=ACH6RHWKjH5fAvPtQIvtSgDVlWqEZ0T name=Onboarding 3 resolved_sum=0 new_tickets_sum=464
+    id=ACcXeC5yUYchRiWMZsueGUGKlRY3g0T name=Claims 3 resolved_sum=0 new_tickets_sum=96
+    id=AC5hbPHEXIO3H91lgZsBv06YKlFxA0T name=Returns 3 resolved_sum=0 new_tickets_sum=189
+    id=ACyXzP3xHGzdiEmjEgtphk1pC8HVO0T name=Partnerships 3 resolved_sum=0 new_tickets_sum=185
+    id=ACjCtzCEnw6xJgVbskAsUXEIfq3rc0T name=Compliance 3 resolved_sum=0 new_tickets_sum=129
+    id=ACwAEeDmBb2OVbwfjWsN561jFtqul0T name=Fax 3 resolved_sum=0 new_tickets_sum=64
+    id=ACag8rEdGd8ygwh2ImrN4QTMlg4bw0T name=Outbound 3 resolved_sum=0 new_tickets_sum=137
+    id=ACRhTUvuoL4HabVC0Bm0A4WY257HA0T name=Care Team 3 resolved_sum=0 new_tickets_sum=183
+    id=ACWtVANCEPIpgfrWJeiCH96uaWVbY0T name=Front Desk 3 resolved_sum=0 new_tickets_sum=618
+    id=ACWp9m2z6j2u2uVnzc6u0BVMGz65w0T name=Dispatch 3 resolved_sum=0 new_tickets_sum=105
+    id=AC9tjF9aoxhzR4XVIjlOyihJvkQBD0T name=Records 3 resolved_sum=640 new_tickets_sum=4219
+    id=ACJpK8lOyew01F7QocZdFG4qDndnC0T name=Intake 3 resolved_sum=0 new_tickets_sum=12
+    id=ACmE1nFFQvABa19fuD67SV7iLXJw00T name=Renewals 3 resolved_sum=0 new_tickets_sum=89
+    id=ACpb47tORJdXX4uOI4t1GYRE3tlS50T name=Disputes 3 resolved_sum=0 new_tickets_sum=55
+    id=ACK0GrKo63k0FQqhIie0Q668owyxi0T name=Wholesale 3 resolved_sum=0 new_tickets_sum=18
+    id=ACcx4cmfbNSBHPwPKDEeWAmpN7GjK0T name=Logistics 3 resolved_sum=84 new_tickets_sum=343
+    id=AC7BF28xHFbI6El2dxjXLRlN7aeab0T name=Concierge 3 resolved_sum=1 new_tickets_sum=193
+    id=AC2RUmuJ5gdJUUkRaDES1pdUjeDew0T name=Support 4 resolved_sum=0 new_tickets_sum=1470
+    id=ACI8LGOffkPS6GJpegNkVkJz28A890T name=Billing 4 resolved_sum=0 new_tickets_sum=22
+    id=ACIi0pxO2RyIWJfaa848BHz5w2Ncp0T name=Scheduling 4 resolved_sum=0 new_tickets_sum=9
+    id=ACXOKyWCr3zweip8FEZVCbb9kivZf0T name=Providers 4 resolved_sum=0 new_tickets_sum=80
+    id=AChHQlCrdfdLQQFQxUXgXA5szDuGN0T name=Vendors 4 resolved_sum=0 new_tickets_sum=20
+    id=ACRBh3d5cI6eVGGuhUluHjXH1VhO10T name=Accounting 4 resolved_sum=0 new_tickets_sum=64
+    id=ACMhT1UvFdgvtl0PV9baM7fLwgu090T name=Customer Care 4 resolved_sum=0 new_tickets_sum=18
+    id=ACpMxvq1lUVkgnF333zYE1lavYuAE0T name=Quality 4 resolved_sum=0 new_tickets_sum=22
+    id=ACIK7ZOTa22wNw11ZW9Mr0CjOebMU0T name=Notifications 4 resolved_sum=0 new_tickets_sum=109
+    id=ACeoXGOQdCUid9hLmdigI33NlOdq60T name=Receivables 4 resolved_sum=0 new_tickets_sum=104
+    id=ACCEckW22KZPuQVpHxEvaXNzbbSFI0T name=Payables 4 resolved_sum=4 new_tickets_sum=702
+    id=ACsNlDSHHM3SDQizUqkWxM652Rdk40T name=Escalations 4 resolved_sum=11 new_tickets_sum=2419
+    id=ACYIbQr5DDm2RAJztwsu1dpa01ADP0T name=Travel 4 resolved_sum=0 new_tickets_sum=252
+    id=ACfwRcQob9pV9BiquTL6jxVza3vO50T name=Onboarding 4 resolved_sum=0 new_tickets_sum=403
+    id=ACYnov7OxfTHPY46uYdOpGCrHTHYm0T name=Claims 4 resolved_sum=3 new_tickets_sum=77
+    id=AC25WYYRVShJxfYK0S1IWnc69ABP10T name=Returns 4 resolved_sum=0 new_tickets_sum=41
+    id=ACqXcFft2tZL533HllG27YfZUfKck0T name=Partnerships 4 resolved_sum=0 new_tickets_sum=302
+    id=ACKEKoHw7Q5z0Dfm0H2dx6wK8g5Za0T name=Compliance 4 resolved_sum=0 new_tickets_sum=117
+    id=ACSqv1FtHEnv76LaZV6FnkgbNu9yL0T name=Fax 4 resolved_sum=0 new_tickets_sum=1368
+    id=ACAxYAMVXnHFkdYMc0Jqi3QDNhBkH0T name=Outbound 4 resolved_sum=0 new_tickets_sum=14
+    id=ACBb3ZPidOESwAcWU9BPoHNvQKqci0T name=Care Team 4 resolved_sum=0 new_tickets_sum=18
+    id=ACCTXEEziR5ra4OO21kRfWEauWV5N0T name=Front Desk 4 resolved_sum=0 new_tickets_sum=608
+    id=ACMkpcPikrMksMIabJg4kDUHOikUQ0T name=Dispatch 4 resolved_sum=0 new_tickets_sum=106
+    id=ACYofwgaNVwpR3aismXZY2pMi6eH20T name=Records 4 resolved_sum=0 new_tickets_sum=29
+    id=AColyd4QYWOtxwYXgVXsF7bJV2tIO0T name=Intake 4 resolved_sum=0 new_tickets_sum=22
+    id=ACkTCaiZww7xDhgOCfWKSVc6y3z5B0T name=Renewals 4 resolved_sum=0 new_tickets_sum=61
+    id=ACNz6ypRp6Ha0q3JKfWFNO843iwRs0T name=Disputes 4 resolved_sum=0 new_tickets_sum=202
+    id=ACndDVYO3f1HwvXWrMREN0ggzUv6W0T name=Wholesale 4 resolved_sum=0 new_tickets_sum=55
+  labels: len=0 content=[]
+  topics: len=0 content=[]
+  categories: len=0 content=[]
+
+### scope with fake mailbox id only ###
+=== fake mailbox id === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-y4-fake-mailbox.json
+  mailbox entries: 103
+    id=ACf0kWdEPNiYSou98PwFYiKQfWq9c0T name=Returns resolved_sum=0 new_tickets_sum=9
+    id=ACqMGljMqLCOAZJ9ZYNz4oNZkF91D0T name=Partnerships resolved_sum=0 new_tickets_sum=276
+    id=ACpw3ge04EDYzOsUMhVHgYGqpn2wq0T name=Compliance resolved_sum=0 new_tickets_sum=103
+    id=ACn0hYoSiro8YwtJVsN48DFDtyHyQ0T name=Fax resolved_sum=0 new_tickets_sum=551
+    id=ACSzkQ6eDUuigSwb0AFR4r7Z19wog0T name=Outbound resolved_sum=0 new_tickets_sum=805
+    id=ACGb2yb8dEQA50hFC2zYC9JATHlvs0T name=Care Team resolved_sum=0 new_tickets_sum=7
+    id=AC8BbOFIXLmQFgXRpqrrnheJ1rmWC0T name=Front Desk resolved_sum=0 new_tickets_sum=15639
+    id=AC5BIZbkDJCPxvRCI7NYpIqoOifrk0T name=Dispatch resolved_sum=0 new_tickets_sum=163
+    id=ACyQ7z8G2TWPsbl3LsmjM3bNz4ZGU0T name=Records resolved_sum=6067 new_tickets_sum=3887
+    id=ACAqsyUBIX6gRjQuhJItE9Uq4hDsU0T name=Intake resolved_sum=0 new_tickets_sum=35
+    id=ACZ5tVuKTenVapUPgYcLOAbqczisH0T name=Renewals resolved_sum=0 new_tickets_sum=26
+    id=ACm1XVF199HqkdDhWyajEKw4E1DTI0T name=Disputes resolved_sum=0 new_tickets_sum=37
+    id=ACXFHG3X4FFRY0BGJLbmkdrsdNBQo0T name=Wholesale resolved_sum=0 new_tickets_sum=93
+    id=ACpccbJlT3PzAQpEtqYezABZFTH5F0T name=Logistics resolved_sum=0 new_tickets_sum=9
+    id=ACXxk6pvrbIjfkE2GFS3tEHRpAHcR0T name=Concierge resolved_sum=0 new_tickets_sum=185
+    id=ACeN6qZueKmyHk3N7qCycr0rQ4top0T name=Support 2 resolved_sum=0 new_tickets_sum=33
+    id=ACVvarVDPL30nN51iPm4MIxrpTOhr0T name=Billing 2 resolved_sum=0 new_tickets_sum=251
+    id=ACCbJJUxrhx2w6KOpOfkZrOLAh4cF0T name=Scheduling 2 resolved_sum=0 new_tickets_sum=66
+    id=AC1Zz7yPHDidgH5JcCwYKPyeOWHjd0T name=Providers 2 resolved_sum=0 new_tickets_sum=127
+    id=ACWOsH3fVRdIgT84M0rtGQrlWEDnG0T name=Vendors 2 resolved_sum=0 new_tickets_sum=156
+    id=ACUUzyR8oHLJvMMnMe1KcVSf2rZSo0T name=Accounting 2 resolved_sum=0 new_tickets_sum=26
+    id=ACGzRKFl9PFnV4AY4c2t7fd6Yqo900T name=Customer Care 2 resolved_sum=0 new_tickets_sum=12
+    id=ACdJWOZgryN8LYYEjoIMsRzlX7oyp0T name=Quality 2 resolved_sum=0 new_tickets_sum=13
+    id=ACeq4sbCB69gxAwyHSVJpq3mDO8cw0T name=Notifications 2 resolved_sum=0 new_tickets_sum=106
+    id=ACzqYN3MvvycW9z2EqCwJap0RRrAb0T name=Receivables 2 resolved_sum=0 new_tickets_sum=37
+    id=ACMNjE68f8khljnnQHfJh8pr7RtQj0T name=Payables 2 resolved_sum=0 new_tickets_sum=32
+    id=ACsuTSpfLoGN0vQpEI8B8i43ZyGC40T name=Escalations 2 resolved_sum=0 new_tickets_sum=349
+    id=AC76v2SjfP1ViwRntT019JKOxeyp00T name=Travel 2 resolved_sum=6 new_tickets_sum=159
+    id=ACCaSgVWdSz4qugj3BlpuLQqWAizS0T name=Onboarding 2 resolved_sum=99 new_tickets_sum=149
+    id=AC4qLm4U3oylT8jdsTfuMu7xm2THH0T name=Claims 2 resolved_sum=256 new_tickets_sum=2623
+    id=ACFi2eSUXF4j39JWlyQVkBuUIfzcY0T name=Returns 2 resolved_sum=0 new_tickets_sum=66
+    id=ACxdmkY9aOxCN5bqS1kC1mCV0bSVg0T name=Partnerships 2 resolved_sum=0 new_tickets_sum=1999
+    id=ACcaAESpsc5qu2bzA6Tx8RCD7fQxN0T name=Compliance 2 resolved_sum=0 new_tickets_sum=84
+    id=ACXGOhjSa8cOtazWSoOoEQ0IUu60Z0T name=Fax 2 resolved_sum=1 new_tickets_sum=131
+    id=ACHAWTP7rtJsQL23LMREZrNTDPfI80T name=Outbound 2 resolved_sum=0 new_tickets_sum=7479
+    id=ACDIAizKkfVvGfUVTb0dK11lIi6Ve0T name=Care Team 2 resolved_sum=0 new_tickets_sum=85
+    id=ACD5Hb6HnCWvKoTzObNPlkJWoxqLr0T name=Front Desk 2 resolved_sum=0 new_tickets_sum=111
+    id=ACaerMkO5YEqmjYjCAK3FKmOai5TC0T name=Dispatch 2 resolved_sum=0 new_tickets_sum=75
+    id=ACIHWKrivRq1JNTBk1Lb8WuEenLfo0T name=Records 2 resolved_sum=0 new_tickets_sum=46
+    id=AC8uZBdJ69H7pKhtUh6uDZbVT5vmJ0T name=Intake 2 resolved_sum=0 new_tickets_sum=29
+    id=ACbLcGijmXip8zolRvKh3riiyFmUG0T name=Renewals 2 resolved_sum=0 new_tickets_sum=20
+    id=ACR49PKwD86F6n1kuOvq47SOdoHiy0T name=Disputes 2 resolved_sum=0 new_tickets_sum=64
+    id=ACySy1R1RzOMqOj0uJJmVxDGoFKnn0T name=Wholesale 2 resolved_sum=0 new_tickets_sum=12
+    id=AC0PiCc1iUeI4f2Xuv4Hyj4ufDQcL0T name=Logistics 2 resolved_sum=0 new_tickets_sum=38
+    id=ACQvSc5ZM1ncwJWadkQrOOhT0wsAa0T name=Concierge 2 resolved_sum=0 new_tickets_sum=93
+    id=AComjGOCm8ZdO2T9Z9MfT2lcXqZMw0T name=Support 3 resolved_sum=0 new_tickets_sum=32
+    id=ACervITlweGwL9ETy8OuV1aaFvdJV0T name=Billing 3 resolved_sum=0 new_tickets_sum=7
+    id=ACGQtcw6pscvdqT72TuahiEbNqQ1j0T name=Scheduling 3 resolved_sum=0 new_tickets_sum=81
+    id=ACR3EnyIvargSSKrmd4ZkiSIefGtn0T name=Providers 3 resolved_sum=1 new_tickets_sum=55
+    id=ACSvkHl5MzJh9lX6pbDnjKW1BzBKh0T name=Vendors 3 resolved_sum=0 new_tickets_sum=104
+    id=ACjVisIfdQ5SEhflfjivyyEVOd8rf0T name=Accounting 3 resolved_sum=0 new_tickets_sum=14
+    id=ACyIzcOYotHoBapLrfT5nn5MiSP6K0T name=Customer Care 3 resolved_sum=0 new_tickets_sum=147
+    id=ACJzAufF0hkThOCHfXTQjY98163WU0T name=Quality 3 resolved_sum=5937 new_tickets_sum=5049
+    id=ACrIR2mA3CaNW3bSJ52Eptpl7SrhZ0T name=Notifications 3 resolved_sum=383 new_tickets_sum=622
+    id=ACjCZwJk6m7k1AKKbi4ZPaghTYVnQ0T name=Receivables 3 resolved_sum=239 new_tickets_sum=1201
+    id=ACdCjEnXGLcOax1eehLCaCrDujZb50T name=Payables 3 resolved_sum=793 new_tickets_sum=769
+    id=ACDN5rT3buFHL3KEjQeuRV8Z8hNsi0T name=Escalations 3 resolved_sum=42 new_tickets_sum=42
+    id=ACtMddzpyYUgiZKlndH1m6GAmbsGQ0T name=Travel 3 resolved_sum=1805 new_tickets_sum=6056
+    id=ACH6RHWKjH5fAvPtQIvtSgDVlWqEZ0T name=Onboarding 3 resolved_sum=0 new_tickets_sum=464
+    id=ACcXeC5yUYchRiWMZsueGUGKlRY3g0T name=Claims 3 resolved_sum=0 new_tickets_sum=96
+    id=AC5hbPHEXIO3H91lgZsBv06YKlFxA0T name=Returns 3 resolved_sum=0 new_tickets_sum=189
+    id=ACyXzP3xHGzdiEmjEgtphk1pC8HVO0T name=Partnerships 3 resolved_sum=0 new_tickets_sum=185
+    id=ACjCtzCEnw6xJgVbskAsUXEIfq3rc0T name=Compliance 3 resolved_sum=0 new_tickets_sum=129
+    id=ACwAEeDmBb2OVbwfjWsN561jFtqul0T name=Fax 3 resolved_sum=0 new_tickets_sum=64
+    id=ACag8rEdGd8ygwh2ImrN4QTMlg4bw0T name=Outbound 3 resolved_sum=0 new_tickets_sum=137
+    id=ACRhTUvuoL4HabVC0Bm0A4WY257HA0T name=Care Team 3 resolved_sum=0 new_tickets_sum=183
+    id=ACWtVANCEPIpgfrWJeiCH96uaWVbY0T name=Front Desk 3 resolved_sum=0 new_tickets_sum=618
+    id=ACWp9m2z6j2u2uVnzc6u0BVMGz65w0T name=Dispatch 3 resolved_sum=0 new_tickets_sum=105
+    id=AC9tjF9aoxhzR4XVIjlOyihJvkQBD0T name=Records 3 resolved_sum=640 new_tickets_sum=4219
+    id=ACJpK8lOyew01F7QocZdFG4qDndnC0T name=Intake 3 resolved_sum=0 new_tickets_sum=12
+    id=ACmE1nFFQvABa19fuD67SV7iLXJw00T name=Renewals 3 resolved_sum=0 new_tickets_sum=89
+    id=ACpb47tORJdXX4uOI4t1GYRE3tlS50T name=Disputes 3 resolved_sum=0 new_tickets_sum=55
+    id=ACK0GrKo63k0FQqhIie0Q668owyxi0T name=Wholesale 3 resolved_sum=0 new_tickets_sum=18
+    id=ACcx4cmfbNSBHPwPKDEeWAmpN7GjK0T name=Logistics 3 resolved_sum=84 new_tickets_sum=343
+    id=AC7BF28xHFbI6El2dxjXLRlN7aeab0T name=Concierge 3 resolved_sum=1 new_tickets_sum=193
+    id=AC2RUmuJ5gdJUUkRaDES1pdUjeDew0T name=Support 4 resolved_sum=0 new_tickets_sum=1470
+    id=ACI8LGOffkPS6GJpegNkVkJz28A890T name=Billing 4 resolved_sum=0 new_tickets_sum=22
+    id=ACIi0pxO2RyIWJfaa848BHz5w2Ncp0T name=Scheduling 4 resolved_sum=0 new_tickets_sum=9
+    id=ACXOKyWCr3zweip8FEZVCbb9kivZf0T name=Providers 4 resolved_sum=0 new_tickets_sum=80
+    id=AChHQlCrdfdLQQFQxUXgXA5szDuGN0T name=Vendors 4 resolved_sum=0 new_tickets_sum=20
+    id=ACRBh3d5cI6eVGGuhUluHjXH1VhO10T name=Accounting 4 resolved_sum=0 new_tickets_sum=64
+    id=ACMhT1UvFdgvtl0PV9baM7fLwgu090T name=Customer Care 4 resolved_sum=0 new_tickets_sum=18
+    id=ACpMxvq1lUVkgnF333zYE1lavYuAE0T name=Quality 4 resolved_sum=0 new_tickets_sum=22
+    id=ACIK7ZOTa22wNw11ZW9Mr0CjOebMU0T name=Notifications 4 resolved_sum=0 new_tickets_sum=109
+    id=ACeoXGOQdCUid9hLmdigI33NlOdq60T name=Receivables 4 resolved_sum=0 new_tickets_sum=104
+    id=ACCEckW22KZPuQVpHxEvaXNzbbSFI0T name=Payables 4 resolved_sum=4 new_tickets_sum=702
+    id=ACsNlDSHHM3SDQizUqkWxM652Rdk40T name=Escalations 4 resolved_sum=11 new_tickets_sum=2419
+    id=ACYIbQr5DDm2RAJztwsu1dpa01ADP0T name=Travel 4 resolved_sum=0 new_tickets_sum=252
+    id=ACfwRcQob9pV9BiquTL6jxVza3vO50T name=Onboarding 4 resolved_sum=0 new_tickets_sum=403
+    id=ACYnov7OxfTHPY46uYdOpGCrHTHYm0T name=Claims 4 resolved_sum=3 new_tickets_sum=77
+    id=AC25WYYRVShJxfYK0S1IWnc69ABP10T name=Returns 4 resolved_sum=0 new_tickets_sum=41
+    id=ACqXcFft2tZL533HllG27YfZUfKck0T name=Partnerships 4 resolved_sum=0 new_tickets_sum=302
+    id=ACKEKoHw7Q5z0Dfm0H2dx6wK8g5Za0T name=Compliance 4 resolved_sum=0 new_tickets_sum=117
+    id=ACSqv1FtHEnv76LaZV6FnkgbNu9yL0T name=Fax 4 resolved_sum=0 new_tickets_sum=1368
+    id=ACAxYAMVXnHFkdYMc0Jqi3QDNhBkH0T name=Outbound 4 resolved_sum=0 new_tickets_sum=14
+    id=ACBb3ZPidOESwAcWU9BPoHNvQKqci0T name=Care Team 4 resolved_sum=0 new_tickets_sum=18
+    id=ACCTXEEziR5ra4OO21kRfWEauWV5N0T name=Front Desk 4 resolved_sum=0 new_tickets_sum=608
+    id=ACMkpcPikrMksMIabJg4kDUHOikUQ0T name=Dispatch 4 resolved_sum=0 new_tickets_sum=106
+    id=ACYofwgaNVwpR3aismXZY2pMi6eH20T name=Records 4 resolved_sum=0 new_tickets_sum=29
+    id=AColyd4QYWOtxwYXgVXsF7bJV2tIO0T name=Intake 4 resolved_sum=0 new_tickets_sum=22
+    id=ACkTCaiZww7xDhgOCfWKSVc6y3z5B0T name=Renewals 4 resolved_sum=0 new_tickets_sum=61
+    id=ACNz6ypRp6Ha0q3JKfWFNO843iwRs0T name=Disputes 4 resolved_sum=0 new_tickets_sum=202
+    id=ACndDVYO3f1HwvXWrMREN0ggzUv6W0T name=Wholesale 4 resolved_sum=0 new_tickets_sum=55
+  labels: len=0 content=[]
+  topics: len=0 content=[]
+  categories: len=0 content=[]
+
+### scope id='mailbox' (singular) with 1 real mailbox ###
+=== singular mailbox id field === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-y5-singular-mailbox-scope.json
+  mailbox entries: 103
+    id=ACf0kWdEPNiYSou98PwFYiKQfWq9c0T name=Returns resolved_sum=0 new_tickets_sum=9
+    id=ACqMGljMqLCOAZJ9ZYNz4oNZkF91D0T name=Partnerships resolved_sum=0 new_tickets_sum=276
+    id=ACpw3ge04EDYzOsUMhVHgYGqpn2wq0T name=Compliance resolved_sum=0 new_tickets_sum=103
+    id=ACn0hYoSiro8YwtJVsN48DFDtyHyQ0T name=Fax resolved_sum=0 new_tickets_sum=551
+    id=ACSzkQ6eDUuigSwb0AFR4r7Z19wog0T name=Outbound resolved_sum=0 new_tickets_sum=805
+    id=ACGb2yb8dEQA50hFC2zYC9JATHlvs0T name=Care Team resolved_sum=0 new_tickets_sum=7
+    id=AC8BbOFIXLmQFgXRpqrrnheJ1rmWC0T name=Front Desk resolved_sum=0 new_tickets_sum=15639
+    id=AC5BIZbkDJCPxvRCI7NYpIqoOifrk0T name=Dispatch resolved_sum=0 new_tickets_sum=163
+    id=ACyQ7z8G2TWPsbl3LsmjM3bNz4ZGU0T name=Records resolved_sum=6067 new_tickets_sum=3887
+    id=ACAqsyUBIX6gRjQuhJItE9Uq4hDsU0T name=Intake resolved_sum=0 new_tickets_sum=35
+    id=ACZ5tVuKTenVapUPgYcLOAbqczisH0T name=Renewals resolved_sum=0 new_tickets_sum=26
+    id=ACm1XVF199HqkdDhWyajEKw4E1DTI0T name=Disputes resolved_sum=0 new_tickets_sum=37
+    id=ACXFHG3X4FFRY0BGJLbmkdrsdNBQo0T name=Wholesale resolved_sum=0 new_tickets_sum=93
+    id=ACpccbJlT3PzAQpEtqYezABZFTH5F0T name=Logistics resolved_sum=0 new_tickets_sum=9
+    id=ACXxk6pvrbIjfkE2GFS3tEHRpAHcR0T name=Concierge resolved_sum=0 new_tickets_sum=185
+    id=ACeN6qZueKmyHk3N7qCycr0rQ4top0T name=Support 2 resolved_sum=0 new_tickets_sum=33
+    id=ACVvarVDPL30nN51iPm4MIxrpTOhr0T name=Billing 2 resolved_sum=0 new_tickets_sum=251
+    id=ACCbJJUxrhx2w6KOpOfkZrOLAh4cF0T name=Scheduling 2 resolved_sum=0 new_tickets_sum=66
+    id=AC1Zz7yPHDidgH5JcCwYKPyeOWHjd0T name=Providers 2 resolved_sum=0 new_tickets_sum=127
+    id=ACWOsH3fVRdIgT84M0rtGQrlWEDnG0T name=Vendors 2 resolved_sum=0 new_tickets_sum=156
+    id=ACUUzyR8oHLJvMMnMe1KcVSf2rZSo0T name=Accounting 2 resolved_sum=0 new_tickets_sum=26
+    id=ACGzRKFl9PFnV4AY4c2t7fd6Yqo900T name=Customer Care 2 resolved_sum=0 new_tickets_sum=12
+    id=ACdJWOZgryN8LYYEjoIMsRzlX7oyp0T name=Quality 2 resolved_sum=0 new_tickets_sum=13
+    id=ACeq4sbCB69gxAwyHSVJpq3mDO8cw0T name=Notifications 2 resolved_sum=0 new_tickets_sum=106
+    id=ACzqYN3MvvycW9z2EqCwJap0RRrAb0T name=Receivables 2 resolved_sum=0 new_tickets_sum=37
+    id=ACMNjE68f8khljnnQHfJh8pr7RtQj0T name=Payables 2 resolved_sum=0 new_tickets_sum=32
+    id=ACsuTSpfLoGN0vQpEI8B8i43ZyGC40T name=Escalations 2 resolved_sum=0 new_tickets_sum=349
+    id=AC76v2SjfP1ViwRntT019JKOxeyp00T name=Travel 2 resolved_sum=6 new_tickets_sum=159
+    id=ACCaSgVWdSz4qugj3BlpuLQqWAizS0T name=Onboarding 2 resolved_sum=99 new_tickets_sum=149
+    id=AC4qLm4U3oylT8jdsTfuMu7xm2THH0T name=Claims 2 resolved_sum=256 new_tickets_sum=2623
+    id=ACFi2eSUXF4j39JWlyQVkBuUIfzcY0T name=Returns 2 resolved_sum=0 new_tickets_sum=66
+    id=ACxdmkY9aOxCN5bqS1kC1mCV0bSVg0T name=Partnerships 2 resolved_sum=0 new_tickets_sum=1999
+    id=ACcaAESpsc5qu2bzA6Tx8RCD7fQxN0T name=Compliance 2 resolved_sum=0 new_tickets_sum=84
+    id=ACXGOhjSa8cOtazWSoOoEQ0IUu60Z0T name=Fax 2 resolved_sum=1 new_tickets_sum=131
+    id=ACHAWTP7rtJsQL23LMREZrNTDPfI80T name=Outbound 2 resolved_sum=0 new_tickets_sum=7479
+    id=ACDIAizKkfVvGfUVTb0dK11lIi6Ve0T name=Care Team 2 resolved_sum=0 new_tickets_sum=85
+    id=ACD5Hb6HnCWvKoTzObNPlkJWoxqLr0T name=Front Desk 2 resolved_sum=0 new_tickets_sum=111
+    id=ACaerMkO5YEqmjYjCAK3FKmOai5TC0T name=Dispatch 2 resolved_sum=0 new_tickets_sum=75
+    id=ACIHWKrivRq1JNTBk1Lb8WuEenLfo0T name=Records 2 resolved_sum=0 new_tickets_sum=46
+    id=AC8uZBdJ69H7pKhtUh6uDZbVT5vmJ0T name=Intake 2 resolved_sum=0 new_tickets_sum=29
+    id=ACbLcGijmXip8zolRvKh3riiyFmUG0T name=Renewals 2 resolved_sum=0 new_tickets_sum=20
+    id=ACR49PKwD86F6n1kuOvq47SOdoHiy0T name=Disputes 2 resolved_sum=0 new_tickets_sum=64
+    id=ACySy1R1RzOMqOj0uJJmVxDGoFKnn0T name=Wholesale 2 resolved_sum=0 new_tickets_sum=12
+    id=AC0PiCc1iUeI4f2Xuv4Hyj4ufDQcL0T name=Logistics 2 resolved_sum=0 new_tickets_sum=38
+    id=ACQvSc5ZM1ncwJWadkQrOOhT0wsAa0T name=Concierge 2 resolved_sum=0 new_tickets_sum=93
+    id=AComjGOCm8ZdO2T9Z9MfT2lcXqZMw0T name=Support 3 resolved_sum=0 new_tickets_sum=32
+    id=ACervITlweGwL9ETy8OuV1aaFvdJV0T name=Billing 3 resolved_sum=0 new_tickets_sum=7
+    id=ACGQtcw6pscvdqT72TuahiEbNqQ1j0T name=Scheduling 3 resolved_sum=0 new_tickets_sum=81
+    id=ACR3EnyIvargSSKrmd4ZkiSIefGtn0T name=Providers 3 resolved_sum=1 new_tickets_sum=55
+    id=ACSvkHl5MzJh9lX6pbDnjKW1BzBKh0T name=Vendors 3 resolved_sum=0 new_tickets_sum=104
+    id=ACjVisIfdQ5SEhflfjivyyEVOd8rf0T name=Accounting 3 resolved_sum=0 new_tickets_sum=14
+    id=ACyIzcOYotHoBapLrfT5nn5MiSP6K0T name=Customer Care 3 resolved_sum=0 new_tickets_sum=147
+    id=ACJzAufF0hkThOCHfXTQjY98163WU0T name=Quality 3 resolved_sum=5937 new_tickets_sum=5049
+    id=ACrIR2mA3CaNW3bSJ52Eptpl7SrhZ0T name=Notifications 3 resolved_sum=383 new_tickets_sum=622
+    id=ACjCZwJk6m7k1AKKbi4ZPaghTYVnQ0T name=Receivables 3 resolved_sum=239 new_tickets_sum=1201
+    id=ACdCjEnXGLcOax1eehLCaCrDujZb50T name=Payables 3 resolved_sum=793 new_tickets_sum=769
+    id=ACDN5rT3buFHL3KEjQeuRV8Z8hNsi0T name=Escalations 3 resolved_sum=42 new_tickets_sum=42
+    id=ACtMddzpyYUgiZKlndH1m6GAmbsGQ0T name=Travel 3 resolved_sum=1805 new_tickets_sum=6056
+    id=ACH6RHWKjH5fAvPtQIvtSgDVlWqEZ0T name=Onboarding 3 resolved_sum=0 new_tickets_sum=464
+    id=ACcXeC5yUYchRiWMZsueGUGKlRY3g0T name=Claims 3 resolved_sum=0 new_tickets_sum=96
+    id=AC5hbPHEXIO3H91lgZsBv06YKlFxA0T name=Returns 3 resolved_sum=0 new_tickets_sum=189
+    id=ACyXzP3xHGzdiEmjEgtphk1pC8HVO0T name=Partnerships 3 resolved_sum=0 new_tickets_sum=185
+    id=ACjCtzCEnw6xJgVbskAsUXEIfq3rc0T name=Compliance 3 resolved_sum=0 new_tickets_sum=129
+    id=ACwAEeDmBb2OVbwfjWsN561jFtqul0T name=Fax 3 resolved_sum=0 new_tickets_sum=64
+    id=ACag8rEdGd8ygwh2ImrN4QTMlg4bw0T name=Outbound 3 resolved_sum=0 new_tickets_sum=137
+    id=ACRhTUvuoL4HabVC0Bm0A4WY257HA0T name=Care Team 3 resolved_sum=0 new_tickets_sum=183
+    id=ACWtVANCEPIpgfrWJeiCH96uaWVbY0T name=Front Desk 3 resolved_sum=0 new_tickets_sum=618
+    id=ACWp9m2z6j2u2uVnzc6u0BVMGz65w0T name=Dispatch 3 resolved_sum=0 new_tickets_sum=105
+    id=AC9tjF9aoxhzR4XVIjlOyihJvkQBD0T name=Records 3 resolved_sum=640 new_tickets_sum=4219
+    id=ACJpK8lOyew01F7QocZdFG4qDndnC0T name=Intake 3 resolved_sum=0 new_tickets_sum=12
+    id=ACmE1nFFQvABa19fuD67SV7iLXJw00T name=Renewals 3 resolved_sum=0 new_tickets_sum=89
+    id=ACpb47tORJdXX4uOI4t1GYRE3tlS50T name=Disputes 3 resolved_sum=0 new_tickets_sum=55
+    id=ACK0GrKo63k0FQqhIie0Q668owyxi0T name=Wholesale 3 resolved_sum=0 new_tickets_sum=18
+    id=ACcx4cmfbNSBHPwPKDEeWAmpN7GjK0T name=Logistics 3 resolved_sum=84 new_tickets_sum=343
+    id=AC7BF28xHFbI6El2dxjXLRlN7aeab0T name=Concierge 3 resolved_sum=1 new_tickets_sum=193
+    id=AC2RUmuJ5gdJUUkRaDES1pdUjeDew0T name=Support 4 resolved_sum=0 new_tickets_sum=1470
+    id=ACI8LGOffkPS6GJpegNkVkJz28A890T name=Billing 4 resolved_sum=0 new_tickets_sum=22
+    id=ACIi0pxO2RyIWJfaa848BHz5w2Ncp0T name=Scheduling 4 resolved_sum=0 new_tickets_sum=9
+    id=ACXOKyWCr3zweip8FEZVCbb9kivZf0T name=Providers 4 resolved_sum=0 new_tickets_sum=80
+    id=AChHQlCrdfdLQQFQxUXgXA5szDuGN0T name=Vendors 4 resolved_sum=0 new_tickets_sum=20
+    id=ACRBh3d5cI6eVGGuhUluHjXH1VhO10T name=Accounting 4 resolved_sum=0 new_tickets_sum=64
+    id=ACMhT1UvFdgvtl0PV9baM7fLwgu090T name=Customer Care 4 resolved_sum=0 new_tickets_sum=18
+    id=ACpMxvq1lUVkgnF333zYE1lavYuAE0T name=Quality 4 resolved_sum=0 new_tickets_sum=22
+    id=ACIK7ZOTa22wNw11ZW9Mr0CjOebMU0T name=Notifications 4 resolved_sum=0 new_tickets_sum=109
+    id=ACeoXGOQdCUid9hLmdigI33NlOdq60T name=Receivables 4 resolved_sum=0 new_tickets_sum=104
+    id=ACCEckW22KZPuQVpHxEvaXNzbbSFI0T name=Payables 4 resolved_sum=4 new_tickets_sum=702
+    id=ACsNlDSHHM3SDQizUqkWxM652Rdk40T name=Escalations 4 resolved_sum=11 new_tickets_sum=2419
+    id=ACYIbQr5DDm2RAJztwsu1dpa01ADP0T name=Travel 4 resolved_sum=0 new_tickets_sum=252
+    id=ACfwRcQob9pV9BiquTL6jxVza3vO50T name=Onboarding 4 resolved_sum=0 new_tickets_sum=403
+    id=ACYnov7OxfTHPY46uYdOpGCrHTHYm0T name=Claims 4 resolved_sum=3 new_tickets_sum=77
+    id=AC25WYYRVShJxfYK0S1IWnc69ABP10T name=Returns 4 resolved_sum=0 new_tickets_sum=41
+    id=ACqXcFft2tZL533HllG27YfZUfKck0T name=Partnerships 4 resolved_sum=0 new_tickets_sum=302
+    id=ACKEKoHw7Q5z0Dfm0H2dx6wK8g5Za0T name=Compliance 4 resolved_sum=0 new_tickets_sum=117
+    id=ACSqv1FtHEnv76LaZV6FnkgbNu9yL0T name=Fax 4 resolved_sum=0 new_tickets_sum=1368
+    id=ACAxYAMVXnHFkdYMc0Jqi3QDNhBkH0T name=Outbound 4 resolved_sum=0 new_tickets_sum=14
+    id=ACBb3ZPidOESwAcWU9BPoHNvQKqci0T name=Care Team 4 resolved_sum=0 new_tickets_sum=18
+    id=ACCTXEEziR5ra4OO21kRfWEauWV5N0T name=Front Desk 4 resolved_sum=0 new_tickets_sum=608
+    id=ACMkpcPikrMksMIabJg4kDUHOikUQ0T name=Dispatch 4 resolved_sum=0 new_tickets_sum=106
+    id=ACYofwgaNVwpR3aismXZY2pMi6eH20T name=Records 4 resolved_sum=0 new_tickets_sum=29
+    id=AColyd4QYWOtxwYXgVXsF7bJV2tIO0T name=Intake 4 resolved_sum=0 new_tickets_sum=22
+    id=ACkTCaiZww7xDhgOCfWKSVc6y3z5B0T name=Renewals 4 resolved_sum=0 new_tickets_sum=61
+    id=ACNz6ypRp6Ha0q3JKfWFNO843iwRs0T name=Disputes 4 resolved_sum=0 new_tickets_sum=202
+    id=ACndDVYO3f1HwvXWrMREN0ggzUv6W0T name=Wholesale 4 resolved_sum=0 new_tickets_sum=55
+  labels: len=0 content=[]
+  topics: len=0 content=[]
+  categories: len=0 content=[]
+
+### scope id='allMailboxes' ###
+=== allMailboxes scope === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-y6-allmailboxes-scope.json
+  mailbox entries: 103
+    id=ACf0kWdEPNiYSou98PwFYiKQfWq9c0T name=Returns resolved_sum=0 new_tickets_sum=9
+    id=ACqMGljMqLCOAZJ9ZYNz4oNZkF91D0T name=Partnerships resolved_sum=0 new_tickets_sum=276
+    id=ACpw3ge04EDYzOsUMhVHgYGqpn2wq0T name=Compliance resolved_sum=0 new_tickets_sum=103
+    id=ACn0hYoSiro8YwtJVsN48DFDtyHyQ0T name=Fax resolved_sum=0 new_tickets_sum=551
+    id=ACSzkQ6eDUuigSwb0AFR4r7Z19wog0T name=Outbound resolved_sum=0 new_tickets_sum=805
+    id=ACGb2yb8dEQA50hFC2zYC9JATHlvs0T name=Care Team resolved_sum=0 new_tickets_sum=7
+    id=AC8BbOFIXLmQFgXRpqrrnheJ1rmWC0T name=Front Desk resolved_sum=0 new_tickets_sum=15639
+    id=AC5BIZbkDJCPxvRCI7NYpIqoOifrk0T name=Dispatch resolved_sum=0 new_tickets_sum=163
+    id=ACyQ7z8G2TWPsbl3LsmjM3bNz4ZGU0T name=Records resolved_sum=6067 new_tickets_sum=3887
+    id=ACAqsyUBIX6gRjQuhJItE9Uq4hDsU0T name=Intake resolved_sum=0 new_tickets_sum=35
+    id=ACZ5tVuKTenVapUPgYcLOAbqczisH0T name=Renewals resolved_sum=0 new_tickets_sum=26
+    id=ACm1XVF199HqkdDhWyajEKw4E1DTI0T name=Disputes resolved_sum=0 new_tickets_sum=37
+    id=ACXFHG3X4FFRY0BGJLbmkdrsdNBQo0T name=Wholesale resolved_sum=0 new_tickets_sum=93
+    id=ACpccbJlT3PzAQpEtqYezABZFTH5F0T name=Logistics resolved_sum=0 new_tickets_sum=9
+    id=ACXxk6pvrbIjfkE2GFS3tEHRpAHcR0T name=Concierge resolved_sum=0 new_tickets_sum=185
+    id=ACeN6qZueKmyHk3N7qCycr0rQ4top0T name=Support 2 resolved_sum=0 new_tickets_sum=33
+    id=ACVvarVDPL30nN51iPm4MIxrpTOhr0T name=Billing 2 resolved_sum=0 new_tickets_sum=251
+    id=ACCbJJUxrhx2w6KOpOfkZrOLAh4cF0T name=Scheduling 2 resolved_sum=0 new_tickets_sum=66
+    id=AC1Zz7yPHDidgH5JcCwYKPyeOWHjd0T name=Providers 2 resolved_sum=0 new_tickets_sum=127
+    id=ACWOsH3fVRdIgT84M0rtGQrlWEDnG0T name=Vendors 2 resolved_sum=0 new_tickets_sum=156
+    id=ACUUzyR8oHLJvMMnMe1KcVSf2rZSo0T name=Accounting 2 resolved_sum=0 new_tickets_sum=26
+    id=ACGzRKFl9PFnV4AY4c2t7fd6Yqo900T name=Customer Care 2 resolved_sum=0 new_tickets_sum=12
+    id=ACdJWOZgryN8LYYEjoIMsRzlX7oyp0T name=Quality 2 resolved_sum=0 new_tickets_sum=13
+    id=ACeq4sbCB69gxAwyHSVJpq3mDO8cw0T name=Notifications 2 resolved_sum=0 new_tickets_sum=106
+    id=ACzqYN3MvvycW9z2EqCwJap0RRrAb0T name=Receivables 2 resolved_sum=0 new_tickets_sum=37
+    id=ACMNjE68f8khljnnQHfJh8pr7RtQj0T name=Payables 2 resolved_sum=0 new_tickets_sum=32
+    id=ACsuTSpfLoGN0vQpEI8B8i43ZyGC40T name=Escalations 2 resolved_sum=0 new_tickets_sum=349
+    id=AC76v2SjfP1ViwRntT019JKOxeyp00T name=Travel 2 resolved_sum=6 new_tickets_sum=159
+    id=ACCaSgVWdSz4qugj3BlpuLQqWAizS0T name=Onboarding 2 resolved_sum=99 new_tickets_sum=149
+    id=AC4qLm4U3oylT8jdsTfuMu7xm2THH0T name=Claims 2 resolved_sum=256 new_tickets_sum=2623
+    id=ACFi2eSUXF4j39JWlyQVkBuUIfzcY0T name=Returns 2 resolved_sum=0 new_tickets_sum=66
+    id=ACxdmkY9aOxCN5bqS1kC1mCV0bSVg0T name=Partnerships 2 resolved_sum=0 new_tickets_sum=1999
+    id=ACcaAESpsc5qu2bzA6Tx8RCD7fQxN0T name=Compliance 2 resolved_sum=0 new_tickets_sum=84
+    id=ACXGOhjSa8cOtazWSoOoEQ0IUu60Z0T name=Fax 2 resolved_sum=1 new_tickets_sum=131
+    id=ACHAWTP7rtJsQL23LMREZrNTDPfI80T name=Outbound 2 resolved_sum=0 new_tickets_sum=7479
+    id=ACDIAizKkfVvGfUVTb0dK11lIi6Ve0T name=Care Team 2 resolved_sum=0 new_tickets_sum=85
+    id=ACD5Hb6HnCWvKoTzObNPlkJWoxqLr0T name=Front Desk 2 resolved_sum=0 new_tickets_sum=111
+    id=ACaerMkO5YEqmjYjCAK3FKmOai5TC0T name=Dispatch 2 resolved_sum=0 new_tickets_sum=75
+    id=ACIHWKrivRq1JNTBk1Lb8WuEenLfo0T name=Records 2 resolved_sum=0 new_tickets_sum=46
+    id=AC8uZBdJ69H7pKhtUh6uDZbVT5vmJ0T name=Intake 2 resolved_sum=0 new_tickets_sum=29
+    id=ACbLcGijmXip8zolRvKh3riiyFmUG0T name=Renewals 2 resolved_sum=0 new_tickets_sum=20
+    id=ACR49PKwD86F6n1kuOvq47SOdoHiy0T name=Disputes 2 resolved_sum=0 new_tickets_sum=64
+    id=ACySy1R1RzOMqOj0uJJmVxDGoFKnn0T name=Wholesale 2 resolved_sum=0 new_tickets_sum=12
+    id=AC0PiCc1iUeI4f2Xuv4Hyj4ufDQcL0T name=Logistics 2 resolved_sum=0 new_tickets_sum=38
+    id=ACQvSc5ZM1ncwJWadkQrOOhT0wsAa0T name=Concierge 2 resolved_sum=0 new_tickets_sum=93
+    id=AComjGOCm8ZdO2T9Z9MfT2lcXqZMw0T name=Support 3 resolved_sum=0 new_tickets_sum=32
+    id=ACervITlweGwL9ETy8OuV1aaFvdJV0T name=Billing 3 resolved_sum=0 new_tickets_sum=7
+    id=ACGQtcw6pscvdqT72TuahiEbNqQ1j0T name=Scheduling 3 resolved_sum=0 new_tickets_sum=81
+    id=ACR3EnyIvargSSKrmd4ZkiSIefGtn0T name=Providers 3 resolved_sum=1 new_tickets_sum=55
+    id=ACSvkHl5MzJh9lX6pbDnjKW1BzBKh0T name=Vendors 3 resolved_sum=0 new_tickets_sum=104
+    id=ACjVisIfdQ5SEhflfjivyyEVOd8rf0T name=Accounting 3 resolved_sum=0 new_tickets_sum=14
+    id=ACyIzcOYotHoBapLrfT5nn5MiSP6K0T name=Customer Care 3 resolved_sum=0 new_tickets_sum=147
+    id=ACJzAufF0hkThOCHfXTQjY98163WU0T name=Quality 3 resolved_sum=5937 new_tickets_sum=5049
+    id=ACrIR2mA3CaNW3bSJ52Eptpl7SrhZ0T name=Notifications 3 resolved_sum=383 new_tickets_sum=622
+    id=ACjCZwJk6m7k1AKKbi4ZPaghTYVnQ0T name=Receivables 3 resolved_sum=239 new_tickets_sum=1201
+    id=ACdCjEnXGLcOax1eehLCaCrDujZb50T name=Payables 3 resolved_sum=793 new_tickets_sum=769
+    id=ACDN5rT3buFHL3KEjQeuRV8Z8hNsi0T name=Escalations 3 resolved_sum=42 new_tickets_sum=42
+    id=ACtMddzpyYUgiZKlndH1m6GAmbsGQ0T name=Travel 3 resolved_sum=1805 new_tickets_sum=6056
+    id=ACH6RHWKjH5fAvPtQIvtSgDVlWqEZ0T name=Onboarding 3 resolved_sum=0 new_tickets_sum=464
+    id=ACcXeC5yUYchRiWMZsueGUGKlRY3g0T name=Claims 3 resolved_sum=0 new_tickets_sum=96
+    id=AC5hbPHEXIO3H91lgZsBv06YKlFxA0T name=Returns 3 resolved_sum=0 new_tickets_sum=189
+    id=ACyXzP3xHGzdiEmjEgtphk1pC8HVO0T name=Partnerships 3 resolved_sum=0 new_tickets_sum=185
+    id=ACjCtzCEnw6xJgVbskAsUXEIfq3rc0T name=Compliance 3 resolved_sum=0 new_tickets_sum=129
+    id=ACwAEeDmBb2OVbwfjWsN561jFtqul0T name=Fax 3 resolved_sum=0 new_tickets_sum=64
+    id=ACag8rEdGd8ygwh2ImrN4QTMlg4bw0T name=Outbound 3 resolved_sum=0 new_tickets_sum=137
+    id=ACRhTUvuoL4HabVC0Bm0A4WY257HA0T name=Care Team 3 resolved_sum=0 new_tickets_sum=183
+    id=ACWtVANCEPIpgfrWJeiCH96uaWVbY0T name=Front Desk 3 resolved_sum=0 new_tickets_sum=618
+    id=ACWp9m2z6j2u2uVnzc6u0BVMGz65w0T name=Dispatch 3 resolved_sum=0 new_tickets_sum=105
+    id=AC9tjF9aoxhzR4XVIjlOyihJvkQBD0T name=Records 3 resolved_sum=640 new_tickets_sum=4219
+    id=ACJpK8lOyew01F7QocZdFG4qDndnC0T name=Intake 3 resolved_sum=0 new_tickets_sum=12
+    id=ACmE1nFFQvABa19fuD67SV7iLXJw00T name=Renewals 3 resolved_sum=0 new_tickets_sum=89
+    id=ACpb47tORJdXX4uOI4t1GYRE3tlS50T name=Disputes 3 resolved_sum=0 new_tickets_sum=55
+    id=ACK0GrKo63k0FQqhIie0Q668owyxi0T name=Wholesale 3 resolved_sum=0 new_tickets_sum=18
+    id=ACcx4cmfbNSBHPwPKDEeWAmpN7GjK0T name=Logistics 3 resolved_sum=84 new_tickets_sum=343
+    id=AC7BF28xHFbI6El2dxjXLRlN7aeab0T name=Concierge 3 resolved_sum=1 new_tickets_sum=193
+    id=AC2RUmuJ5gdJUUkRaDES1pdUjeDew0T name=Support 4 resolved_sum=0 new_tickets_sum=1470
+    id=ACI8LGOffkPS6GJpegNkVkJz28A890T name=Billing 4 resolved_sum=0 new_tickets_sum=22
+    id=ACIi0pxO2RyIWJfaa848BHz5w2Ncp0T name=Scheduling 4 resolved_sum=0 new_tickets_sum=9
+    id=ACXOKyWCr3zweip8FEZVCbb9kivZf0T name=Providers 4 resolved_sum=0 new_tickets_sum=80
+    id=AChHQlCrdfdLQQFQxUXgXA5szDuGN0T name=Vendors 4 resolved_sum=0 new_tickets_sum=20
+    id=ACRBh3d5cI6eVGGuhUluHjXH1VhO10T name=Accounting 4 resolved_sum=0 new_tickets_sum=64
+    id=ACMhT1UvFdgvtl0PV9baM7fLwgu090T name=Customer Care 4 resolved_sum=0 new_tickets_sum=18
+    id=ACpMxvq1lUVkgnF333zYE1lavYuAE0T name=Quality 4 resolved_sum=0 new_tickets_sum=22
+    id=ACIK7ZOTa22wNw11ZW9Mr0CjOebMU0T name=Notifications 4 resolved_sum=0 new_tickets_sum=109
+    id=ACeoXGOQdCUid9hLmdigI33NlOdq60T name=Receivables 4 resolved_sum=0 new_tickets_sum=104
+    id=ACCEckW22KZPuQVpHxEvaXNzbbSFI0T name=Payables 4 resolved_sum=4 new_tickets_sum=702
+    id=ACsNlDSHHM3SDQizUqkWxM652Rdk40T name=Escalations 4 resolved_sum=11 new_tickets_sum=2419
+    id=ACYIbQr5DDm2RAJztwsu1dpa01ADP0T name=Travel 4 resolved_sum=0 new_tickets_sum=252
+    id=ACfwRcQob9pV9BiquTL6jxVza3vO50T name=Onboarding 4 resolved_sum=0 new_tickets_sum=403
+    id=ACYnov7OxfTHPY46uYdOpGCrHTHYm0T name=Claims 4 resolved_sum=3 new_tickets_sum=77
+    id=AC25WYYRVShJxfYK0S1IWnc69ABP10T name=Returns 4 resolved_sum=0 new_tickets_sum=41
+    id=ACqXcFft2tZL533HllG27YfZUfKck0T name=Partnerships 4 resolved_sum=0 new_tickets_sum=302
+    id=ACKEKoHw7Q5z0Dfm0H2dx6wK8g5Za0T name=Compliance 4 resolved_sum=0 new_tickets_sum=117
+    id=ACSqv1FtHEnv76LaZV6FnkgbNu9yL0T name=Fax 4 resolved_sum=0 new_tickets_sum=1368
+    id=ACAxYAMVXnHFkdYMc0Jqi3QDNhBkH0T name=Outbound 4 resolved_sum=0 new_tickets_sum=14
+    id=ACBb3ZPidOESwAcWU9BPoHNvQKqci0T name=Care Team 4 resolved_sum=0 new_tickets_sum=18
+    id=ACCTXEEziR5ra4OO21kRfWEauWV5N0T name=Front Desk 4 resolved_sum=0 new_tickets_sum=608
+    id=ACMkpcPikrMksMIabJg4kDUHOikUQ0T name=Dispatch 4 resolved_sum=0 new_tickets_sum=106
+    id=ACYofwgaNVwpR3aismXZY2pMi6eH20T name=Records 4 resolved_sum=0 new_tickets_sum=29
+    id=AColyd4QYWOtxwYXgVXsF7bJV2tIO0T name=Intake 4 resolved_sum=0 new_tickets_sum=22
+    id=ACkTCaiZww7xDhgOCfWKSVc6y3z5B0T name=Renewals 4 resolved_sum=0 new_tickets_sum=61
+    id=ACNz6ypRp6Ha0q3JKfWFNO843iwRs0T name=Disputes 4 resolved_sum=0 new_tickets_sum=202
+    id=ACndDVYO3f1HwvXWrMREN0ggzUv6W0T name=Wholesale 4 resolved_sum=0 new_tickets_sum=55
+  labels: len=0 content=[]
+  topics: len=0 content=[]
+  categories: len=0 content=[]
+
+### scope operator 'or' with 5 mailboxes ###
+=== operator or, 5 mailboxes === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-y7-operator-or.json
+  mailbox entries: 5
+    id=ACf0kWdEPNiYSou98PwFYiKQfWq9c0T name=Returns resolved_sum=0 new_tickets_sum=9
+    id=ACqMGljMqLCOAZJ9ZYNz4oNZkF91D0T name=Partnerships resolved_sum=0 new_tickets_sum=276
+    id=ACpw3ge04EDYzOsUMhVHgYGqpn2wq0T name=Compliance resolved_sum=0 new_tickets_sum=103
+    id=ACn0hYoSiro8YwtJVsN48DFDtyHyQ0T name=Fax resolved_sum=0 new_tickets_sum=551
+    id=ACSzkQ6eDUuigSwb0AFR4r7Z19wog0T name=Outbound resolved_sum=0 new_tickets_sum=805
+  labels: len=0 content=[]
+  topics: len=0 content=[]
+  categories: len=0 content=[]
+
+### scope operator 'is_not' with 1 mailbox ###
+=== operator is_not === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-y8-operator-isnot.json
+  mailbox entries: 1
+    id=ACf0kWdEPNiYSou98PwFYiKQfWq9c0T name=Returns resolved_sum=0 new_tickets_sum=9
+  labels: len=0 content=[]
+  topics: len=0 content=[]
+  categories: len=0 content=[]
+
+### filters array (instead of scope) with 1 mailbox, scope absent ###
+=== filters array only === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-y9-filters-only.json
+  mailbox entries: 103
+    id=ACf0kWdEPNiYSou98PwFYiKQfWq9c0T name=Returns resolved_sum=0 new_tickets_sum=9
+    id=ACqMGljMqLCOAZJ9ZYNz4oNZkF91D0T name=Partnerships resolved_sum=0 new_tickets_sum=276
+    id=ACpw3ge04EDYzOsUMhVHgYGqpn2wq0T name=Compliance resolved_sum=0 new_tickets_sum=103
+    id=ACn0hYoSiro8YwtJVsN48DFDtyHyQ0T name=Fax resolved_sum=0 new_tickets_sum=551
+    id=ACSzkQ6eDUuigSwb0AFR4r7Z19wog0T name=Outbound resolved_sum=0 new_tickets_sum=805
+    id=ACGb2yb8dEQA50hFC2zYC9JATHlvs0T name=Care Team resolved_sum=0 new_tickets_sum=7
+    id=AC8BbOFIXLmQFgXRpqrrnheJ1rmWC0T name=Front Desk resolved_sum=0 new_tickets_sum=15639
+    id=AC5BIZbkDJCPxvRCI7NYpIqoOifrk0T name=Dispatch resolved_sum=0 new_tickets_sum=163
+    id=ACyQ7z8G2TWPsbl3LsmjM3bNz4ZGU0T name=Records resolved_sum=6067 new_tickets_sum=3887
+    id=ACAqsyUBIX6gRjQuhJItE9Uq4hDsU0T name=Intake resolved_sum=0 new_tickets_sum=35
+    id=ACZ5tVuKTenVapUPgYcLOAbqczisH0T name=Renewals resolved_sum=0 new_tickets_sum=26
+    id=ACm1XVF199HqkdDhWyajEKw4E1DTI0T name=Disputes resolved_sum=0 new_tickets_sum=37
+    id=ACXFHG3X4FFRY0BGJLbmkdrsdNBQo0T name=Wholesale resolved_sum=0 new_tickets_sum=93
+    id=ACpccbJlT3PzAQpEtqYezABZFTH5F0T name=Logistics resolved_sum=0 new_tickets_sum=9
+    id=ACXxk6pvrbIjfkE2GFS3tEHRpAHcR0T name=Concierge resolved_sum=0 new_tickets_sum=185
+    id=ACeN6qZueKmyHk3N7qCycr0rQ4top0T name=Support 2 resolved_sum=0 new_tickets_sum=33
+    id=ACVvarVDPL30nN51iPm4MIxrpTOhr0T name=Billing 2 resolved_sum=0 new_tickets_sum=251
+    id=ACCbJJUxrhx2w6KOpOfkZrOLAh4cF0T name=Scheduling 2 resolved_sum=0 new_tickets_sum=66
+    id=AC1Zz7yPHDidgH5JcCwYKPyeOWHjd0T name=Providers 2 resolved_sum=0 new_tickets_sum=127
+    id=ACWOsH3fVRdIgT84M0rtGQrlWEDnG0T name=Vendors 2 resolved_sum=0 new_tickets_sum=156
+    id=ACUUzyR8oHLJvMMnMe1KcVSf2rZSo0T name=Accounting 2 resolved_sum=0 new_tickets_sum=26
+    id=ACGzRKFl9PFnV4AY4c2t7fd6Yqo900T name=Customer Care 2 resolved_sum=0 new_tickets_sum=12
+    id=ACdJWOZgryN8LYYEjoIMsRzlX7oyp0T name=Quality 2 resolved_sum=0 new_tickets_sum=13
+    id=ACeq4sbCB69gxAwyHSVJpq3mDO8cw0T name=Notifications 2 resolved_sum=0 new_tickets_sum=106
+    id=ACzqYN3MvvycW9z2EqCwJap0RRrAb0T name=Receivables 2 resolved_sum=0 new_tickets_sum=37
+    id=ACMNjE68f8khljnnQHfJh8pr7RtQj0T name=Payables 2 resolved_sum=0 new_tickets_sum=32
+    id=ACsuTSpfLoGN0vQpEI8B8i43ZyGC40T name=Escalations 2 resolved_sum=0 new_tickets_sum=349
+    id=AC76v2SjfP1ViwRntT019JKOxeyp00T name=Travel 2 resolved_sum=6 new_tickets_sum=159
+    id=ACCaSgVWdSz4qugj3BlpuLQqWAizS0T name=Onboarding 2 resolved_sum=99 new_tickets_sum=149
+    id=AC4qLm4U3oylT8jdsTfuMu7xm2THH0T name=Claims 2 resolved_sum=256 new_tickets_sum=2623
+    id=ACFi2eSUXF4j39JWlyQVkBuUIfzcY0T name=Returns 2 resolved_sum=0 new_tickets_sum=66
+    id=ACxdmkY9aOxCN5bqS1kC1mCV0bSVg0T name=Partnerships 2 resolved_sum=0 new_tickets_sum=1999
+    id=ACcaAESpsc5qu2bzA6Tx8RCD7fQxN0T name=Compliance 2 resolved_sum=0 new_tickets_sum=84
+    id=ACXGOhjSa8cOtazWSoOoEQ0IUu60Z0T name=Fax 2 resolved_sum=1 new_tickets_sum=131
+    id=ACHAWTP7rtJsQL23LMREZrNTDPfI80T name=Outbound 2 resolved_sum=0 new_tickets_sum=7479
+    id=ACDIAizKkfVvGfUVTb0dK11lIi6Ve0T name=Care Team 2 resolved_sum=0 new_tickets_sum=85
+    id=ACD5Hb6HnCWvKoTzObNPlkJWoxqLr0T name=Front Desk 2 resolved_sum=0 new_tickets_sum=111
+    id=ACaerMkO5YEqmjYjCAK3FKmOai5TC0T name=Dispatch 2 resolved_sum=0 new_tickets_sum=75
+    id=ACIHWKrivRq1JNTBk1Lb8WuEenLfo0T name=Records 2 resolved_sum=0 new_tickets_sum=46
+    id=AC8uZBdJ69H7pKhtUh6uDZbVT5vmJ0T name=Intake 2 resolved_sum=0 new_tickets_sum=29
+    id=ACbLcGijmXip8zolRvKh3riiyFmUG0T name=Renewals 2 resolved_sum=0 new_tickets_sum=20
+    id=ACR49PKwD86F6n1kuOvq47SOdoHiy0T name=Disputes 2 resolved_sum=0 new_tickets_sum=64
+    id=ACySy1R1RzOMqOj0uJJmVxDGoFKnn0T name=Wholesale 2 resolved_sum=0 new_tickets_sum=12
+    id=AC0PiCc1iUeI4f2Xuv4Hyj4ufDQcL0T name=Logistics 2 resolved_sum=0 new_tickets_sum=38
+    id=ACQvSc5ZM1ncwJWadkQrOOhT0wsAa0T name=Concierge 2 resolved_sum=0 new_tickets_sum=93
+    id=AComjGOCm8ZdO2T9Z9MfT2lcXqZMw0T name=Support 3 resolved_sum=0 new_tickets_sum=32
+    id=ACervITlweGwL9ETy8OuV1aaFvdJV0T name=Billing 3 resolved_sum=0 new_tickets_sum=7
+    id=ACGQtcw6pscvdqT72TuahiEbNqQ1j0T name=Scheduling 3 resolved_sum=0 new_tickets_sum=81
+    id=ACR3EnyIvargSSKrmd4ZkiSIefGtn0T name=Providers 3 resolved_sum=1 new_tickets_sum=55
+    id=ACSvkHl5MzJh9lX6pbDnjKW1BzBKh0T name=Vendors 3 resolved_sum=0 new_tickets_sum=104
+    id=ACjVisIfdQ5SEhflfjivyyEVOd8rf0T name=Accounting 3 resolved_sum=0 new_tickets_sum=14
+    id=ACyIzcOYotHoBapLrfT5nn5MiSP6K0T name=Customer Care 3 resolved_sum=0 new_tickets_sum=147
+    id=ACJzAufF0hkThOCHfXTQjY98163WU0T name=Quality 3 resolved_sum=5937 new_tickets_sum=5049
+    id=ACrIR2mA3CaNW3bSJ52Eptpl7SrhZ0T name=Notifications 3 resolved_sum=383 new_tickets_sum=622
+    id=ACjCZwJk6m7k1AKKbi4ZPaghTYVnQ0T name=Receivables 3 resolved_sum=239 new_tickets_sum=1201
+    id=ACdCjEnXGLcOax1eehLCaCrDujZb50T name=Payables 3 resolved_sum=793 new_tickets_sum=769
+    id=ACDN5rT3buFHL3KEjQeuRV8Z8hNsi0T name=Escalations 3 resolved_sum=42 new_tickets_sum=42
+    id=ACtMddzpyYUgiZKlndH1m6GAmbsGQ0T name=Travel 3 resolved_sum=1805 new_tickets_sum=6056
+    id=ACH6RHWKjH5fAvPtQIvtSgDVlWqEZ0T name=Onboarding 3 resolved_sum=0 new_tickets_sum=464
+    id=ACcXeC5yUYchRiWMZsueGUGKlRY3g0T name=Claims 3 resolved_sum=0 new_tickets_sum=96
+    id=AC5hbPHEXIO3H91lgZsBv06YKlFxA0T name=Returns 3 resolved_sum=0 new_tickets_sum=189
+    id=ACyXzP3xHGzdiEmjEgtphk1pC8HVO0T name=Partnerships 3 resolved_sum=0 new_tickets_sum=185
+    id=ACjCtzCEnw6xJgVbskAsUXEIfq3rc0T name=Compliance 3 resolved_sum=0 new_tickets_sum=129
+    id=ACwAEeDmBb2OVbwfjWsN561jFtqul0T name=Fax 3 resolved_sum=0 new_tickets_sum=64
+    id=ACag8rEdGd8ygwh2ImrN4QTMlg4bw0T name=Outbound 3 resolved_sum=0 new_tickets_sum=137
+    id=ACRhTUvuoL4HabVC0Bm0A4WY257HA0T name=Care Team 3 resolved_sum=0 new_tickets_sum=183
+    id=ACWtVANCEPIpgfrWJeiCH96uaWVbY0T name=Front Desk 3 resolved_sum=0 new_tickets_sum=618
+    id=ACWp9m2z6j2u2uVnzc6u0BVMGz65w0T name=Dispatch 3 resolved_sum=0 new_tickets_sum=105
+    id=AC9tjF9aoxhzR4XVIjlOyihJvkQBD0T name=Records 3 resolved_sum=640 new_tickets_sum=4219
+    id=ACJpK8lOyew01F7QocZdFG4qDndnC0T name=Intake 3 resolved_sum=0 new_tickets_sum=12
+    id=ACmE1nFFQvABa19fuD67SV7iLXJw00T name=Renewals 3 resolved_sum=0 new_tickets_sum=89
+    id=ACpb47tORJdXX4uOI4t1GYRE3tlS50T name=Disputes 3 resolved_sum=0 new_tickets_sum=55
+    id=ACK0GrKo63k0FQqhIie0Q668owyxi0T name=Wholesale 3 resolved_sum=0 new_tickets_sum=18
+    id=ACcx4cmfbNSBHPwPKDEeWAmpN7GjK0T name=Logistics 3 resolved_sum=84 new_tickets_sum=343
+    id=AC7BF28xHFbI6El2dxjXLRlN7aeab0T name=Concierge 3 resolved_sum=1 new_tickets_sum=193
+    id=AC2RUmuJ5gdJUUkRaDES1pdUjeDew0T name=Support 4 resolved_sum=0 new_tickets_sum=1470
+    id=ACI8LGOffkPS6GJpegNkVkJz28A890T name=Billing 4 resolved_sum=0 new_tickets_sum=22
+    id=ACIi0pxO2RyIWJfaa848BHz5w2Ncp0T name=Scheduling 4 resolved_sum=0 new_tickets_sum=9
+    id=ACXOKyWCr3zweip8FEZVCbb9kivZf0T name=Providers 4 resolved_sum=0 new_tickets_sum=80
+    id=AChHQlCrdfdLQQFQxUXgXA5szDuGN0T name=Vendors 4 resolved_sum=0 new_tickets_sum=20
+    id=ACRBh3d5cI6eVGGuhUluHjXH1VhO10T name=Accounting 4 resolved_sum=0 new_tickets_sum=64
+    id=ACMhT1UvFdgvtl0PV9baM7fLwgu090T name=Customer Care 4 resolved_sum=0 new_tickets_sum=18
+    id=ACpMxvq1lUVkgnF333zYE1lavYuAE0T name=Quality 4 resolved_sum=0 new_tickets_sum=22
+    id=ACIK7ZOTa22wNw11ZW9Mr0CjOebMU0T name=Notifications 4 resolved_sum=0 new_tickets_sum=109
+    id=ACeoXGOQdCUid9hLmdigI33NlOdq60T name=Receivables 4 resolved_sum=0 new_tickets_sum=104
+    id=ACCEckW22KZPuQVpHxEvaXNzbbSFI0T name=Payables 4 resolved_sum=4 new_tickets_sum=702
+    id=ACsNlDSHHM3SDQizUqkWxM652Rdk40T name=Escalations 4 resolved_sum=11 new_tickets_sum=2419
+    id=ACYIbQr5DDm2RAJztwsu1dpa01ADP0T name=Travel 4 resolved_sum=0 new_tickets_sum=252
+    id=ACfwRcQob9pV9BiquTL6jxVza3vO50T name=Onboarding 4 resolved_sum=0 new_tickets_sum=403
+    id=ACYnov7OxfTHPY46uYdOpGCrHTHYm0T name=Claims 4 resolved_sum=3 new_tickets_sum=77
+    id=AC25WYYRVShJxfYK0S1IWnc69ABP10T name=Returns 4 resolved_sum=0 new_tickets_sum=41
+    id=ACqXcFft2tZL533HllG27YfZUfKck0T name=Partnerships 4 resolved_sum=0 new_tickets_sum=302
+    id=ACKEKoHw7Q5z0Dfm0H2dx6wK8g5Za0T name=Compliance 4 resolved_sum=0 new_tickets_sum=117
+    id=ACSqv1FtHEnv76LaZV6FnkgbNu9yL0T name=Fax 4 resolved_sum=0 new_tickets_sum=1368
+    id=ACAxYAMVXnHFkdYMc0Jqi3QDNhBkH0T name=Outbound 4 resolved_sum=0 new_tickets_sum=14
+    id=ACBb3ZPidOESwAcWU9BPoHNvQKqci0T name=Care Team 4 resolved_sum=0 new_tickets_sum=18
+    id=ACCTXEEziR5ra4OO21kRfWEauWV5N0T name=Front Desk 4 resolved_sum=0 new_tickets_sum=608
+    id=ACMkpcPikrMksMIabJg4kDUHOikUQ0T name=Dispatch 4 resolved_sum=0 new_tickets_sum=106
+    id=ACYofwgaNVwpR3aismXZY2pMi6eH20T name=Records 4 resolved_sum=0 new_tickets_sum=29
+    id=AColyd4QYWOtxwYXgVXsF7bJV2tIO0T name=Intake 4 resolved_sum=0 new_tickets_sum=22
+    id=ACkTCaiZww7xDhgOCfWKSVc6y3z5B0T name=Renewals 4 resolved_sum=0 new_tickets_sum=61
+    id=ACNz6ypRp6Ha0q3JKfWFNO843iwRs0T name=Disputes 4 resolved_sum=0 new_tickets_sum=202
+    id=ACndDVYO3f1HwvXWrMREN0ggzUv6W0T name=Wholesale 4 resolved_sum=0 new_tickets_sum=55
+  labels: len=0 content=[]
+  topics: len=0 content=[]
+  categories: len=0 content=[]
+
+### filters array with labels ###
+=== filters labels === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-y10-filters-labels.json
+  mailbox entries: 5
+    id=ACf0kWdEPNiYSou98PwFYiKQfWq9c0T name=Returns resolved_sum=0 new_tickets_sum=9
+    id=ACqMGljMqLCOAZJ9ZYNz4oNZkF91D0T name=Partnerships resolved_sum=0 new_tickets_sum=276
+    id=ACpw3ge04EDYzOsUMhVHgYGqpn2wq0T name=Compliance resolved_sum=0 new_tickets_sum=103
+    id=ACn0hYoSiro8YwtJVsN48DFDtyHyQ0T name=Fax resolved_sum=0 new_tickets_sum=551
+    id=ACSzkQ6eDUuigSwb0AFR4r7Z19wog0T name=Outbound resolved_sum=0 new_tickets_sum=805
+  labels: len=0 content=[]
+  topics: len=0 content=[]
+  categories: len=0 content=[]
+
+### filters array with topics ###
+=== filters topics === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-y11-filters-topics.json
+  mailbox entries: 5
+    id=ACf0kWdEPNiYSou98PwFYiKQfWq9c0T name=Returns resolved_sum=0 new_tickets_sum=9
+    id=ACqMGljMqLCOAZJ9ZYNz4oNZkF91D0T name=Partnerships resolved_sum=0 new_tickets_sum=276
+    id=ACpw3ge04EDYzOsUMhVHgYGqpn2wq0T name=Compliance resolved_sum=0 new_tickets_sum=103
+    id=ACn0hYoSiro8YwtJVsN48DFDtyHyQ0T name=Fax resolved_sum=0 new_tickets_sum=551
+    id=ACSzkQ6eDUuigSwb0AFR4r7Z19wog0T name=Outbound resolved_sum=0 new_tickets_sum=805
+  labels: len=0 content=[]
+  topics: len=0 content=[]
+  categories: len=0 content=[]
+
+### filters array with categories ###
+=== filters categories === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-y12-filters-categories.json
+  mailbox entries: 5
+    id=ACf0kWdEPNiYSou98PwFYiKQfWq9c0T name=Returns resolved_sum=0 new_tickets_sum=9
+    id=ACqMGljMqLCOAZJ9ZYNz4oNZkF91D0T name=Partnerships resolved_sum=0 new_tickets_sum=276
+    id=ACpw3ge04EDYzOsUMhVHgYGqpn2wq0T name=Compliance resolved_sum=0 new_tickets_sum=103
+    id=ACn0hYoSiro8YwtJVsN48DFDtyHyQ0T name=Fax resolved_sum=0 new_tickets_sum=551
+    id=ACSzkQ6eDUuigSwb0AFR4r7Z19wog0T name=Outbound resolved_sum=0 new_tickets_sum=805
+  labels: len=0 content=[]
+  topics: len=0 content=[]
+  categories: len=0 content=[]
+
+### filters array with user, operator and_not ###
+=== filters user and_not === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-y13-filters-user-andnot.json
+  mailbox entries: 5
+    id=ACf0kWdEPNiYSou98PwFYiKQfWq9c0T name=Returns resolved_sum=0 new_tickets_sum=9
+    id=ACqMGljMqLCOAZJ9ZYNz4oNZkF91D0T name=Partnerships resolved_sum=0 new_tickets_sum=276
+    id=ACpw3ge04EDYzOsUMhVHgYGqpn2wq0T name=Compliance resolved_sum=0 new_tickets_sum=103
+    id=ACn0hYoSiro8YwtJVsN48DFDtyHyQ0T name=Fax resolved_sum=0 new_tickets_sum=551
+    id=ACSzkQ6eDUuigSwb0AFR4r7Z19wog0T name=Outbound resolved_sum=0 new_tickets_sum=805
+  labels: len=0 content=[]
+  topics: len=0 content=[]
+  categories: len=0 content=[]
+
+### scope + filters both present (scope=Returns, filters excludes Fax) ###
+=== scope+filters combined === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-y14-scope-plus-filters.json
+  mailbox entries: 1
+    id=ACf0kWdEPNiYSou98PwFYiKQfWq9c0T name=Returns resolved_sum=0 new_tickets_sum=9
+  labels: len=0 content=[]
+  topics: len=0 content=[]
+  categories: len=0 content=[]
+
+### customerEmail / customerDomain filter id (undocumented data shape) ###
+=== filters customerEmail === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-y15-filters-customeremail.json
+  mailbox entries: 5
+    id=ACf0kWdEPNiYSou98PwFYiKQfWq9c0T name=Returns resolved_sum=0 new_tickets_sum=9
+    id=ACqMGljMqLCOAZJ9ZYNz4oNZkF91D0T name=Partnerships resolved_sum=0 new_tickets_sum=276
+    id=ACpw3ge04EDYzOsUMhVHgYGqpn2wq0T name=Compliance resolved_sum=0 new_tickets_sum=103
+    id=ACn0hYoSiro8YwtJVsN48DFDtyHyQ0T name=Fax resolved_sum=0 new_tickets_sum=551
+    id=ACSzkQ6eDUuigSwb0AFR4r7Z19wog0T name=Outbound resolved_sum=0 new_tickets_sum=805
+  labels: len=0 content=[]
+  topics: len=0 content=[]
+  categories: len=0 content=[]

@@ -1,0 +1,59 @@
+### Fresh unscoped, full-window, all-metrics fetch (today) ###
+=== fresh unscoped full-window === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-full-unscoped-latest.json
+ticks: ['2026-07-10T00:00:00Z', '2026-07-11T00:00:00Z', '2026-07-12T00:00:00Z', '2026-07-13T00:00:00Z', '2026-07-14T00:00:00Z', '2026-07-15T00:00:00Z', '2026-07-16T00:00:00Z', '2026-07-17T00:00:00Z', '2026-07-18T00:00:00Z', '2026-07-19T00:00:00Z', '2026-07-20T00:00:00Z', '2026-07-21T00:00:00Z', '2026-07-22T00:00:00Z', '2026-07-23T00:00:00Z', '2026-07-24T00:00:00Z']
+num ticks: 15
+num actors: 108  num mailboxes: 103
+saved actors-list.json, mailboxes-list.json
+
+### Window roll check vs yesterday (resp-q1-full-14day.json) ###
+yesterday's ticks (pass 1/2, requested 07-10..07-24): ['2026-07-10T00:00:00Z', '2026-07-11T00:00:00Z', '2026-07-12T00:00:00Z', '2026-07-13T00:00:00Z', '2026-07-14T00:00:00Z', '2026-07-15T00:00:00Z', '2026-07-16T00:00:00Z', '2026-07-17T00:00:00Z', '2026-07-18T00:00:00Z', '2026-07-19T00:00:00Z', '2026-07-20T00:00:00Z', '2026-07-21T00:00:00Z', '2026-07-22T00:00:00Z', '2026-07-23T00:00:00Z', '2026-07-24T00:00:00Z']
+today's ticks (this fetch, wide request 07-01..08-10): ['2026-07-10T00:00:00Z', '2026-07-11T00:00:00Z', '2026-07-12T00:00:00Z', '2026-07-13T00:00:00Z', '2026-07-14T00:00:00Z', '2026-07-15T00:00:00Z', '2026-07-16T00:00:00Z', '2026-07-17T00:00:00Z', '2026-07-18T00:00:00Z', '2026-07-19T00:00:00Z', '2026-07-20T00:00:00Z', '2026-07-21T00:00:00Z', '2026-07-22T00:00:00Z', '2026-07-23T00:00:00Z', '2026-07-24T00:00:00Z']
+today ticks[0]: 2026-07-10T00:00:00Z  ticks[-1]: 2026-07-24T00:00:00Z
+=== today, same request as pass-1 Q1 === status=200
+  saved -> /home/timop/work/loopai/scratch/resp-q1-rerun-day2.json
+
+today, same exact request as pass-1 Q1 -> ticks: ['2026-07-10T00:00:00Z', '2026-07-11T00:00:00Z', '2026-07-12T00:00:00Z', '2026-07-13T00:00:00Z', '2026-07-14T00:00:00Z', '2026-07-15T00:00:00Z', '2026-07-16T00:00:00Z', '2026-07-17T00:00:00Z', '2026-07-18T00:00:00Z', '2026-07-19T00:00:00Z', '2026-07-20T00:00:00Z', '2026-07-21T00:00:00Z', '2026-07-22T00:00:00Z', '2026-07-23T00:00:00Z', '2026-07-24T00:00:00Z']
+identical to yesterday's saved response (full dict)?: True
+  resolved identical to yesterday.
+
+### Per-metric reconciliation: top-level total vs sum(actors) vs sum(mailboxes) ###
+metric                                             top_total      actor_sum    mailbox_sum  actor_match   mb_match
+actioned_emails                                   19024.0000     28941.0000     19024.0000        False       True
+resolved                                          16372.0000     16372.0000     16372.0000         True       True
+new_tickets                                       66288.0000     66288.0000     66288.0000         True       True
+open                                                  0.0000         0.0000         0.0000         True       True
+replies                                           13679.0000     13679.0000     13679.0000         True       True
+new_emails                                        68711.0000     68711.0000     68711.0000         True       True
+replies_to_resolve                                17965.0000     17965.0000     17965.0000         True       True
+sla_breaches                                       4073.0000      4073.0000      4073.0000         True       True
+resolve_time                                     187974.0994    187974.0994    187974.0994         True       True
+response_time                                    209110.7662    209110.7662    209110.7662         True       True
+time_to_first_reply                              182526.7361    182526.7361    182526.7361         True       True
+resolve_time_business_hours                      125344.5443    125344.5443    125344.5443         True       True
+response_time_business_hours                     139410.7391    139410.7391    139410.7391         True       True
+time_to_first_reply_business_hours               121831.7160    121831.7160    121831.7160         True       True
+handle_time                                          85.0669        85.0669        85.0669         True       True
+
+### _count companions reconciliation ###
+resolve_time_count                            top=16371.0000 actor_sum=16371.0000 mailbox_sum=16371.0000 actor_match=True mb_match=True
+response_time_count                           top=5968.0000 actor_sum=5968.0000 mailbox_sum=5968.0000 actor_match=True mb_match=True
+time_to_first_reply_count                     top=4540.0000 actor_sum=4540.0000 mailbox_sum=4540.0000 actor_match=True mb_match=True
+resolve_time_business_hours_count             top=16371.0000 actor_sum=16371.0000 mailbox_sum=16371.0000 actor_match=True mb_match=True
+response_time_business_hours_count            top=5968.0000 actor_sum=5968.0000 mailbox_sum=5968.0000 actor_match=True mb_match=True
+time_to_first_reply_business_hours_count      top=4540.0000 actor_sum=4540.0000 mailbox_sum=4540.0000 actor_match=True mb_match=True
+handle_time_count                             top=6407.0000 actor_sum=6407.0000 mailbox_sum=6407.0000 actor_match=True mb_match=True
+
+### 'open' metric characterization ###
+top-level open: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+sum: 0
+actors with nonzero open: [] 
+mailboxes with nonzero open: [] 
+
+### business_hours vs base metric comparison ###
+resolve_time: total=187974.099 count=16371  |  resolve_time_business_hours: total=125344.544 count=16371  |  bh/base ratio=0.666818166643325
+    avg resolve_time=11.4821h  avg resolve_time_business_hours=7.6565h  (business avg < total avg)
+response_time: total=209110.766 count=5968  |  response_time_business_hours: total=139410.739 count=5968  |  bh/base ratio=0.6666836990211829
+    avg response_time=35.0387h  avg response_time_business_hours=23.3597h  (business avg < total avg)
+time_to_first_reply: total=182526.736 count=4540  |  time_to_first_reply_business_hours: total=121831.716 count=4540  |  bh/base ratio=0.6674732619911512
+    avg time_to_first_reply=40.2041h  avg time_to_first_reply_business_hours=26.8352h  (business avg < total avg)

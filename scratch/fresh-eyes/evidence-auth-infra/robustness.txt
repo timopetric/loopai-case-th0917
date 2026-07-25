@@ -1,0 +1,25 @@
+HUGE_BODY(~50k filter objs): status=413 time=4.10s resp_len=144 body_snip=<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Payload Too Large</pre>
+</body>
+</html>
+
+DEEPLY_NESTED_FILTERS(depth5000): status=200 time=0.42s resp_len=362109 body_snip={"ticks":["2026-07-10T00:00:00Z","2026-07-11T00:00:00Z","2026-07-12T00:00:00Z","2026-07-13T00:00:00Z","2026-07-14T00:00:00Z","2026-07-15T00:00:00Z","2026-07-16T00:00:00Z","2026-07-17T00:00:00Z","2026-07-18T00:00:00Z","2026-07-19T00:00:00Z","2026-07-20T00:00:00Z","2026-07-21T00:00:00Z","2026-07-22T00
+DEEPLY_NESTED_FILTERS(depth50000): EXCEPTION after 0.00s: maximum recursion depth exceeded while encoding a JSON object
+ENORMOUS_DATE_RANGE(1900-2100): status=200 time=0.30s resp_len=362109 body_snip={"ticks":["2026-07-10T00:00:00Z","2026-07-11T00:00:00Z","2026-07-12T00:00:00Z","2026-07-13T00:00:00Z","2026-07-14T00:00:00Z","2026-07-15T00:00:00Z","2026-07-16T00:00:00Z","2026-07-17T00:00:00Z","2026-07-18T00:00:00Z","2026-07-19T00:00:00Z","2026-07-20T00:00:00Z","2026-07-21T00:00:00Z","2026-07-22T00
+ENORMOUS_DATE_RANGE_HOURLY(1900-2100,hour): status=200 time=0.31s resp_len=362109 body_snip={"ticks":["2026-07-10T00:00:00Z","2026-07-11T00:00:00Z","2026-07-12T00:00:00Z","2026-07-13T00:00:00Z","2026-07-14T00:00:00Z","2026-07-15T00:00:00Z","2026-07-16T00:00:00Z","2026-07-17T00:00:00Z","2026-07-18T00:00:00Z","2026-07-19T00:00:00Z","2026-07-20T00:00:00Z","2026-07-21T00:00:00Z","2026-07-22T00
+RAW_HUGE_BYTES(~10MB junk array): status=413 time=3.06s resp_len=144 body_snip=<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Payload Too Large</pre>
+</body>
+</html>

@@ -1,0 +1,8502 @@
+{
+  "status_code": 200,
+  "request_body": {
+    "community_id": "demo-community",
+    "event_types": [
+      "actioned_emails",
+      "resolved",
+      "new_tickets",
+      "open",
+      "replies",
+      "new_emails",
+      "replies_to_resolve",
+      "resolve_time",
+      "response_time",
+      "time_to_first_reply",
+      "resolve_time_business_hours",
+      "response_time_business_hours",
+      "time_to_first_reply_business_hours",
+      "sla_breaches",
+      "handle_time"
+    ],
+    "time_type": "custom",
+    "time_unit": "day",
+    "time_period": 1,
+    "timezone": "America/New_York",
+    "from_date": "2026-07-15T00:00:00.000Z",
+    "to_date": "2026-07-15T00:00:00.000Z",
+    "filters": [],
+    "scope": {
+      "id": "mailboxes",
+      "operator": {
+        "id": "is"
+      },
+      "values": [
+        {
+          "id": "ACf0kWdEPNiYSou98PwFYiKQfWq9c0T",
+          "name": "Returns"
+        },
+        {
+          "id": "ACqMGljMqLCOAZJ9ZYNz4oNZkF91D0T",
+          "name": "Partnerships"
+        },
+        {
+          "id": "ACpw3ge04EDYzOsUMhVHgYGqpn2wq0T",
+          "name": "Compliance"
+        },
+        {
+          "id": "ACn0hYoSiro8YwtJVsN48DFDtyHyQ0T",
+          "name": "Fax"
+        },
+        {
+          "id": "ACSzkQ6eDUuigSwb0AFR4r7Z19wog0T",
+          "name": "Outbound"
+        }
+      ]
+    }
+  },
+  "response_json": {
+    "ticks": [
+      "2026-07-15T00:00:00Z",
+      "2026-07-16T00:00:00Z"
+    ],
+    "actioned_emails": [
+      1898
+    ],
+    "resolved": [
+      1701
+    ],
+    "new_tickets": [
+      6110
+    ],
+    "open": [
+      0
+    ],
+    "replies": [
+      1445
+    ],
+    "new_emails": [
+      6383
+    ],
+    "replies_to_resolve": [
+      2010
+    ],
+    "replies_to_resolve_count": [
+      1098
+    ],
+    "resolve_time": [
+      11548.074940277776
+    ],
+    "resolve_time_count": [
+      1701
+    ],
+    "response_time": [
+      22758.19416861111
+    ],
+    "response_time_count": [
+      704
+    ],
+    "time_to_first_reply": [
+      18667.551945833333
+    ],
+    "time_to_first_reply_count": [
+      522
+    ],
+    "resolve_time_business_hours": [
+      7652.367815
+    ],
+    "resolve_time_business_hours_count": [
+      1701
+    ],
+    "response_time_business_hours": [
+      15118.340945555556
+    ],
+    "response_time_business_hours_count": [
+      704
+    ],
+    "time_to_first_reply_business_hours": [
+      12416.514572777776
+    ],
+    "time_to_first_reply_business_hours_count": [
+      522
+    ],
+    "handle_time": [
+      10.537009722222223
+    ],
+    "handle_time_count": [
+      746
+    ],
+    "sla_breaches": [
+      443
+    ],
+    "actors": [
+      {
+        "user_id": "user_yoJRgsMu",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          2
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Support",
+        "id": "user_yoJRgsMu"
+      },
+      {
+        "user_id": "user_pwNpEQRp",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          25
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Elena Kaur",
+        "id": "user_pwNpEQRp"
+      },
+      {
+        "user_id": "user_Nq24icrN",
+        "actioned_emails": [
+          129
+        ],
+        "resolved": [
+          27
+        ],
+        "new_tickets": [
+          206
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          115
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          19
+        ],
+        "replies_to_resolve_count": [
+          15
+        ],
+        "resolve_time": [
+          3.360673055555556
+        ],
+        "resolve_time_count": [
+          27
+        ],
+        "response_time": [
+          553.03813
+        ],
+        "response_time_count": [
+          14
+        ],
+        "time_to_first_reply": [
+          23.704125
+        ],
+        "time_to_first_reply_count": [
+          10
+        ],
+        "resolve_time_business_hours": [
+          3.360673055555556
+        ],
+        "resolve_time_business_hours_count": [
+          27
+        ],
+        "response_time_business_hours": [
+          361.3717411111111
+        ],
+        "response_time_business_hours_count": [
+          14
+        ],
+        "time_to_first_reply_business_hours": [
+          8.03773611111111
+        ],
+        "time_to_first_reply_business_hours_count": [
+          10
+        ],
+        "handle_time": [
+          0.19055305555555554
+        ],
+        "handle_time_count": [
+          13
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Enzo Grant",
+        "id": "user_Nq24icrN"
+      },
+      {
+        "user_id": "user_Pp8PiUHj",
+        "actioned_emails": [
+          1
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          3
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          1
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Vera Nash",
+        "id": "user_Pp8PiUHj"
+      },
+      {
+        "user_id": "user_mbxMNcKo",
+        "actioned_emails": [
+          94
+        ],
+        "resolved": [
+          6
+        ],
+        "new_tickets": [
+          818
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          97
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          100
+        ],
+        "replies_to_resolve_count": [
+          51
+        ],
+        "resolve_time": [
+          15.034507777777778
+        ],
+        "resolve_time_count": [
+          6
+        ],
+        "response_time": [
+          1640.550945
+        ],
+        "response_time_count": [
+          16
+        ],
+        "time_to_first_reply": [
+          1640.550945
+        ],
+        "time_to_first_reply_count": [
+          16
+        ],
+        "resolve_time_business_hours": [
+          8.064507777777777
+        ],
+        "resolve_time_business_hours_count": [
+          6
+        ],
+        "response_time_business_hours": [
+          1090.6378894444445
+        ],
+        "response_time_business_hours_count": [
+          16
+        ],
+        "time_to_first_reply_business_hours": [
+          1090.6378894444445
+        ],
+        "time_to_first_reply_business_hours_count": [
+          16
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Billing",
+        "id": "user_mbxMNcKo"
+      },
+      {
+        "user_id": "user_vPLy7bjY",
+        "actioned_emails": [
+          61
+        ],
+        "resolved": [
+          60
+        ],
+        "new_tickets": [
+          59
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          16
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          14
+        ],
+        "replies_to_resolve_count": [
+          14
+        ],
+        "resolve_time": [
+          278.5103911111111
+        ],
+        "resolve_time_count": [
+          60
+        ],
+        "response_time": [
+          2.3041466666666666
+        ],
+        "response_time_count": [
+          1
+        ],
+        "time_to_first_reply": [
+          2.3041466666666666
+        ],
+        "time_to_first_reply_count": [
+          1
+        ],
+        "resolve_time_business_hours": [
+          199.08789111111113
+        ],
+        "resolve_time_business_hours_count": [
+          60
+        ],
+        "response_time_business_hours": [
+          2.3041466666666666
+        ],
+        "response_time_business_hours_count": [
+          1
+        ],
+        "time_to_first_reply_business_hours": [
+          2.3041466666666666
+        ],
+        "time_to_first_reply_business_hours_count": [
+          1
+        ],
+        "handle_time": [
+          0.06700611111111111
+        ],
+        "handle_time_count": [
+          4
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Hana Torres",
+        "id": "user_vPLy7bjY"
+      },
+      {
+        "user_id": "user_kVDYF6hO",
+        "actioned_emails": [
+          70
+        ],
+        "resolved": [
+          68
+        ],
+        "new_tickets": [
+          18
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          52
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          50
+        ],
+        "replies_to_resolve_count": [
+          43
+        ],
+        "resolve_time": [
+          874.4518272222223
+        ],
+        "resolve_time_count": [
+          68
+        ],
+        "response_time": [
+          31.07954861111111
+        ],
+        "response_time_count": [
+          40
+        ],
+        "time_to_first_reply": [
+          19.744753055555556
+        ],
+        "time_to_first_reply_count": [
+          26
+        ],
+        "resolve_time_business_hours": [
+          594.4518272222223
+        ],
+        "resolve_time_business_hours_count": [
+          68
+        ],
+        "response_time_business_hours": [
+          31.07954861111111
+        ],
+        "response_time_business_hours_count": [
+          40
+        ],
+        "time_to_first_reply_business_hours": [
+          19.744753055555556
+        ],
+        "time_to_first_reply_business_hours_count": [
+          26
+        ],
+        "handle_time": [
+          0.47078194444444443
+        ],
+        "handle_time_count": [
+          41
+        ],
+        "sla_breaches": [
+          60
+        ],
+        "name": "Nadia Moreno",
+        "id": "user_kVDYF6hO"
+      },
+      {
+        "user_id": "user_yXFH74Ck",
+        "actioned_emails": [
+          38
+        ],
+        "resolved": [
+          30
+        ],
+        "new_tickets": [
+          227
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          10
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          1
+        ],
+        "replies_to_resolve_count": [
+          1
+        ],
+        "resolve_time": [
+          35.410110833333334
+        ],
+        "resolve_time_count": [
+          30
+        ],
+        "response_time": [
+          243.11792083333333
+        ],
+        "response_time_count": [
+          4
+        ],
+        "time_to_first_reply": [
+          24.1057275
+        ],
+        "time_to_first_reply_count": [
+          2
+        ],
+        "resolve_time_business_hours": [
+          10.425666388888889
+        ],
+        "resolve_time_business_hours_count": [
+          30
+        ],
+        "response_time_business_hours": [
+          155.12251166666667
+        ],
+        "response_time_business_hours_count": [
+          4
+        ],
+        "time_to_first_reply_business_hours": [
+          8.110318333333334
+        ],
+        "time_to_first_reply_business_hours_count": [
+          2
+        ],
+        "handle_time": [
+          0.03994194444444445
+        ],
+        "handle_time_count": [
+          3
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Rosa Kaur",
+        "id": "user_yXFH74Ck"
+      },
+      {
+        "user_id": "user_DfDqkztn",
+        "actioned_emails": [
+          20
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          200
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          25
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          212.88306527777777
+        ],
+        "response_time_count": [
+          14
+        ],
+        "time_to_first_reply": [
+          102.39851527777779
+        ],
+        "time_to_first_reply_count": [
+          10
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          140.88306527777777
+        ],
+        "response_time_business_hours_count": [
+          14
+        ],
+        "time_to_first_reply_business_hours": [
+          70.39851527777778
+        ],
+        "time_to_first_reply_business_hours_count": [
+          10
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Ravi Moreno",
+        "id": "user_DfDqkztn"
+      },
+      {
+        "user_id": "user_avnyJuGB",
+        "actioned_emails": [
+          6
+        ],
+        "resolved": [
+          6
+        ],
+        "new_tickets": [
+          1
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          5
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          5
+        ],
+        "replies_to_resolve_count": [
+          5
+        ],
+        "resolve_time": [
+          0.9983627777777778
+        ],
+        "resolve_time_count": [
+          6
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0.9983627777777778
+        ],
+        "resolve_time_business_hours_count": [
+          6
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Enzo Suarez",
+        "id": "user_avnyJuGB"
+      },
+      {
+        "user_id": "user_vQjmRpkL",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          1089
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Noah Petrov",
+        "id": "user_vQjmRpkL"
+      },
+      {
+        "user_id": "user_xOF7bjaH",
+        "actioned_emails": [
+          127
+        ],
+        "resolved": [
+          117
+        ],
+        "new_tickets": [
+          174
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          11
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          1
+        ],
+        "replies_to_resolve_count": [
+          1
+        ],
+        "resolve_time": [
+          25.794329722222223
+        ],
+        "resolve_time_count": [
+          117
+        ],
+        "response_time": [
+          39.95503888888889
+        ],
+        "response_time_count": [
+          6
+        ],
+        "time_to_first_reply": [
+          39.95503888888889
+        ],
+        "time_to_first_reply_count": [
+          6
+        ],
+        "resolve_time_business_hours": [
+          25.794329722222223
+        ],
+        "resolve_time_business_hours_count": [
+          117
+        ],
+        "response_time_business_hours": [
+          15.955038888888888
+        ],
+        "response_time_business_hours_count": [
+          6
+        ],
+        "time_to_first_reply_business_hours": [
+          15.955038888888888
+        ],
+        "time_to_first_reply_business_hours_count": [
+          6
+        ],
+        "handle_time": [
+          0.005712222222222222
+        ],
+        "handle_time_count": [
+          6
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Arjun Ivanov",
+        "id": "user_xOF7bjaH"
+      },
+      {
+        "user_id": "user_vNj9gW3D",
+        "actioned_emails": [
+          1
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          36
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          2
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Hana Ramos",
+        "id": "user_vNj9gW3D"
+      },
+      {
+        "user_id": "user_aIGiHXES",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          15
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Hana Diaz",
+        "id": "user_aIGiHXES"
+      },
+      {
+        "user_id": "user_DQviod2X",
+        "actioned_emails": [
+          51
+        ],
+        "resolved": [
+          89
+        ],
+        "new_tickets": [
+          46
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          72
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          194
+        ],
+        "replies_to_resolve_count": [
+          74
+        ],
+        "resolve_time": [
+          2399.046252222222
+        ],
+        "resolve_time_count": [
+          89
+        ],
+        "response_time": [
+          242.7246372222222
+        ],
+        "response_time_count": [
+          34
+        ],
+        "time_to_first_reply": [
+          124.72864444444444
+        ],
+        "time_to_first_reply_count": [
+          20
+        ],
+        "resolve_time_business_hours": [
+          1575.0462522222224
+        ],
+        "resolve_time_business_hours_count": [
+          89
+        ],
+        "response_time_business_hours": [
+          162.7246372222222
+        ],
+        "response_time_business_hours_count": [
+          34
+        ],
+        "time_to_first_reply_business_hours": [
+          84.72864444444444
+        ],
+        "time_to_first_reply_business_hours_count": [
+          20
+        ],
+        "handle_time": [
+          0.8432883333333334
+        ],
+        "handle_time_count": [
+          43
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Iker Fisher",
+        "id": "user_DQviod2X"
+      },
+      {
+        "user_id": "user_yzbldXo6",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          0
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          285
+        ],
+        "replies_to_resolve_count": [
+          99
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Scheduling",
+        "id": "user_yzbldXo6"
+      },
+      {
+        "user_id": "user_jwDIMFbL",
+        "actioned_emails": [
+          2
+        ],
+        "resolved": [
+          2
+        ],
+        "new_tickets": [
+          41
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          2
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          4.295650277777778
+        ],
+        "resolve_time_count": [
+          2
+        ],
+        "response_time": [
+          2.542883333333333
+        ],
+        "response_time_count": [
+          1
+        ],
+        "time_to_first_reply": [
+          2.542883333333333
+        ],
+        "time_to_first_reply_count": [
+          1
+        ],
+        "resolve_time_business_hours": [
+          4.295650277777778
+        ],
+        "resolve_time_business_hours_count": [
+          2
+        ],
+        "response_time_business_hours": [
+          2.542883333333333
+        ],
+        "response_time_business_hours_count": [
+          1
+        ],
+        "time_to_first_reply_business_hours": [
+          2.542883333333333
+        ],
+        "time_to_first_reply_business_hours_count": [
+          1
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Yara Sato",
+        "id": "user_jwDIMFbL"
+      },
+      {
+        "user_id": "user_sZb6Mphx",
+        "actioned_emails": [
+          122
+        ],
+        "resolved": [
+          107
+        ],
+        "new_tickets": [
+          106
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          71
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          205
+        ],
+        "replies_to_resolve_count": [
+          68
+        ],
+        "resolve_time": [
+          197.0783625
+        ],
+        "resolve_time_count": [
+          107
+        ],
+        "response_time": [
+          98.07716166666667
+        ],
+        "response_time_count": [
+          38
+        ],
+        "time_to_first_reply": [
+          66.89457805555556
+        ],
+        "time_to_first_reply_count": [
+          19
+        ],
+        "resolve_time_business_hours": [
+          70.64197361111111
+        ],
+        "resolve_time_business_hours_count": [
+          107
+        ],
+        "response_time_business_hours": [
+          42.07716166666667
+        ],
+        "response_time_business_hours_count": [
+          38
+        ],
+        "time_to_first_reply_business_hours": [
+          26.894578055555556
+        ],
+        "time_to_first_reply_business_hours_count": [
+          19
+        ],
+        "handle_time": [
+          0.3503311111111111
+        ],
+        "handle_time_count": [
+          52
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Ava Nash",
+        "id": "user_sZb6Mphx"
+      },
+      {
+        "user_id": "user_THeNfSBe",
+        "actioned_emails": [
+          24
+        ],
+        "resolved": [
+          50
+        ],
+        "new_tickets": [
+          35
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          16
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          61
+        ],
+        "replies_to_resolve_count": [
+          22
+        ],
+        "resolve_time": [
+          395.24336999999997
+        ],
+        "resolve_time_count": [
+          50
+        ],
+        "response_time": [
+          34.34287166666667
+        ],
+        "response_time_count": [
+          7
+        ],
+        "time_to_first_reply": [
+          33.818461388888885
+        ],
+        "time_to_first_reply_count": [
+          3
+        ],
+        "resolve_time_business_hours": [
+          235.24337
+        ],
+        "resolve_time_business_hours_count": [
+          50
+        ],
+        "response_time_business_hours": [
+          18.342871666666667
+        ],
+        "response_time_business_hours_count": [
+          7
+        ],
+        "time_to_first_reply_business_hours": [
+          17.81846138888889
+        ],
+        "time_to_first_reply_business_hours_count": [
+          3
+        ],
+        "handle_time": [
+          0.13750666666666667
+        ],
+        "handle_time_count": [
+          10
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Sana Bauer",
+        "id": "user_THeNfSBe"
+      },
+      {
+        "user_id": "user_nN5brDNG",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          110
+        ],
+        "new_tickets": [
+          9
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          593.7545383333334
+        ],
+        "resolve_time_count": [
+          110
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          341.47203833333333
+        ],
+        "resolve_time_business_hours_count": [
+          110
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Providers",
+        "id": "user_nN5brDNG"
+      },
+      {
+        "user_id": "user_tlCwM23v",
+        "actioned_emails": [
+          16
+        ],
+        "resolved": [
+          19
+        ],
+        "new_tickets": [
+          22
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          11
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          13
+        ],
+        "replies_to_resolve_count": [
+          10
+        ],
+        "resolve_time": [
+          77.74075333333333
+        ],
+        "resolve_time_count": [
+          19
+        ],
+        "response_time": [
+          2.944291666666667
+        ],
+        "response_time_count": [
+          2
+        ],
+        "time_to_first_reply": [
+          2.944291666666667
+        ],
+        "time_to_first_reply_count": [
+          2
+        ],
+        "resolve_time_business_hours": [
+          45.74075333333333
+        ],
+        "resolve_time_business_hours_count": [
+          19
+        ],
+        "response_time_business_hours": [
+          2.944291666666667
+        ],
+        "response_time_business_hours_count": [
+          2
+        ],
+        "time_to_first_reply_business_hours": [
+          2.944291666666667
+        ],
+        "time_to_first_reply_business_hours_count": [
+          2
+        ],
+        "handle_time": [
+          0.14273944444444445
+        ],
+        "handle_time_count": [
+          4
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Ava Maric",
+        "id": "user_tlCwM23v"
+      },
+      {
+        "user_id": "user_ti3fMqTa",
+        "actioned_emails": [
+          43
+        ],
+        "resolved": [
+          127
+        ],
+        "new_tickets": [
+          59
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          75
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          297
+        ],
+        "replies_to_resolve_count": [
+          109
+        ],
+        "resolve_time": [
+          220.84963694444443
+        ],
+        "resolve_time_count": [
+          127
+        ],
+        "response_time": [
+          28.852908333333335
+        ],
+        "response_time_count": [
+          39
+        ],
+        "time_to_first_reply": [
+          27.849695
+        ],
+        "time_to_first_reply_count": [
+          24
+        ],
+        "resolve_time_business_hours": [
+          116.84963694444446
+        ],
+        "resolve_time_business_hours_count": [
+          127
+        ],
+        "response_time_business_hours": [
+          20.852908333333335
+        ],
+        "response_time_business_hours_count": [
+          39
+        ],
+        "time_to_first_reply_business_hours": [
+          19.849695
+        ],
+        "time_to_first_reply_business_hours_count": [
+          24
+        ],
+        "handle_time": [
+          0.08506944444444445
+        ],
+        "handle_time_count": [
+          44
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Milan Maric",
+        "id": "user_ti3fMqTa"
+      },
+      {
+        "user_id": "user_6L2FRdq6",
+        "actioned_emails": [
+          33
+        ],
+        "resolved": [
+          6
+        ],
+        "new_tickets": [
+          148
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          9
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          5
+        ],
+        "replies_to_resolve_count": [
+          4
+        ],
+        "resolve_time": [
+          16.317668333333334
+        ],
+        "resolve_time_count": [
+          6
+        ],
+        "response_time": [
+          20.982599722222222
+        ],
+        "response_time_count": [
+          5
+        ],
+        "time_to_first_reply": [
+          20.982599722222222
+        ],
+        "time_to_first_reply_count": [
+          5
+        ],
+        "resolve_time_business_hours": [
+          16.317668333333334
+        ],
+        "resolve_time_business_hours_count": [
+          6
+        ],
+        "response_time_business_hours": [
+          12.982599722222222
+        ],
+        "response_time_business_hours_count": [
+          5
+        ],
+        "time_to_first_reply_business_hours": [
+          12.982599722222222
+        ],
+        "time_to_first_reply_business_hours_count": [
+          5
+        ],
+        "handle_time": [
+          0.09625583333333333
+        ],
+        "handle_time_count": [
+          7
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Ivan Kaur",
+        "id": "user_6L2FRdq6"
+      },
+      {
+        "user_id": "user_v3RR4jMM",
+        "actioned_emails": [
+          87
+        ],
+        "resolved": [
+          93
+        ],
+        "new_tickets": [
+          63
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          47
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          106
+        ],
+        "replies_to_resolve_count": [
+          46
+        ],
+        "resolve_time": [
+          680.6763094444445
+        ],
+        "resolve_time_count": [
+          93
+        ],
+        "response_time": [
+          223.4561961111111
+        ],
+        "response_time_count": [
+          28
+        ],
+        "time_to_first_reply": [
+          220.583855
+        ],
+        "time_to_first_reply_count": [
+          21
+        ],
+        "resolve_time_business_hours": [
+          456.6763094444444
+        ],
+        "resolve_time_business_hours_count": [
+          93
+        ],
+        "response_time_business_hours": [
+          149.27675166666666
+        ],
+        "response_time_business_hours_count": [
+          28
+        ],
+        "time_to_first_reply_business_hours": [
+          146.40441055555556
+        ],
+        "time_to_first_reply_business_hours_count": [
+          21
+        ],
+        "handle_time": [
+          0.2727652777777778
+        ],
+        "handle_time_count": [
+          36
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Tomas Costa",
+        "id": "user_v3RR4jMM"
+      },
+      {
+        "user_id": "user_Bbz5h3Zg",
+        "actioned_emails": [
+          35
+        ],
+        "resolved": [
+          64
+        ],
+        "new_tickets": [
+          52
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          49
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          111
+        ],
+        "replies_to_resolve_count": [
+          49
+        ],
+        "resolve_time": [
+          196.42777361111112
+        ],
+        "resolve_time_count": [
+          64
+        ],
+        "response_time": [
+          69.93323527777778
+        ],
+        "response_time_count": [
+          20
+        ],
+        "time_to_first_reply": [
+          51.74592805555555
+        ],
+        "time_to_first_reply_count": [
+          14
+        ],
+        "resolve_time_business_hours": [
+          126.02567444444445
+        ],
+        "resolve_time_business_hours_count": [
+          64
+        ],
+        "response_time_business_hours": [
+          46.63347694444444
+        ],
+        "response_time_business_hours_count": [
+          20
+        ],
+        "time_to_first_reply_business_hours": [
+          35.556464166666665
+        ],
+        "time_to_first_reply_business_hours_count": [
+          14
+        ],
+        "handle_time": [
+          0.23993499999999998
+        ],
+        "handle_time_count": [
+          29
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Iker Suarez",
+        "id": "user_Bbz5h3Zg"
+      },
+      {
+        "user_id": "user_DsjsFsqM",
+        "actioned_emails": [
+          71
+        ],
+        "resolved": [
+          52
+        ],
+        "new_tickets": [
+          47
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          34
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          75
+        ],
+        "replies_to_resolve_count": [
+          39
+        ],
+        "resolve_time": [
+          800.2519574999999
+        ],
+        "resolve_time_count": [
+          52
+        ],
+        "response_time": [
+          188.57252499999998
+        ],
+        "response_time_count": [
+          13
+        ],
+        "time_to_first_reply": [
+          187.3543738888889
+        ],
+        "time_to_first_reply_count": [
+          11
+        ],
+        "resolve_time_business_hours": [
+          512.2519575
+        ],
+        "resolve_time_business_hours_count": [
+          52
+        ],
+        "response_time_business_hours": [
+          124.57252500000001
+        ],
+        "response_time_business_hours_count": [
+          13
+        ],
+        "time_to_first_reply_business_hours": [
+          123.35437388888889
+        ],
+        "time_to_first_reply_business_hours_count": [
+          11
+        ],
+        "handle_time": [
+          0.37841444444444444
+        ],
+        "handle_time_count": [
+          23
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Emma Blum",
+        "id": "user_DsjsFsqM"
+      },
+      {
+        "user_id": "user_wbPmzrzN",
+        "actioned_emails": [
+          14
+        ],
+        "resolved": [
+          14
+        ],
+        "new_tickets": [
+          46
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          13
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          12
+        ],
+        "replies_to_resolve_count": [
+          11
+        ],
+        "resolve_time": [
+          35.41978527777778
+        ],
+        "resolve_time_count": [
+          14
+        ],
+        "response_time": [
+          7.905087777777777
+        ],
+        "response_time_count": [
+          2
+        ],
+        "time_to_first_reply": [
+          0.5653247222222223
+        ],
+        "time_to_first_reply_count": [
+          1
+        ],
+        "resolve_time_business_hours": [
+          27.419785277777777
+        ],
+        "resolve_time_business_hours_count": [
+          14
+        ],
+        "response_time_business_hours": [
+          7.905087777777777
+        ],
+        "response_time_business_hours_count": [
+          2
+        ],
+        "time_to_first_reply_business_hours": [
+          0.5653247222222223
+        ],
+        "time_to_first_reply_business_hours_count": [
+          1
+        ],
+        "handle_time": [
+          0.09249805555555556
+        ],
+        "handle_time_count": [
+          4
+        ],
+        "sla_breaches": [
+          1
+        ],
+        "name": "Priya Novak",
+        "id": "user_wbPmzrzN"
+      },
+      {
+        "user_id": "user_1ArKlBkU",
+        "actioned_emails": [
+          61
+        ],
+        "resolved": [
+          65
+        ],
+        "new_tickets": [
+          36
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          38
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          39
+        ],
+        "replies_to_resolve_count": [
+          37
+        ],
+        "resolve_time": [
+          1515.1681794444446
+        ],
+        "resolve_time_count": [
+          65
+        ],
+        "response_time": [
+          28.519891944444446
+        ],
+        "response_time_count": [
+          27
+        ],
+        "time_to_first_reply": [
+          27.72013777777778
+        ],
+        "time_to_first_reply_count": [
+          25
+        ],
+        "resolve_time_business_hours": [
+          995.1681794444445
+        ],
+        "resolve_time_business_hours_count": [
+          65
+        ],
+        "response_time_business_hours": [
+          20.519891944444446
+        ],
+        "response_time_business_hours_count": [
+          27
+        ],
+        "time_to_first_reply_business_hours": [
+          19.72013777777778
+        ],
+        "time_to_first_reply_business_hours_count": [
+          25
+        ],
+        "handle_time": [
+          0.5519230555555555
+        ],
+        "handle_time_count": [
+          29
+        ],
+        "sla_breaches": [
+          41
+        ],
+        "name": "Rosa Fisher",
+        "id": "user_1ArKlBkU"
+      },
+      {
+        "user_id": "user_ZNwcKwBu",
+        "actioned_emails": [
+          91
+        ],
+        "resolved": [
+          78
+        ],
+        "new_tickets": [
+          17
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          70
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          63
+        ],
+        "replies_to_resolve_count": [
+          59
+        ],
+        "resolve_time": [
+          252.30119444444446
+        ],
+        "resolve_time_count": [
+          78
+        ],
+        "response_time": [
+          53.16684194444444
+        ],
+        "response_time_count": [
+          64
+        ],
+        "time_to_first_reply": [
+          45.69562333333334
+        ],
+        "time_to_first_reply_count": [
+          55
+        ],
+        "resolve_time_business_hours": [
+          188.30119444444446
+        ],
+        "resolve_time_business_hours_count": [
+          78
+        ],
+        "response_time_business_hours": [
+          53.16684194444444
+        ],
+        "response_time_business_hours_count": [
+          64
+        ],
+        "time_to_first_reply_business_hours": [
+          45.69562333333334
+        ],
+        "time_to_first_reply_business_hours_count": [
+          55
+        ],
+        "handle_time": [
+          1.0778916666666667
+        ],
+        "handle_time_count": [
+          66
+        ],
+        "sla_breaches": [
+          61
+        ],
+        "name": "Bo Petrov",
+        "id": "user_ZNwcKwBu"
+      },
+      {
+        "user_id": "user_p1vrutmr",
+        "actioned_emails": [
+          16
+        ],
+        "resolved": [
+          16
+        ],
+        "new_tickets": [
+          18
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          10
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          11
+        ],
+        "replies_to_resolve_count": [
+          11
+        ],
+        "resolve_time": [
+          54.40815833333333
+        ],
+        "resolve_time_count": [
+          16
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          54.40815833333333
+        ],
+        "resolve_time_business_hours_count": [
+          16
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Omar Farah",
+        "id": "user_p1vrutmr"
+      },
+      {
+        "user_id": "user_qx8xd34p",
+        "actioned_emails": [
+          11
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          145
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          12
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          480.23212972222217
+        ],
+        "response_time_count": [
+          11
+        ],
+        "time_to_first_reply": [
+          460.42490749999996
+        ],
+        "time_to_first_reply_count": [
+          8
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          304.23212972222217
+        ],
+        "response_time_business_hours_count": [
+          11
+        ],
+        "time_to_first_reply_business_hours": [
+          292.42490749999996
+        ],
+        "time_to_first_reply_business_hours_count": [
+          8
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Noah Maric",
+        "id": "user_qx8xd34p"
+      },
+      {
+        "user_id": "user_6jcvJLr9",
+        "actioned_emails": [
+          48
+        ],
+        "resolved": [
+          44
+        ],
+        "new_tickets": [
+          10
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          37
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          30
+        ],
+        "replies_to_resolve_count": [
+          30
+        ],
+        "resolve_time": [
+          264.84964527777777
+        ],
+        "resolve_time_count": [
+          44
+        ],
+        "response_time": [
+          24.908488055555555
+        ],
+        "response_time_count": [
+          27
+        ],
+        "time_to_first_reply": [
+          17.59055
+        ],
+        "time_to_first_reply_count": [
+          22
+        ],
+        "resolve_time_business_hours": [
+          184.84964527777777
+        ],
+        "resolve_time_business_hours_count": [
+          44
+        ],
+        "response_time_business_hours": [
+          24.908488055555555
+        ],
+        "response_time_business_hours_count": [
+          27
+        ],
+        "time_to_first_reply_business_hours": [
+          17.59055
+        ],
+        "time_to_first_reply_business_hours_count": [
+          22
+        ],
+        "handle_time": [
+          0.5327388888888889
+        ],
+        "handle_time_count": [
+          27
+        ],
+        "sla_breaches": [
+          46
+        ],
+        "name": "Nina Adler",
+        "id": "user_6jcvJLr9"
+      },
+      {
+        "user_id": "user_uschAZ1c",
+        "actioned_emails": [
+          95
+        ],
+        "resolved": [
+          85
+        ],
+        "new_tickets": [
+          65
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          57
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          61
+        ],
+        "replies_to_resolve_count": [
+          56
+        ],
+        "resolve_time": [
+          536.0856141666667
+        ],
+        "resolve_time_count": [
+          85
+        ],
+        "response_time": [
+          1274.0115230555555
+        ],
+        "response_time_count": [
+          44
+        ],
+        "time_to_first_reply": [
+          1266.9207722222222
+        ],
+        "time_to_first_reply_count": [
+          41
+        ],
+        "resolve_time_business_hours": [
+          416.08561416666663
+        ],
+        "resolve_time_business_hours_count": [
+          85
+        ],
+        "response_time_business_hours": [
+          890.0115230555556
+        ],
+        "response_time_business_hours_count": [
+          44
+        ],
+        "time_to_first_reply_business_hours": [
+          882.9207722222221
+        ],
+        "time_to_first_reply_business_hours_count": [
+          41
+        ],
+        "handle_time": [
+          0.45320638888888887
+        ],
+        "handle_time_count": [
+          45
+        ],
+        "sla_breaches": [
+          76
+        ],
+        "name": "Lena Nash",
+        "id": "user_uschAZ1c"
+      },
+      {
+        "user_id": "user_VJDbSl47",
+        "actioned_emails": [
+          32
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          32
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          33
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          55.11958333333333
+        ],
+        "response_time_count": [
+          23
+        ],
+        "time_to_first_reply": [
+          33.005140833333336
+        ],
+        "time_to_first_reply_count": [
+          12
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          31.119583333333335
+        ],
+        "response_time_business_hours_count": [
+          23
+        ],
+        "time_to_first_reply_business_hours": [
+          17.005140833333332
+        ],
+        "time_to_first_reply_business_hours_count": [
+          12
+        ],
+        "handle_time": [
+          0.27501194444444443
+        ],
+        "handle_time_count": [
+          23
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Enzo Marsh",
+        "id": "user_VJDbSl47"
+      },
+      {
+        "user_id": "user_VQkiACmy",
+        "actioned_emails": [
+          7
+        ],
+        "resolved": [
+          7
+        ],
+        "new_tickets": [
+          2
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          7
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          7
+        ],
+        "replies_to_resolve_count": [
+          7
+        ],
+        "resolve_time": [
+          0.4853563888888889
+        ],
+        "resolve_time_count": [
+          7
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0.4853563888888889
+        ],
+        "resolve_time_business_hours_count": [
+          7
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Mateo Kovac",
+        "id": "user_VQkiACmy"
+      },
+      {
+        "user_id": "user_ctMDtKzC",
+        "actioned_emails": [
+          31
+        ],
+        "resolved": [
+          22
+        ],
+        "new_tickets": [
+          7
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          22
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          18
+        ],
+        "replies_to_resolve_count": [
+          18
+        ],
+        "resolve_time": [
+          62.077753888888886
+        ],
+        "resolve_time_count": [
+          22
+        ],
+        "response_time": [
+          25.11851027777778
+        ],
+        "response_time_count": [
+          19
+        ],
+        "time_to_first_reply": [
+          19.537208055555553
+        ],
+        "time_to_first_reply_count": [
+          16
+        ],
+        "resolve_time_business_hours": [
+          46.077753888888886
+        ],
+        "resolve_time_business_hours_count": [
+          22
+        ],
+        "response_time_business_hours": [
+          25.11851027777778
+        ],
+        "response_time_business_hours_count": [
+          19
+        ],
+        "time_to_first_reply_business_hours": [
+          19.537208055555553
+        ],
+        "time_to_first_reply_business_hours_count": [
+          16
+        ],
+        "handle_time": [
+          0.5855433333333334
+        ],
+        "handle_time_count": [
+          19
+        ],
+        "sla_breaches": [
+          53
+        ],
+        "name": "Dora Lowe",
+        "id": "user_ctMDtKzC"
+      },
+      {
+        "user_id": "user_6ScbuCZx",
+        "actioned_emails": [
+          16
+        ],
+        "resolved": [
+          16
+        ],
+        "new_tickets": [
+          196
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          1
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          529.2942061111111
+        ],
+        "resolve_time_count": [
+          16
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          353.2942061111111
+        ],
+        "resolve_time_business_hours_count": [
+          16
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0.22892138888888888
+        ],
+        "handle_time_count": [
+          1
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Ava Sato",
+        "id": "user_6ScbuCZx"
+      },
+      {
+        "user_id": "user_tbENLE2G",
+        "actioned_emails": [
+          8
+        ],
+        "resolved": [
+          8
+        ],
+        "new_tickets": [
+          29
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          8
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          9
+        ],
+        "replies_to_resolve_count": [
+          9
+        ],
+        "resolve_time": [
+          1.681916388888889
+        ],
+        "resolve_time_count": [
+          8
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          1.681916388888889
+        ],
+        "resolve_time_business_hours_count": [
+          8
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Elena Nash",
+        "id": "user_tbENLE2G"
+      },
+      {
+        "user_id": "user_UzMUXfVl",
+        "actioned_emails": [
+          9
+        ],
+        "resolved": [
+          9
+        ],
+        "new_tickets": [
+          11
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          3
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          2
+        ],
+        "replies_to_resolve_count": [
+          2
+        ],
+        "resolve_time": [
+          8.359069166666668
+        ],
+        "resolve_time_count": [
+          9
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          8.359069166666668
+        ],
+        "resolve_time_business_hours_count": [
+          9
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0.0003291666666666667
+        ],
+        "handle_time_count": [
+          1
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Diego Lowe",
+        "id": "user_UzMUXfVl"
+      },
+      {
+        "user_id": "user_xyBRHxd7",
+        "actioned_emails": [
+          26
+        ],
+        "resolved": [
+          18
+        ],
+        "new_tickets": [
+          42
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          15
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          8
+        ],
+        "replies_to_resolve_count": [
+          8
+        ],
+        "resolve_time": [
+          36.22770666666667
+        ],
+        "resolve_time_count": [
+          18
+        ],
+        "response_time": [
+          32.562643333333334
+        ],
+        "response_time_count": [
+          5
+        ],
+        "time_to_first_reply": [
+          9.155207500000001
+        ],
+        "time_to_first_reply_count": [
+          4
+        ],
+        "resolve_time_business_hours": [
+          36.22770666666667
+        ],
+        "resolve_time_business_hours_count": [
+          18
+        ],
+        "response_time_business_hours": [
+          24.562643333333334
+        ],
+        "response_time_business_hours_count": [
+          5
+        ],
+        "time_to_first_reply_business_hours": [
+          9.155207500000001
+        ],
+        "time_to_first_reply_business_hours_count": [
+          4
+        ],
+        "handle_time": [
+          0.03829972222222222
+        ],
+        "handle_time_count": [
+          5
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Omar Ivanov",
+        "id": "user_xyBRHxd7"
+      },
+      {
+        "user_id": "user_b0bu9l4n",
+        "actioned_emails": [
+          17
+        ],
+        "resolved": [
+          15
+        ],
+        "new_tickets": [
+          23
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          17
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          15
+        ],
+        "replies_to_resolve_count": [
+          15
+        ],
+        "resolve_time": [
+          1.4842255555555557
+        ],
+        "resolve_time_count": [
+          15
+        ],
+        "response_time": [
+          0.2963880555555556
+        ],
+        "response_time_count": [
+          2
+        ],
+        "time_to_first_reply": [
+          0.2963880555555556
+        ],
+        "time_to_first_reply_count": [
+          2
+        ],
+        "resolve_time_business_hours": [
+          1.4842255555555557
+        ],
+        "resolve_time_business_hours_count": [
+          15
+        ],
+        "response_time_business_hours": [
+          0.2963880555555556
+        ],
+        "response_time_business_hours_count": [
+          2
+        ],
+        "time_to_first_reply_business_hours": [
+          0.2963880555555556
+        ],
+        "time_to_first_reply_business_hours_count": [
+          2
+        ],
+        "handle_time": [
+          0.0036555555555555556
+        ],
+        "handle_time_count": [
+          2
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Samir Nguyen",
+        "id": "user_b0bu9l4n"
+      },
+      {
+        "user_id": "user_cGBS7JoK",
+        "actioned_emails": [
+          49
+        ],
+        "resolved": [
+          48
+        ],
+        "new_tickets": [
+          10
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          38
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          34
+        ],
+        "replies_to_resolve_count": [
+          34
+        ],
+        "resolve_time": [
+          214.31924361111112
+        ],
+        "resolve_time_count": [
+          48
+        ],
+        "response_time": [
+          73.7262575
+        ],
+        "response_time_count": [
+          32
+        ],
+        "time_to_first_reply": [
+          63.55570166666667
+        ],
+        "time_to_first_reply_count": [
+          30
+        ],
+        "resolve_time_business_hours": [
+          133.79035472222222
+        ],
+        "resolve_time_business_hours_count": [
+          48
+        ],
+        "response_time_business_hours": [
+          34.22764638888889
+        ],
+        "response_time_business_hours_count": [
+          32
+        ],
+        "time_to_first_reply_business_hours": [
+          32.057090555555554
+        ],
+        "time_to_first_reply_business_hours_count": [
+          30
+        ],
+        "handle_time": [
+          0.34150861111111114
+        ],
+        "handle_time_count": [
+          32
+        ],
+        "sla_breaches": [
+          42
+        ],
+        "name": "Leo Ivanov",
+        "id": "user_cGBS7JoK"
+      },
+      {
+        "user_id": "user_xiPvoRxU",
+        "actioned_emails": [
+          21
+        ],
+        "resolved": [
+          12
+        ],
+        "new_tickets": [
+          47
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          10
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          1
+        ],
+        "replies_to_resolve_count": [
+          1
+        ],
+        "resolve_time": [
+          14.680303888888888
+        ],
+        "resolve_time_count": [
+          12
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          12
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Mira Suarez",
+        "id": "user_xiPvoRxU"
+      },
+      {
+        "user_id": "user_CVD31ZTB",
+        "actioned_emails": [
+          1
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          3
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          1
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Elena Nguyen",
+        "id": "user_CVD31ZTB"
+      },
+      {
+        "user_id": "user_9LqfmDdS",
+        "actioned_emails": [
+          4
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          28
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          7
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          55.760286388888886
+        ],
+        "response_time_count": [
+          5
+        ],
+        "time_to_first_reply": [
+          0.5925
+        ],
+        "time_to_first_reply_count": [
+          1
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          39.760286388888886
+        ],
+        "response_time_business_hours_count": [
+          5
+        ],
+        "time_to_first_reply_business_hours": [
+          0.5925
+        ],
+        "time_to_first_reply_business_hours_count": [
+          1
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Samir Bauer",
+        "id": "user_9LqfmDdS"
+      },
+      {
+        "user_id": "user_AvFCLBBh",
+        "actioned_emails": [
+          1
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          2
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          1
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          335.33378611111107
+        ],
+        "response_time_count": [
+          1
+        ],
+        "time_to_first_reply": [
+          335.33378611111107
+        ],
+        "time_to_first_reply_count": [
+          1
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          223.33378611111112
+        ],
+        "response_time_business_hours_count": [
+          1
+        ],
+        "time_to_first_reply_business_hours": [
+          223.33378611111112
+        ],
+        "time_to_first_reply_business_hours_count": [
+          1
+        ],
+        "handle_time": [
+          0.16103638888888888
+        ],
+        "handle_time_count": [
+          1
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Omar Petrov",
+        "id": "user_AvFCLBBh"
+      },
+      {
+        "user_id": "user_9UyU8aZA",
+        "actioned_emails": [
+          10
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          23
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          15
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          48.27191611111111
+        ],
+        "response_time_count": [
+          3
+        ],
+        "time_to_first_reply": [
+          26.724508611111112
+        ],
+        "time_to_first_reply_count": [
+          1
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          32.27191611111111
+        ],
+        "response_time_business_hours_count": [
+          3
+        ],
+        "time_to_first_reply_business_hours": [
+          18.724508611111112
+        ],
+        "time_to_first_reply_business_hours_count": [
+          1
+        ],
+        "handle_time": [
+          0.32358027777777776
+        ],
+        "handle_time_count": [
+          3
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Bruno Weiss",
+        "id": "user_9UyU8aZA"
+      },
+      {
+        "user_id": "user_A3tXO1tX",
+        "actioned_emails": [
+          5
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          24
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          3
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          95.277345
+        ],
+        "response_time_count": [
+          2
+        ],
+        "time_to_first_reply": [
+          16.097546666666666
+        ],
+        "time_to_first_reply_count": [
+          1
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          63.277345000000004
+        ],
+        "response_time_business_hours_count": [
+          2
+        ],
+        "time_to_first_reply_business_hours": [
+          8.097546666666666
+        ],
+        "time_to_first_reply_business_hours_count": [
+          1
+        ],
+        "handle_time": [
+          0.09612861111111111
+        ],
+        "handle_time_count": [
+          2
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Gita Reyes",
+        "id": "user_A3tXO1tX"
+      },
+      {
+        "user_id": "user_pZsI6SIv",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          0
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Rhea Perez",
+        "id": "user_pZsI6SIv"
+      },
+      {
+        "user_id": "user_gLojhdOz",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          0
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Ivan Petrov",
+        "id": "user_gLojhdOz"
+      },
+      {
+        "user_id": "user_GjGKR6VR",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          2
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Felix Torres",
+        "id": "user_GjGKR6VR"
+      },
+      {
+        "user_id": "user_fEgWmFPV",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          2
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Emma Khan",
+        "id": "user_fEgWmFPV"
+      },
+      {
+        "user_id": "user_rHlGwTI5",
+        "actioned_emails": [
+          18
+        ],
+        "resolved": [
+          2
+        ],
+        "new_tickets": [
+          6
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          16
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          1
+        ],
+        "replies_to_resolve_count": [
+          1
+        ],
+        "resolve_time": [
+          48.766173611111114
+        ],
+        "resolve_time_count": [
+          2
+        ],
+        "response_time": [
+          524.2313769444444
+        ],
+        "response_time_count": [
+          14
+        ],
+        "time_to_first_reply": [
+          524.2313769444444
+        ],
+        "time_to_first_reply_count": [
+          14
+        ],
+        "resolve_time_business_hours": [
+          32.766173611111114
+        ],
+        "resolve_time_business_hours_count": [
+          2
+        ],
+        "response_time_business_hours": [
+          332.23137694444443
+        ],
+        "response_time_business_hours_count": [
+          14
+        ],
+        "time_to_first_reply_business_hours": [
+          332.23137694444443
+        ],
+        "time_to_first_reply_business_hours_count": [
+          14
+        ],
+        "handle_time": [
+          0.14163555555555554
+        ],
+        "handle_time_count": [
+          9
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Noor Adler",
+        "id": "user_rHlGwTI5"
+      },
+      {
+        "user_id": "user_pUQyDdKs",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          0
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          2
+        ],
+        "replies_to_resolve_count": [
+          1
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Sana Holt",
+        "id": "user_pUQyDdKs"
+      },
+      {
+        "user_id": "user_MsMCIa6u",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          0
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Vendors",
+        "id": "user_MsMCIa6u"
+      },
+      {
+        "user_id": "user_vd4V8VuH",
+        "actioned_emails": [
+          6
+        ],
+        "resolved": [
+          6
+        ],
+        "new_tickets": [
+          13
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          6
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          6
+        ],
+        "replies_to_resolve_count": [
+          6
+        ],
+        "resolve_time": [
+          0.3218519444444444
+        ],
+        "resolve_time_count": [
+          6
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0.3218519444444444
+        ],
+        "resolve_time_business_hours_count": [
+          6
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Priya Ramos",
+        "id": "user_vd4V8VuH"
+      },
+      {
+        "user_id": "user_OZFex8Df",
+        "actioned_emails": [
+          2
+        ],
+        "resolved": [
+          2
+        ],
+        "new_tickets": [
+          10
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          2
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          3
+        ],
+        "replies_to_resolve_count": [
+          3
+        ],
+        "resolve_time": [
+          0.5126205555555555
+        ],
+        "resolve_time_count": [
+          2
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0.5126205555555555
+        ],
+        "resolve_time_business_hours_count": [
+          2
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Omar Haddad",
+        "id": "user_OZFex8Df"
+      },
+      {
+        "user_id": "user_9qQiNZTt",
+        "actioned_emails": [
+          14
+        ],
+        "resolved": [
+          14
+        ],
+        "new_tickets": [
+          1
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          14
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          15
+        ],
+        "replies_to_resolve_count": [
+          15
+        ],
+        "resolve_time": [
+          0.6005394444444444
+        ],
+        "resolve_time_count": [
+          14
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0.6005394444444444
+        ],
+        "resolve_time_business_hours_count": [
+          14
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Leo Khan",
+        "id": "user_9qQiNZTt"
+      },
+      {
+        "user_id": "user_1mJHHjnG",
+        "actioned_emails": [
+          16
+        ],
+        "resolved": [
+          13
+        ],
+        "new_tickets": [
+          57
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          13
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          11
+        ],
+        "replies_to_resolve_count": [
+          11
+        ],
+        "resolve_time": [
+          3.611251944444444
+        ],
+        "resolve_time_count": [
+          13
+        ],
+        "response_time": [
+          0.2960227777777778
+        ],
+        "response_time_count": [
+          1
+        ],
+        "time_to_first_reply": [
+          0.2960227777777778
+        ],
+        "time_to_first_reply_count": [
+          1
+        ],
+        "resolve_time_business_hours": [
+          3.611251944444444
+        ],
+        "resolve_time_business_hours_count": [
+          13
+        ],
+        "response_time_business_hours": [
+          0.2960227777777778
+        ],
+        "response_time_business_hours_count": [
+          1
+        ],
+        "time_to_first_reply_business_hours": [
+          0.2960227777777778
+        ],
+        "time_to_first_reply_business_hours_count": [
+          1
+        ],
+        "handle_time": [
+          0.006929722222222222
+        ],
+        "handle_time_count": [
+          1
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Kai Rivera",
+        "id": "user_1mJHHjnG"
+      },
+      {
+        "user_id": "user_CGlM0zon",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          4
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Accounting",
+        "id": "user_CGlM0zon"
+      },
+      {
+        "user_id": "user_H4fxIPjs",
+        "actioned_emails": [
+          7
+        ],
+        "resolved": [
+          9
+        ],
+        "new_tickets": [
+          4
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          9
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          12
+        ],
+        "replies_to_resolve_count": [
+          10
+        ],
+        "resolve_time": [
+          1.240641111111111
+        ],
+        "resolve_time_count": [
+          9
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          1.240641111111111
+        ],
+        "resolve_time_business_hours_count": [
+          9
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0.04353027777777778
+        ],
+        "handle_time_count": [
+          2
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Enzo Nguyen",
+        "id": "user_H4fxIPjs"
+      },
+      {
+        "user_id": "user_MN5r0t2N",
+        "actioned_emails": [
+          1
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          29
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          1
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Liam Roy",
+        "id": "user_MN5r0t2N"
+      },
+      {
+        "user_id": "user_B9IqwKwD",
+        "actioned_emails": [
+          14
+        ],
+        "resolved": [
+          10
+        ],
+        "new_tickets": [
+          35
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          12
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          10
+        ],
+        "replies_to_resolve_count": [
+          10
+        ],
+        "resolve_time": [
+          2.7966913888888887
+        ],
+        "resolve_time_count": [
+          10
+        ],
+        "response_time": [
+          0.5261333333333333
+        ],
+        "response_time_count": [
+          1
+        ],
+        "time_to_first_reply": [
+          0.5261333333333333
+        ],
+        "time_to_first_reply_count": [
+          1
+        ],
+        "resolve_time_business_hours": [
+          2.7966913888888887
+        ],
+        "resolve_time_business_hours_count": [
+          10
+        ],
+        "response_time_business_hours": [
+          0.5261333333333333
+        ],
+        "response_time_business_hours_count": [
+          1
+        ],
+        "time_to_first_reply_business_hours": [
+          0.5261333333333333
+        ],
+        "time_to_first_reply_business_hours_count": [
+          1
+        ],
+        "handle_time": [
+          0.000575
+        ],
+        "handle_time_count": [
+          1
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Enzo Weiss",
+        "id": "user_B9IqwKwD"
+      },
+      {
+        "user_id": "user_HTdx53dX",
+        "actioned_emails": [
+          50
+        ],
+        "resolved": [
+          41
+        ],
+        "new_tickets": [
+          57
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          21
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          12
+        ],
+        "replies_to_resolve_count": [
+          12
+        ],
+        "resolve_time": [
+          101.50525277777777
+        ],
+        "resolve_time_count": [
+          41
+        ],
+        "response_time": [
+          23.671345833333334
+        ],
+        "response_time_count": [
+          7
+        ],
+        "time_to_first_reply": [
+          23.671345833333334
+        ],
+        "time_to_first_reply_count": [
+          7
+        ],
+        "resolve_time_business_hours": [
+          101.50525277777777
+        ],
+        "resolve_time_business_hours_count": [
+          41
+        ],
+        "response_time_business_hours": [
+          23.671345833333334
+        ],
+        "response_time_business_hours_count": [
+          7
+        ],
+        "time_to_first_reply_business_hours": [
+          23.671345833333334
+        ],
+        "time_to_first_reply_business_hours_count": [
+          7
+        ],
+        "handle_time": [
+          0.038989722222222224
+        ],
+        "handle_time_count": [
+          8
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Milan Roy",
+        "id": "user_HTdx53dX"
+      },
+      {
+        "user_id": "user_7gYVTzEI",
+        "actioned_emails": [
+          13
+        ],
+        "resolved": [
+          9
+        ],
+        "new_tickets": [
+          26
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          4
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          484.95443
+        ],
+        "resolve_time_count": [
+          9
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          324.95443
+        ],
+        "resolve_time_business_hours_count": [
+          9
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Noor Vega",
+        "id": "user_7gYVTzEI"
+      },
+      {
+        "user_id": "user_ubRRJ4pv",
+        "actioned_emails": [
+          2
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          6
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          2
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          14.404166666666667
+        ],
+        "response_time_count": [
+          1
+        ],
+        "time_to_first_reply": [
+          14.404166666666667
+        ],
+        "time_to_first_reply_count": [
+          1
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          7.853055555555556
+        ],
+        "response_time_business_hours_count": [
+          1
+        ],
+        "time_to_first_reply_business_hours": [
+          7.853055555555556
+        ],
+        "time_to_first_reply_business_hours_count": [
+          1
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Rhea Blum",
+        "id": "user_ubRRJ4pv"
+      },
+      {
+        "user_id": "user_69kipcJg",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          0
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Customer Care",
+        "id": "user_69kipcJg"
+      },
+      {
+        "user_id": "user_ky51DgGD",
+        "actioned_emails": [
+          3
+        ],
+        "resolved": [
+          1
+        ],
+        "new_tickets": [
+          8
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          3
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          1
+        ],
+        "replies_to_resolve_count": [
+          1
+        ],
+        "resolve_time": [
+          0.08685361111111112
+        ],
+        "resolve_time_count": [
+          1
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0.08685361111111112
+        ],
+        "resolve_time_business_hours_count": [
+          1
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0.012939722222222222
+        ],
+        "handle_time_count": [
+          1
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Ines Popa",
+        "id": "user_ky51DgGD"
+      },
+      {
+        "user_id": "user_2Hef1X03",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          441
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Quality",
+        "id": "user_2Hef1X03"
+      },
+      {
+        "user_id": "user_HcvsKijC",
+        "actioned_emails": [
+          35
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          40
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          31
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          80.51736972222223
+        ],
+        "response_time_count": [
+          13
+        ],
+        "time_to_first_reply": [
+          13.1411275
+        ],
+        "time_to_first_reply_count": [
+          2
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          32.51736972222222
+        ],
+        "response_time_business_hours_count": [
+          13
+        ],
+        "time_to_first_reply_business_hours": [
+          5.1411275000000005
+        ],
+        "time_to_first_reply_business_hours_count": [
+          2
+        ],
+        "handle_time": [
+          0.12652416666666666
+        ],
+        "handle_time_count": [
+          19
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Noah Haddad",
+        "id": "user_HcvsKijC"
+      },
+      {
+        "user_id": "user_UstteaC5",
+        "actioned_emails": [
+          26
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          26
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          42
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          193.48536527777776
+        ],
+        "response_time_count": [
+          34
+        ],
+        "time_to_first_reply": [
+          78.87699166666667
+        ],
+        "time_to_first_reply_count": [
+          10
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          93.21203194444445
+        ],
+        "response_time_business_hours_count": [
+          34
+        ],
+        "time_to_first_reply_business_hours": [
+          32.30921388888889
+        ],
+        "time_to_first_reply_business_hours_count": [
+          10
+        ],
+        "handle_time": [
+          0.3452619444444444
+        ],
+        "handle_time_count": [
+          41
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Diego Ortiz",
+        "id": "user_UstteaC5"
+      },
+      {
+        "user_id": "user_rqWCsbcr",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          0
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Notifications",
+        "id": "user_rqWCsbcr"
+      },
+      {
+        "user_id": "user_hHnhiiuF",
+        "actioned_emails": [
+          1
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          5
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          1
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Omar Nguyen",
+        "id": "user_hHnhiiuF"
+      },
+      {
+        "user_id": "user_iuA0lB3W",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          0
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Otto Ramos",
+        "id": "user_iuA0lB3W"
+      },
+      {
+        "user_id": "user_3BzY22s8",
+        "actioned_emails": [
+          5
+        ],
+        "resolved": [
+          4
+        ],
+        "new_tickets": [
+          11
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          5
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          4
+        ],
+        "replies_to_resolve_count": [
+          4
+        ],
+        "resolve_time": [
+          0.42838
+        ],
+        "resolve_time_count": [
+          4
+        ],
+        "response_time": [
+          0.025218611111111112
+        ],
+        "response_time_count": [
+          1
+        ],
+        "time_to_first_reply": [
+          0.025218611111111112
+        ],
+        "time_to_first_reply_count": [
+          1
+        ],
+        "resolve_time_business_hours": [
+          0.42838
+        ],
+        "resolve_time_business_hours_count": [
+          4
+        ],
+        "response_time_business_hours": [
+          0.025218611111111112
+        ],
+        "response_time_business_hours_count": [
+          1
+        ],
+        "time_to_first_reply_business_hours": [
+          0.025218611111111112
+        ],
+        "time_to_first_reply_business_hours_count": [
+          1
+        ],
+        "handle_time": [
+          0.0006655555555555555
+        ],
+        "handle_time_count": [
+          1
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Kai Jensen",
+        "id": "user_3BzY22s8"
+      },
+      {
+        "user_id": "user_XQeSeCbY",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          1
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Sofia Ilic",
+        "id": "user_XQeSeCbY"
+      },
+      {
+        "user_id": "user_JI8l5WOs",
+        "actioned_emails": [
+          15
+        ],
+        "resolved": [
+          16
+        ],
+        "new_tickets": [
+          6
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          14
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          17
+        ],
+        "replies_to_resolve_count": [
+          15
+        ],
+        "resolve_time": [
+          26.662405555555555
+        ],
+        "resolve_time_count": [
+          16
+        ],
+        "response_time": [
+          5.9608475
+        ],
+        "response_time_count": [
+          4
+        ],
+        "time_to_first_reply": [
+          5.9608475
+        ],
+        "time_to_first_reply_count": [
+          4
+        ],
+        "resolve_time_business_hours": [
+          18.662405555555555
+        ],
+        "resolve_time_business_hours_count": [
+          16
+        ],
+        "response_time_business_hours": [
+          5.9608475
+        ],
+        "response_time_business_hours_count": [
+          4
+        ],
+        "time_to_first_reply_business_hours": [
+          5.9608475
+        ],
+        "time_to_first_reply_business_hours_count": [
+          4
+        ],
+        "handle_time": [
+          0.2742686111111111
+        ],
+        "handle_time_count": [
+          6
+        ],
+        "sla_breaches": [
+          2
+        ],
+        "name": "Priya Vega",
+        "id": "user_JI8l5WOs"
+      },
+      {
+        "user_id": "user_oTpgLV2u",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          14
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Liam Suarez",
+        "id": "user_oTpgLV2u"
+      },
+      {
+        "user_id": "user_aIkMfudB",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          0
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Iker Farah",
+        "id": "user_aIkMfudB"
+      },
+      {
+        "user_id": "user_hFJGTmm3",
+        "actioned_emails": [
+          6
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          14
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          5
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Aisha Rivera",
+        "id": "user_hFJGTmm3"
+      },
+      {
+        "user_id": "user_8wbGfBgp",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          0
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Marco Reyes",
+        "id": "user_8wbGfBgp"
+      },
+      {
+        "user_id": "user_x90ObH7K",
+        "actioned_emails": [
+          52
+        ],
+        "resolved": [
+          64
+        ],
+        "new_tickets": [
+          19
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          47
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          45
+        ],
+        "replies_to_resolve_count": [
+          44
+        ],
+        "resolve_time": [
+          480.10898555555553
+        ],
+        "resolve_time_count": [
+          64
+        ],
+        "response_time": [
+          39.56709166666667
+        ],
+        "response_time_count": [
+          40
+        ],
+        "time_to_first_reply": [
+          37.60668305555556
+        ],
+        "time_to_first_reply_count": [
+          38
+        ],
+        "resolve_time_business_hours": [
+          336.10898555555553
+        ],
+        "resolve_time_business_hours_count": [
+          64
+        ],
+        "response_time_business_hours": [
+          39.56709166666667
+        ],
+        "response_time_business_hours_count": [
+          40
+        ],
+        "time_to_first_reply_business_hours": [
+          37.60668305555556
+        ],
+        "time_to_first_reply_business_hours_count": [
+          38
+        ],
+        "handle_time": [
+          0.5869352777777778
+        ],
+        "handle_time_count": [
+          42
+        ],
+        "sla_breaches": [
+          61
+        ],
+        "name": "Diego Ramos",
+        "id": "user_x90ObH7K"
+      },
+      {
+        "user_id": "user_z3IYBA7l",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          0
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Sana Ortiz",
+        "id": "user_z3IYBA7l"
+      },
+      {
+        "user_id": "user_L92FWOlu",
+        "actioned_emails": [
+          15
+        ],
+        "resolved": [
+          20
+        ],
+        "new_tickets": [
+          12
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          14
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          19
+        ],
+        "replies_to_resolve_count": [
+          17
+        ],
+        "resolve_time": [
+          54.39402916666667
+        ],
+        "resolve_time_count": [
+          20
+        ],
+        "response_time": [
+          26.51130388888889
+        ],
+        "response_time_count": [
+          3
+        ],
+        "time_to_first_reply": [
+          26.51130388888889
+        ],
+        "time_to_first_reply_count": [
+          3
+        ],
+        "resolve_time_business_hours": [
+          38.39402916666667
+        ],
+        "resolve_time_business_hours_count": [
+          20
+        ],
+        "response_time_business_hours": [
+          18.51130388888889
+        ],
+        "response_time_business_hours_count": [
+          3
+        ],
+        "time_to_first_reply_business_hours": [
+          18.51130388888889
+        ],
+        "time_to_first_reply_business_hours_count": [
+          3
+        ],
+        "handle_time": [
+          0.15535305555555554
+        ],
+        "handle_time_count": [
+          5
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Theo Mancia",
+        "id": "user_L92FWOlu"
+      },
+      {
+        "user_id": "user_KIRGx8BK",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          0
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Dora Moreno",
+        "id": "user_KIRGx8BK"
+      },
+      {
+        "user_id": "user_y3xfq9gF",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          0
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Ava Holt",
+        "id": "user_y3xfq9gF"
+      },
+      {
+        "user_id": "user_mXGDTEb7",
+        "actioned_emails": [
+          3
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          6
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          4
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          202.4027047222222
+        ],
+        "response_time_count": [
+          2
+        ],
+        "time_to_first_reply": [
+          202.4027047222222
+        ],
+        "time_to_first_reply_count": [
+          2
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          138.40270472222224
+        ],
+        "response_time_business_hours_count": [
+          2
+        ],
+        "time_to_first_reply_business_hours": [
+          138.40270472222224
+        ],
+        "time_to_first_reply_business_hours_count": [
+          2
+        ],
+        "handle_time": [
+          0.09944416666666667
+        ],
+        "handle_time_count": [
+          3
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Hana Bauer",
+        "id": "user_mXGDTEb7"
+      },
+      {
+        "user_id": "user_uScwosQZ",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          16
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Maya Ivanov",
+        "id": "user_uScwosQZ"
+      },
+      {
+        "user_id": "user_fUtkrWQr",
+        "actioned_emails": [
+          1
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          4
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          1
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Freya Kovac",
+        "id": "user_fUtkrWQr"
+      },
+      {
+        "user_id": "user_fv4RaIOp",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          1
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Receivables",
+        "id": "user_fv4RaIOp"
+      },
+      {
+        "user_id": "user_Dsxqecui",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          0
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Payables",
+        "id": "user_Dsxqecui"
+      },
+      {
+        "user_id": "user_bzpFxx3t",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          23
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Emma Ilic",
+        "id": "user_bzpFxx3t"
+      },
+      {
+        "user_id": "user_FVHJKaZB",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          385
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Ivan Marsh",
+        "id": "user_FVHJKaZB"
+      },
+      {
+        "user_id": "user_P10lxQLr",
+        "actioned_emails": [
+          1
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          12
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          1
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          506.44666666666666
+        ],
+        "response_time_count": [
+          1
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          338.44666666666666
+        ],
+        "response_time_business_hours_count": [
+          1
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Leo Blum",
+        "id": "user_P10lxQLr"
+      },
+      {
+        "user_id": "user_pugOBlNX",
+        "actioned_emails": [
+          1
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          4
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          1
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Emma Costa",
+        "id": "user_pugOBlNX"
+      },
+      {
+        "user_id": "user_ahvfshQM",
+        "actioned_emails": [
+          3
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          62
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          3
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          45.559606388888895
+        ],
+        "response_time_count": [
+          2
+        ],
+        "time_to_first_reply": [
+          45.559606388888895
+        ],
+        "time_to_first_reply_count": [
+          2
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          29.559606388888888
+        ],
+        "response_time_business_hours_count": [
+          2
+        ],
+        "time_to_first_reply_business_hours": [
+          29.559606388888888
+        ],
+        "time_to_first_reply_business_hours_count": [
+          2
+        ],
+        "handle_time": [
+          0.07084777777777777
+        ],
+        "handle_time_count": [
+          2
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Zoe Petrov",
+        "id": "user_ahvfshQM"
+      },
+      {
+        "user_id": "user_yhsC0ANv",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          1
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Escalations",
+        "id": "user_yhsC0ANv"
+      },
+      {
+        "user_id": "user_zpHtNvbr",
+        "actioned_emails": [
+          24
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          0
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          23
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          14631.821620555555
+        ],
+        "response_time_count": [
+          23
+        ],
+        "time_to_first_reply": [
+          12737.528576666668
+        ],
+        "time_to_first_reply_count": [
+          20
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          9745.345509444443
+        ],
+        "response_time_business_hours_count": [
+          23
+        ],
+        "time_to_first_reply_business_hours": [
+          8483.052465555555
+        ],
+        "time_to_first_reply_business_hours_count": [
+          20
+        ],
+        "handle_time": [
+          0.4599591666666667
+        ],
+        "handle_time_count": [
+          23
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Rosa Petrov",
+        "id": "user_zpHtNvbr"
+      },
+      {
+        "user_id": "user_hWjPG6Yn",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          0
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Ivan Silva",
+        "id": "user_hWjPG6Yn"
+      },
+      {
+        "user_id": "user_oifDeSwL",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          0
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Nina Suarez",
+        "id": "user_oifDeSwL"
+      },
+      {
+        "user_id": "user_m5YmyJLV",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          0
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Rhea Nguyen",
+        "id": "user_m5YmyJLV"
+      },
+      {
+        "user_id": "user_t7q5WqcE",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          6
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Travel",
+        "id": "user_t7q5WqcE"
+      },
+      {
+        "user_id": "user_BC5p0YXB",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          28
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Vera Silva",
+        "id": "user_BC5p0YXB"
+      },
+      {
+        "user_id": "user_Uwcrol80",
+        "actioned_emails": [
+          9
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          144
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          12
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          237.19854416666666
+        ],
+        "response_time_count": [
+          8
+        ],
+        "time_to_first_reply": [
+          41.385975277777774
+        ],
+        "time_to_first_reply_count": [
+          5
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          157.19854416666666
+        ],
+        "response_time_business_hours_count": [
+          8
+        ],
+        "time_to_first_reply_business_hours": [
+          25.385975277777778
+        ],
+        "time_to_first_reply_business_hours_count": [
+          5
+        ],
+        "handle_time": [
+          0.09057611111111112
+        ],
+        "handle_time_count": [
+          7
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Bruno Jensen",
+        "id": "user_Uwcrol80"
+      },
+      {
+        "user_id": "user_Zz3YWR0q",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          180
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Onboarding",
+        "id": "user_Zz3YWR0q"
+      },
+      {
+        "user_id": "user_lS4ERvLO",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          42
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Talia Farah",
+        "id": "user_lS4ERvLO"
+      },
+      {
+        "user_id": "user_57NcevDe",
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          30
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          0
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Talia Adler",
+        "id": "user_57NcevDe"
+      },
+      {
+        "user_id": "user_hBlkdfdI",
+        "actioned_emails": [
+          1024
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          0
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          6383
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Claims",
+        "id": "user_hBlkdfdI"
+      }
+    ],
+    "mailbox": [
+      {
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          2
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          2
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Returns",
+        "id": "ACf0kWdEPNiYSou98PwFYiKQfWq9c0T",
+        "mailbox_id": "ACf0kWdEPNiYSou98PwFYiKQfWq9c0T"
+      },
+      {
+        "actioned_emails": [
+          0
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          25
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          0
+        ],
+        "new_emails": [
+          56
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          0
+        ],
+        "response_time_count": [
+          0
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          0
+        ],
+        "response_time_business_hours_count": [
+          0
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Partnerships",
+        "id": "ACqMGljMqLCOAZJ9ZYNz4oNZkF91D0T",
+        "mailbox_id": "ACqMGljMqLCOAZJ9ZYNz4oNZkF91D0T"
+      },
+      {
+        "actioned_emails": [
+          10
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          15
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          10
+        ],
+        "new_emails": [
+          12
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          144.01404166666666
+        ],
+        "response_time_count": [
+          1
+        ],
+        "time_to_first_reply": [
+          0
+        ],
+        "time_to_first_reply_count": [
+          0
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          96.01404166666666
+        ],
+        "response_time_business_hours_count": [
+          1
+        ],
+        "time_to_first_reply_business_hours": [
+          0
+        ],
+        "time_to_first_reply_business_hours_count": [
+          0
+        ],
+        "handle_time": [
+          0.06398777777777778
+        ],
+        "handle_time_count": [
+          4
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Compliance",
+        "id": "ACpw3ge04EDYzOsUMhVHgYGqpn2wq0T",
+        "mailbox_id": "ACpw3ge04EDYzOsUMhVHgYGqpn2wq0T"
+      },
+      {
+        "actioned_emails": [
+          8
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          49
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          9
+        ],
+        "new_emails": [
+          50
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          243.11792083333333
+        ],
+        "response_time_count": [
+          4
+        ],
+        "time_to_first_reply": [
+          24.1057275
+        ],
+        "time_to_first_reply_count": [
+          2
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          155.12251166666667
+        ],
+        "response_time_business_hours_count": [
+          4
+        ],
+        "time_to_first_reply_business_hours": [
+          8.110318333333334
+        ],
+        "time_to_first_reply_business_hours_count": [
+          2
+        ],
+        "handle_time": [
+          0.03994194444444445
+        ],
+        "handle_time_count": [
+          3
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Fax",
+        "id": "ACn0hYoSiro8YwtJVsN48DFDtyHyQ0T",
+        "mailbox_id": "ACn0hYoSiro8YwtJVsN48DFDtyHyQ0T"
+      },
+      {
+        "actioned_emails": [
+          18
+        ],
+        "resolved": [
+          0
+        ],
+        "new_tickets": [
+          64
+        ],
+        "open": [
+          0
+        ],
+        "replies": [
+          23
+        ],
+        "new_emails": [
+          90
+        ],
+        "replies_to_resolve": [
+          0
+        ],
+        "replies_to_resolve_count": [
+          0
+        ],
+        "resolve_time": [
+          0
+        ],
+        "resolve_time_count": [
+          0
+        ],
+        "response_time": [
+          165.66800722222223
+        ],
+        "response_time_count": [
+          12
+        ],
+        "time_to_first_reply": [
+          55.18345722222222
+        ],
+        "time_to_first_reply_count": [
+          8
+        ],
+        "resolve_time_business_hours": [
+          0
+        ],
+        "resolve_time_business_hours_count": [
+          0
+        ],
+        "response_time_business_hours": [
+          109.66800722222223
+        ],
+        "response_time_business_hours_count": [
+          12
+        ],
+        "time_to_first_reply_business_hours": [
+          39.18345722222222
+        ],
+        "time_to_first_reply_business_hours_count": [
+          8
+        ],
+        "handle_time": [
+          0
+        ],
+        "handle_time_count": [
+          0
+        ],
+        "sla_breaches": [
+          0
+        ],
+        "name": "Outbound",
+        "id": "ACSzkQ6eDUuigSwb0AFR4r7Z19wog0T",
+        "mailbox_id": "ACSzkQ6eDUuigSwb0AFR4r7Z19wog0T"
+      }
+    ],
+    "labels": [],
+    "topics": [],
+    "categories": []
+  }
+}
