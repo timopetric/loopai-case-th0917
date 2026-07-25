@@ -1,12 +1,13 @@
 """The Report Spec and Report Table (architecture.md §2, §10).
 
 `ReportSpec` is the single validated contract shared by the builder UI, the
-report route, and — in later slices — the Assistant and the URL. This module
-only carries the fields issue 04 needs: `metrics`, a date range and a single
-`group_by`. The remaining contract fields (`sort`, `columns_order`, `layout`,
-`chart_metric`, `duration_display`) belong to later slices (05–07) and are
-deliberately absent here — adding them early would let code start depending
-on fields the engine cannot yet execute.
+report route, and — in later slices — the Assistant and the URL. Issue 04
+carried `metrics`, a date range and a single `group_by`; issue 05 adds
+`duration_display`, the toggle between the per-ticket average and the period
+total for Duration Metrics. The remaining contract fields (`sort`,
+`columns_order`, `layout`, `chart_metric`) belong to later slices (06–07) and
+are deliberately absent here — adding them early would let code start
+depending on fields the engine cannot yet execute.
 
 The load-bearing constraint lives in `group_by`: it is a single
 `Literal["none", "agent", "mailbox"]`, never a list or a pair of booleans, so
@@ -60,6 +61,11 @@ class ReportSpec(BaseModel):
     date_to: date
     granularity: Literal["day", "total"] = "day"
     group_by: Literal["none", "agent", "mailbox"] = "none"
+    duration_display: Literal["avg", "total"] = "avg"
+    """Duration Metric display (CONTEXT.md, issue 05): "avg" is the per-ticket,
+    count-weighted mean `Σvalue / Σcount` ("how fast" — the default); "total"
+    is the raw period sum in hours ("how much work"). Applies only to columns
+    of `kind == "duration"`; Counters are unaffected by this field."""
 
     @model_validator(mode="after")
     def _date_range_is_ordered(self) -> "ReportSpec":
@@ -93,7 +99,18 @@ class ReportRow(BaseModel):
     bucket: str
     group_key: str | None
     group_label: str | None
-    values: dict[str, float]
+    values: dict[str, float | None]
+    """`None` marks a Duration Metric cell the engine withholds rather than
+    lies about: `duration_display == "avg"` with a zero `_count` is an
+    undefined mean, not a real zero (issue 05 fix — a zero-ticket Actor must
+    never look like the fastest resolver on the board). `duration_display ==
+    "total"` still reports a true `0.0` for the same cell — "did no work" is
+    an honest total, only the average is undefined."""
+    counts: dict[str, float] = Field(default_factory=dict)
+    """The Σcount behind each Duration Metric cell in `values` (issue 05,
+    user story 23) — only populated for `kind == "duration"` columns, since a
+    Counter has no `_count` companion (CONTEXT.md). Never itself a column;
+    the UI surfaces it as a cell tooltip, not a rendered row."""
 
 
 class ReportTable(BaseModel):
@@ -103,5 +120,12 @@ class ReportTable(BaseModel):
 
     columns: list[ColumnMeta]
     rows: list[ReportRow]
-    totals: dict[str, float]
+    totals: dict[str, float | None]
+    """`None` marks a cell the engine deliberately withholds rather than
+    lies about — currently only `actioned_emails` totalled across Actors
+    (issue 05, user story 24): it double-counts by ~52% and only across
+    Actors (api-report-fresh.md §4.5), so the total is a dash, not a number
+    and not a blank. Every other metric/grouping combination is a float."""
+    total_counts: dict[str, float] = Field(default_factory=dict)
+    """The Σcount behind each Duration Metric total, mirroring `ReportRow.counts`."""
     warnings: list[str] = Field(default_factory=list)

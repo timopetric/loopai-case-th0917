@@ -11,13 +11,14 @@ import { fetchReport } from "./lib/report";
 
 /**
  * The client's literal ask (PRD user story 3): day × Actor, populated the
- * moment the app opens, no controls touched. Metrics are Counters only —
- * this slice's engine does not yet aggregate Duration Metrics (issue 05).
- * The date range spans the whole Coverage Window; a real builder UI with
- * metric/date/group controls arrives in later slices.
+ * moment the app opens, no controls touched. `resolve_time` is included
+ * alongside the Counters so the avg/total toggle below has something to
+ * demonstrate — Duration Metrics are aggregated as of issue 05. The date
+ * range spans the whole Coverage Window; a real builder UI with metric/date/
+ * group controls arrives in later slices (issue 06).
  */
-const DEFAULT_SPEC: ReportSpec = {
-  metrics: ["resolved", "replies", "new_tickets"],
+const DEFAULT_SPEC: Omit<ReportSpec, "duration_display"> = {
+  metrics: ["resolved", "replies", "new_tickets", "resolve_time"],
   date_from: "2026-07-10",
   date_to: "2026-07-23",
   granularity: "day",
@@ -44,6 +45,15 @@ export function App() {
   const [meta, setMeta] = useState<Meta | null>(null);
   const [table, setTable] = useState<ReportTableData | null>(null);
   const [reportError, setReportError] = useState<string | null>(null);
+  /**
+   * The one Report Spec control this slice adds (issue 05, user story 14):
+   * per-ticket average ("how fast") vs period total ("how much work") for
+   * Duration Metrics. A full builder UI (this alongside metric/date/group
+   * controls, all driving one spec-in-state) is issue 06's scope; this is
+   * the minimal wiring needed to close issue 05's own acceptance criterion
+   * honestly rather than deferring it.
+   */
+  const [durationDisplay, setDurationDisplay] = useState<"avg" | "total">("avg");
 
   useEffect(() => {
     function handleUnauthorized() {
@@ -61,13 +71,17 @@ export function App() {
     fetchMeta()
       .then(setMeta)
       .catch(() => setMeta(null));
-    fetchReport(DEFAULT_SPEC)
+  }, [signedIn]);
+
+  useEffect(() => {
+    if (!signedIn) return;
+    fetchReport({ ...DEFAULT_SPEC, duration_display: durationDisplay })
       .then((result) => {
         setTable(result);
         setReportError(null);
       })
       .catch(() => setReportError("Could not load the report."));
-  }, [signedIn]);
+  }, [signedIn, durationDisplay]);
 
   if (!signedIn) {
     return <SignIn onSignedIn={() => setSignedIn(true)} />;
@@ -99,7 +113,30 @@ export function App() {
         </p>
       )}
       <p>Backend status: {status}</p>
-      <h2>Resolved, replies and new tickets — by day and Actor</h2>
+      <h2>Resolved, replies, new tickets and resolve time — by day and Actor</h2>
+      <fieldset style={{ marginBottom: "1rem", display: "inline-block" }}>
+        <legend>Duration display</legend>
+        <label style={{ marginRight: "1rem" }}>
+          <input
+            type="radio"
+            name="duration_display"
+            value="avg"
+            checked={durationDisplay === "avg"}
+            onChange={() => setDurationDisplay("avg")}
+          />
+          Per-ticket average (how fast)
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="duration_display"
+            value="total"
+            checked={durationDisplay === "total"}
+            onChange={() => setDurationDisplay("total")}
+          />
+          Period total (how much work)
+        </label>
+      </fieldset>
       {reportError && <p role="alert">{reportError}</p>}
       {table && <ReportTable table={table} />}
     </main>

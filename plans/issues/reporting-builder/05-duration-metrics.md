@@ -1,6 +1,6 @@
 # 05 — Duration Metrics and correct aggregation
 
-Status: ready-for-agent
+Status: done
 
 ## Parent
 

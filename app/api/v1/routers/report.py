@@ -24,8 +24,9 @@ async def post_report(
     try:
         return execute(spec, dataset)
     except UnsupportedMetricError as exc:
-        # Duration Metrics arrive in issue 05; this slice only aggregates
-        # Counters. A clear 422 beats a silently wrong number.
+        # `replies_to_resolve` (`kind == "sum"`) is still unsupported (issue
+        # 05 covers Counters and Duration Metrics only). A clear 422 beats a
+        # silently wrong number.
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
         ) from exc
