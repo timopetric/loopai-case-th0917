@@ -1,6 +1,6 @@
 # 02 — Auth gate end to end
 
-Status: ready-for-agent
+Status: done
 
 ## Parent
 
