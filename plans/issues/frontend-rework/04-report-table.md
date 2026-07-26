@@ -1,6 +1,6 @@
 # 04 — Report Table: readable and virtualised
 
-Status: ready-for-agent
+Status: done
 
 ## Parent
 

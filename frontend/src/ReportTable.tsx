@@ -1,6 +1,9 @@
-import type { CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-import type { ReportTable as ReportTableData, SortSpec } from "./lib/report";
+import { useVirtualizer } from "@tanstack/react-virtual";
+
+import type { ReportTable as ReportTableData, ReportRow, SortSpec } from "./lib/report";
+import { SegmentedControl } from "./ui/SegmentedControl";
 
 /**
  * The group column header must follow the selected grouping (issue 06) —
@@ -15,9 +18,71 @@ function groupColumnLabel(groupBy: "none" | "agent" | "mailbox"): string | null 
   return null;
 }
 
+const MONTHS = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
+
 /**
- * A plain table of the executed report (issue 04), extended in issue 05 for
- * Duration Metrics, and in issue 07 for the three table-presentation
+ * `"2026-07-10"` -> `"10 Jul"` — the grouping label (issue 04: "Bucket
+ * becomes a grouping, not a repeated cell"). Plain string slicing rather
+ * than `Date` parsing, matching `BuilderPane.tsx`'s `formatShortDate`: a
+ * Bucket has no time component, and round-tripping through `Date` risks a
+ * timezone-driven off-by-one (CLAUDE.md's general caution about date
+ * handling). `granularity: "total"` collapses every row onto the single
+ * `bucket === "total"` (`app/engine.py`), which reads as "Total" instead.
+ */
+function formatBucketLabel(bucket: string): string {
+  if (bucket === "total" || bucket === "pivot") return "Total";
+  const parts = bucket.split("-");
+  if (parts.length !== 3) return bucket;
+  const day = Number.parseInt(parts[2], 10);
+  const month = MONTHS[Number.parseInt(parts[1], 10) - 1];
+  if (Number.isNaN(day) || !month) return bucket;
+  return `${day} ${month}`;
+}
+
+/** A withheld Duration Metric average or `actioned_emails`-across-Actors
+ * total (issue 05/PRD's withheld-value rule): visibly distinct from a real
+ * figure (muted colour, no numeral) AND from an empty cell (a real glyph is
+ * always painted here, never nothing) — never mistakable for `0`. */
+function WithheldValue() {
+  return (
+    <span className="text-stone">
+      <span aria-hidden="true">—</span>
+      <span className="sr-only">not available</span>
+    </span>
+  );
+}
+
+type Density = "comfortable" | "compact";
+
+const DENSITY_OPTIONS = [
+  { value: "comfortable" as const, label: "Comfortable" },
+  { value: "compact" as const, label: "Compact" },
+];
+
+/** Fixed row-height classes keyed to `Density`, and the pixel value the
+ * virtualizer must use for the SAME rows — these two constants are read
+ * together everywhere a row height matters (`ROW_HEIGHT_CLASS[density]` for
+ * the rendered `<td>`, `ROW_HEIGHT_PX[density]` for `estimateSize`) so they
+ * cannot drift apart into a rendered row that doesn't match the space the
+ * virtualizer reserved for it. */
+const ROW_HEIGHT_CLASS: Record<Density, string> = { comfortable: "h-11", compact: "h-8" };
+const ROW_HEIGHT_PX: Record<Density, number> = { comfortable: 44, compact: 32 };
+
+/** The column header row and every Bucket group-header row share this exact
+ * height (`h-10` = 40px), which is also why a group header's sticky offset
+ * can be the static Tailwind class `top-10` instead of a computed value —
+ * the header never changes height with density, only body rows do. */
+const HEADER_ROW_PX = 40;
+
+type FlatItem =
+  | { kind: "group"; bucket: string; label: string }
+  | { kind: "row"; row: ReportRow; rowIndex: number };
+
+/**
+ * A virtualised table of the executed report (issue 04), extended in issue
+ * 05 for Duration Metrics, and in issue 07 for the three table-presentation
  * controls — sort, column order, and the pivot layout:
  *
  * - **Sort** is a click on a column header, in the "long" layout only —
@@ -38,10 +103,10 @@ function groupColumnLabel(groupBy: "none" | "agent" | "mailbox"): string | null 
  *   indexed by Bucket date instead of by metric key. Rendering this through
  *   the *same* `table.columns.map(...)` as the long layout is deliberate:
  *   the column/value contract (`row.values[column.key]`) doesn't change
- *   between layouts, only what a "column" represents does. The one thing
- *   that must NOT happen is the long-layout's Day/metric column headers
- *   leaking into a pivot render (or vice versa) — hence the `layout`-gated
- *   branches below rather than one shared unconditional header.
+ *   between layouts, only what a "column" represents does. There is no
+ *   Bucket *grouping* in this layout (there is nothing left to group — a
+ *   pivot row already is one Bucket-independent group), so `flatItems`
+ *   below only ever produces `"group"` items for the long layout.
  *
  * Otherwise renders exactly the raw numbers and column metadata the backend
  * sends — no client-side re-aggregation, so preview and exports cannot
@@ -50,6 +115,25 @@ function groupColumnLabel(groupBy: "none" | "agent" | "mailbox"): string | null 
  * `table.warnings` from `engine._execute_pivot`, the same banner every
  * other Warning already renders through, so there is exactly one place that
  * decides what the message says.
+ *
+ * issue 04 (frontend-rework) rewrites the rendering strategy on top of all
+ * of the above, unchanged: only `table.rows` (still every row the engine
+ * returned — nothing sliced, nothing paginated) is ever windowed into the
+ * DOM. `@tanstack/react-virtual` was added for this — a small (~5KB),
+ * headless row virtualizer with no opinion on markup, which matters here
+ * because the table stays a real `<table>` (sticky `<th>`/`<td>`,
+ * `colSpan` group-header rows, native column-width negotiation) rather than
+ * a `<div>` grid a heavier "virtual table" component would force. The
+ * technique is the same top/bottom "spacer row" recipe used in the
+ * library's own table example: only the rows inside `getVirtualItems()`
+ * become real `<tr>`s; the two spacer `<tr>`s stand in for the collapsed
+ * space above and below them so the scrollbar still represents the full
+ * `flatItems.length`, not a page of it. This is also the one place in this
+ * file `style={{ height }}` legitimately appears: virtualization is
+ * dynamic scroll-position arithmetic (a pixel offset computed per render),
+ * not a design value, so it is not a Tailwind/token-layer regression — the
+ * token layer covers colour, spacing and type, none of which this
+ * computed number touches.
  */
 export function ReportTable({
   table,
@@ -66,159 +150,251 @@ export function ReportTable({
   onSort: (columnKey: string) => void;
   onMoveColumn: (columnKey: string, direction: "left" | "right") => void;
 }) {
+  const [density, setDensity] = useState<Density>("comfortable");
   const groupLabel = groupColumnLabel(groupBy);
   const hasGroups = groupLabel !== null && table.rows.some((row) => row.group_label !== null);
   const isPivot = layout === "pivot";
+  const showLeadColumn = hasGroups || isPivot;
+  const totalColumnCount = (showLeadColumn ? 1 : 0) + table.columns.length;
+
+  // The engine already returns `table.rows` grouped into contiguous
+  // same-Bucket runs (`app/engine.py`'s `_sort_rows_within_bucket` docstring
+  // — sort only ever reorders *within* a run) — this only detects the run
+  // boundaries the engine already produced, it never re-groups anything
+  // itself. `isPivot` rows have nothing to group: each row already IS one
+  // Bucket-independent group.
+  const flatItems = useMemo<FlatItem[]>(() => {
+    if (isPivot) {
+      return table.rows.map((row, rowIndex) => ({ kind: "row" as const, row, rowIndex }));
+    }
+    const items: FlatItem[] = [];
+    let lastBucket: string | null = null;
+    table.rows.forEach((row, rowIndex) => {
+      if (row.bucket !== lastBucket) {
+        items.push({ kind: "group", bucket: row.bucket, label: formatBucketLabel(row.bucket) });
+        lastBucket = row.bucket;
+      }
+      items.push({ kind: "row", row, rowIndex });
+    });
+    return items;
+  }, [table.rows, isPivot]);
+
+  const scrollParentRef = useRef<HTMLDivElement>(null);
+  const rowHeightPx = ROW_HEIGHT_PX[density];
+
+  const rowVirtualizer = useVirtualizer({
+    count: flatItems.length,
+    getScrollElement: () => scrollParentRef.current,
+    // Every size here is exact, not truly "estimated" — a group-header row
+    // is always `HEADER_ROW_PX` and a data row is always `ROW_HEIGHT_PX
+    // [density]` (real fixed-height Tailwind classes below, `h-10`/`h-11`/
+    // `h-8`), so there is nothing left for the virtualizer to reconcile
+    // against a measured DOM size.
+    estimateSize: (index) => (flatItems[index]?.kind === "group" ? HEADER_ROW_PX : rowHeightPx),
+    overscan: 10,
+  });
+
+  // `estimateSize`'s closure captures `density`/`flatItems` but the
+  // virtualizer only re-reads it for indices it hasn't sized yet — a
+  // density change (or a fresh `table`, which rebuilds `flatItems`) must
+  // force it to throw away that cache and re-measure everything, per the
+  // library's own guidance for "the sizing logic itself changed".
+  useEffect(() => {
+    rowVirtualizer.measure();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [density, flatItems]);
+
+  const virtualRows = rowVirtualizer.getVirtualItems();
+  const totalSizePx = rowVirtualizer.getTotalSize();
+  const paddingTop = virtualRows.length > 0 ? virtualRows[0].start : 0;
+  const paddingBottom =
+    virtualRows.length > 0 ? totalSizePx - virtualRows[virtualRows.length - 1].end : 0;
 
   return (
-    <>
+    <div className="flex min-h-0 flex-1 flex-col">
       {table.warnings.length > 0 && (
-        <ul role="alert" style={warningsStyle}>
-          {table.warnings.map((warning) => (
-            <li key={warning}>{warning}</li>
-          ))}
-        </ul>
+        <div
+          role="alert"
+          className="mb-3 rounded-lg border border-beige-deep bg-cream px-4 py-3 text-body-sm text-ink-tint"
+        >
+          <p className="mb-1 text-micro-uppercase font-semibold text-steel">Warnings</p>
+          <ul className="list-disc space-y-1 pl-5">
+            {table.warnings.map((warning) => (
+              <li key={warning}>{warning}</li>
+            ))}
+          </ul>
+        </div>
       )}
-      <table style={{ borderCollapse: "collapse", width: "100%" }}>
-        <thead>
-          <tr>
-            {!isPivot && <th style={headerStyle}>Day</th>}
-            {(hasGroups || isPivot) && (
-              <th style={headerStyle}>{hasGroups ? groupLabel : ""}</th>
-            )}
-            {table.columns.map((column, index) => (
-              <th key={column.key} style={headerStyle}>
-                {isPivot ? (
-                  <>
-                    {column.label}
-                    {column.unit === "hours" ? " (h)" : ""}
-                  </>
-                ) : (
-                  <>
-                    <button type="button" onClick={() => onSort(column.key)} style={sortButtonStyle}>
+
+      <div className="mb-2 flex items-center justify-end gap-2">
+        <span className="text-micro font-medium uppercase tracking-wide text-muted">Density</span>
+        <div className="w-44">
+          <SegmentedControl name="Row density" options={DENSITY_OPTIONS} value={density} onChange={setDensity} />
+        </div>
+      </div>
+
+      <div
+        ref={scrollParentRef}
+        className="min-h-0 flex-1 overflow-auto rounded-lg border border-hairline bg-canvas"
+      >
+        {/* `border-separate` + zero spacing, not `border-collapse`: sticky
+            positioning on `<th>`/`<td>` is unreliable under
+            `border-collapse` in some engines (notably Safari drops the
+            sticky offset entirely), which would silently break the header
+            and leading-column stickiness this issue exists to add. */}
+        <table className="w-full border-separate border-spacing-0 text-body-sm">
+          <thead>
+            <tr className="h-10">
+              {showLeadColumn && (
+                <th
+                  className="sticky left-0 top-0 z-30 h-10 border-b border-hairline-strong bg-canvas
+                    px-3 text-left align-middle text-body-sm-medium font-semibold text-ink-tint"
+                >
+                  {hasGroups ? groupLabel : ""}
+                </th>
+              )}
+              {table.columns.map((column, index) => (
+                <th
+                  key={column.key}
+                  className="sticky top-0 z-20 h-10 border-b border-hairline-strong bg-canvas
+                    px-3 text-right align-middle text-body-sm-medium font-semibold text-ink-tint"
+                >
+                  {isPivot ? (
+                    <>
                       {column.label}
                       {column.unit === "hours" ? " (h)" : ""}
-                      {sort?.column === column.key ? (sort.direction === "desc" ? " ▼" : " ▲") : ""}
-                    </button>
-                    <span style={moveButtonsStyle}>
+                    </>
+                  ) : (
+                    <div className="flex items-center justify-end gap-1">
                       <button
                         type="button"
-                        disabled={index === 0}
-                        onClick={() => onMoveColumn(column.key, "left")}
-                        aria-label={`Move ${column.label} left`}
-                        style={moveButtonStyle}
+                        onClick={() => onSort(column.key)}
+                        className="cursor-pointer border-none bg-transparent p-0 text-right
+                          [font:inherit] font-semibold text-ink-tint hover:text-ink"
                       >
-                        {"<"}
+                        {column.label}
+                        {column.unit === "hours" ? " (h)" : ""}
+                        {sort?.column === column.key ? (sort.direction === "desc" ? " ▼" : " ▲") : ""}
                       </button>
-                      <button
-                        type="button"
-                        disabled={index === table.columns.length - 1}
-                        onClick={() => onMoveColumn(column.key, "right")}
-                        aria-label={`Move ${column.label} right`}
-                        style={moveButtonStyle}
+                      <span className="inline-flex gap-0.5">
+                        <button
+                          type="button"
+                          disabled={index === 0}
+                          onClick={() => onMoveColumn(column.key, "left")}
+                          aria-label={`Move ${column.label} left`}
+                          className="rounded border border-hairline-strong bg-canvas px-1 text-micro
+                            leading-none text-steel hover:bg-cream-soft disabled:cursor-not-allowed
+                            disabled:opacity-40"
+                        >
+                          {"<"}
+                        </button>
+                        <button
+                          type="button"
+                          disabled={index === table.columns.length - 1}
+                          onClick={() => onMoveColumn(column.key, "right")}
+                          aria-label={`Move ${column.label} right`}
+                          className="rounded border border-hairline-strong bg-canvas px-1 text-micro
+                            leading-none text-steel hover:bg-cream-soft disabled:cursor-not-allowed
+                            disabled:opacity-40"
+                        >
+                          {">"}
+                        </button>
+                      </span>
+                    </div>
+                  )}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {paddingTop > 0 && (
+              <tr aria-hidden="true" style={{ height: paddingTop }}>
+                <td colSpan={totalColumnCount} />
+              </tr>
+            )}
+            {virtualRows.map((virtualRow) => {
+              const item = flatItems[virtualRow.index];
+              if (!item) return null;
+
+              if (item.kind === "group") {
+                return (
+                  <tr key={`group-${item.bucket}-${virtualRow.index}`}>
+                    <td
+                      colSpan={totalColumnCount}
+                      className="sticky top-10 z-10 h-10 border-b border-hairline-strong bg-cream
+                        px-3 align-middle text-body-sm-medium font-semibold text-ink-tint"
+                    >
+                      <span className="sticky left-3">{item.label}</span>
+                    </td>
+                  </tr>
+                );
+              }
+
+              const { row, rowIndex } = item;
+              const zebraBg = rowIndex % 2 === 1 ? "bg-surface" : "bg-canvas";
+              return (
+                <tr key={`row-${rowIndex}`} className="group">
+                  {showLeadColumn && (
+                    <td
+                      className={`sticky left-0 z-10 ${ROW_HEIGHT_CLASS[density]} ${zebraBg}
+                        border-b border-hairline-soft px-3 align-middle text-body-sm text-ink-tint
+                        group-hover:bg-cream-soft`}
+                    >
+                      {hasGroups ? row.group_label : ""}
+                    </td>
+                  )}
+                  {table.columns.map((column) => {
+                    const value = row.values[column.key];
+                    const count = row.counts[column.key];
+                    return (
+                      <td
+                        key={column.key}
+                        title={count !== undefined ? `${count} ticket${count === 1 ? "" : "s"}` : undefined}
+                        className={`${ROW_HEIGHT_CLASS[density]} ${zebraBg} border-b
+                          border-hairline-soft px-3 text-right align-middle font-mono
+                          tabular-nums text-ink group-hover:bg-cream-soft`}
                       >
-                        {">"}
-                      </button>
-                    </span>
-                  </>
-                )}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {table.rows.map((row, index) => (
-            <tr key={`${row.bucket}-${row.group_key ?? "none"}-${index}`}>
-              {!isPivot && <td style={cellStyle}>{row.bucket}</td>}
-              {(hasGroups || isPivot) && (
-                <td style={cellStyle}>{hasGroups ? row.group_label : ""}</td>
+                        {value === null ? <WithheldValue /> : value}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+            {paddingBottom > 0 && (
+              <tr aria-hidden="true" style={{ height: paddingBottom }}>
+                <td colSpan={totalColumnCount} />
+              </tr>
+            )}
+          </tbody>
+          <tfoot>
+            <tr>
+              {showLeadColumn && (
+                <td
+                  className="sticky bottom-0 left-0 z-30 h-10 border-t-2 border-hairline-strong
+                    bg-canvas px-3 align-middle text-body-sm-medium font-semibold text-ink-tint"
+                >
+                  Total
+                </td>
               )}
               {table.columns.map((column) => {
-                const value = row.values[column.key];
-                const count = row.counts[column.key];
+                const value = table.totals[column.key];
+                const count = table.total_counts[column.key];
                 return (
                   <td
                     key={column.key}
-                    style={cellStyle}
                     title={count !== undefined ? `${count} ticket${count === 1 ? "" : "s"}` : undefined}
+                    className="sticky bottom-0 z-20 h-10 border-t-2 border-hairline-strong bg-canvas
+                      px-3 text-right align-middle font-mono tabular-nums font-semibold text-ink"
                   >
-                    {value === null ? "—" : value}
+                    {value === null ? <WithheldValue /> : value}
                   </td>
                 );
               })}
             </tr>
-          ))}
-        </tbody>
-        <tfoot>
-          <tr>
-            {!isPivot && <td style={{ ...cellStyle, fontWeight: 600 }}>Total</td>}
-            {(hasGroups || isPivot) && (
-              <td style={{ ...cellStyle, fontWeight: 600 }}>{isPivot ? "Total" : ""}</td>
-            )}
-            {table.columns.map((column) => {
-              const value = table.totals[column.key];
-              const count = table.total_counts[column.key];
-              return (
-                <td
-                  key={column.key}
-                  style={{ ...cellStyle, fontWeight: 600 }}
-                  title={count !== undefined ? `${count} ticket${count === 1 ? "" : "s"}` : undefined}
-                >
-                  {value === null ? "—" : value}
-                </td>
-              );
-            })}
-          </tr>
-        </tfoot>
-      </table>
-    </>
+          </tfoot>
+        </table>
+      </div>
+    </div>
   );
 }
-
-const warningsStyle: CSSProperties = {
-  background: "#fff3cd",
-  color: "#664d03",
-  border: "1px solid #ffe69c",
-  borderRadius: 4,
-  padding: "0.5rem 1rem",
-  margin: "0 0 1rem 0",
-};
-
-const headerStyle: CSSProperties = {
-  textAlign: "left",
-  borderBottom: "2px solid #ccc",
-  padding: "0.25rem 0.5rem",
-  position: "sticky",
-  top: 0,
-  background: "white",
-};
-
-const cellStyle: CSSProperties = {
-  borderBottom: "1px solid #eee",
-  padding: "0.25rem 0.5rem",
-};
-
-const sortButtonStyle: CSSProperties = {
-  background: "none",
-  border: "none",
-  font: "inherit",
-  fontWeight: "inherit",
-  color: "inherit",
-  cursor: "pointer",
-  padding: 0,
-};
-
-const moveButtonsStyle: CSSProperties = {
-  display: "inline-block",
-  marginLeft: "0.35rem",
-};
-
-const moveButtonStyle: CSSProperties = {
-  border: "1px solid #ccc",
-  background: "white",
-  cursor: "pointer",
-  fontSize: "0.7rem",
-  lineHeight: 1,
-  padding: "1px 4px",
-  marginLeft: "2px",
-};

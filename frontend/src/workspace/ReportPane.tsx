@@ -42,7 +42,15 @@ export function ReportPane({
   } = useReportSpecStore();
 
   return (
-    <section className="min-w-0 flex-1 overflow-y-auto bg-canvas p-4">
+    // `flex-col` + `overflow-hidden` (not `overflow-y-auto`) is the change
+    // this slice makes here: the Report Table now owns its own bounded
+    // scroll container so its rows can be virtualised (issue 04) — a pane
+    // that scrolls itself as well would give the table unbounded height and
+    // defeat the point of windowing the rows into the DOM. The chart stays
+    // a fixed-height sibling above it; only the table area is `flex-1
+    // min-h-0`, the flexbox idiom for "take the rest of the space, but
+    // don't grow past it."
+    <section className="flex min-w-0 flex-1 flex-col overflow-hidden bg-canvas p-4">
       {reportError && (
         <p role="alert" className="mb-3 rounded-md bg-danger-soft px-4 py-3 text-body-sm text-danger">
           {reportError}
@@ -70,16 +78,18 @@ export function ReportPane({
         />
       )}
       {table && (
-        <ReportTable
-          table={table}
-          groupBy={groupBy}
-          layout={layout}
-          sort={sort}
-          onSort={toggleSort}
-          onMoveColumn={(columnKey, direction) =>
-            moveColumn(columnKey, direction, table.columns.map((c) => c.key))
-          }
-        />
+        <div className="mt-4 flex min-h-0 flex-1 flex-col">
+          <ReportTable
+            table={table}
+            groupBy={groupBy}
+            layout={layout}
+            sort={sort}
+            onSort={toggleSort}
+            onMoveColumn={(columnKey, direction) =>
+              moveColumn(columnKey, direction, table.columns.map((c) => c.key))
+            }
+          />
+        </div>
       )}
     </section>
   );
