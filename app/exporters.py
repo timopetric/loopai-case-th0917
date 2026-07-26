@@ -43,10 +43,20 @@ docstring; `ReportSpec` "Table semantics").
 import csv
 import io
 
+from openpyxl import Workbook
+
+from app.assumptions import build_assumptions
 from app.models import ColumnMeta, ReportSpec, ReportTable
+from app.upstream import CoverageWindow
 
 WITHHELD = ""
 """The sentinel a withheld (`None`) cell renders as — see module docstring."""
+
+XLSX_WITHHELD = "—"
+"""The em dash a withheld (`None`) cell renders as in the XLSX **data** sheet —
+deliberately the same glyph the screen uses and deliberately NOT the CSV
+sentinel above (module docstring). A workbook is opened by hand, so the
+caveat travels with the cell; never `0` here either."""
 
 _GROUP_COLUMN_LABELS = {"agent": "Actor", "mailbox": "Mailbox"}
 
@@ -112,3 +122,115 @@ def _render(value: float | None) -> str:
     if value.is_integer():
         return str(int(value))
     return str(value)
+
+
+def to_xlsx(spec: ReportSpec, table: ReportTable, coverage: CoverageWindow) -> bytes:
+    """Render `table` as a two-sheet workbook (issue 11, architecture.md §3
+    exporters row): "Data" mirrors the CSV exactly (same layout, same
+    values, same em-dash-vs-empty split documented at module level — except
+    a withheld cell renders as the em dash here, deliberately, because a
+    workbook is opened by hand); "Report info" carries the context a
+    forwarded file otherwise loses — the report definition, the Coverage
+    Window, the units note, and any `ReportTable.warnings`.
+
+    The units note text is NOT written here: it is read from
+    `app.assumptions.build_assumptions`, the single source shared with the
+    coverage-banner modal (issue 09), so the two can never drift apart. Do
+    not paraphrase or duplicate that text in this function.
+    """
+    workbook = Workbook()
+    _write_data_sheet(workbook.active, spec, table)
+    _write_report_info_sheet(workbook.create_sheet("Report info"), spec, table, coverage)
+
+    buffer = io.BytesIO()
+    workbook.save(buffer)
+    return buffer.getvalue()
+
+
+def _write_data_sheet(sheet, spec: ReportSpec, table: ReportTable) -> None:
+    sheet.title = "Data"
+
+    is_pivot = spec.layout == "pivot"
+    has_groups = spec.group_by != "none" and any(
+        row.group_label is not None for row in table.rows
+    )
+    show_group_column = has_groups or is_pivot
+    group_column_label = _GROUP_COLUMN_LABELS.get(spec.group_by, "") if has_groups else ""
+
+    header: list[str] = []
+    if not is_pivot:
+        header.append("Day")
+    if show_group_column:
+        header.append(group_column_label)
+    header.extend(_column_header(column) for column in table.columns)
+    sheet.append(header)
+
+    for row in table.rows:
+        line: list[str | float] = []
+        if not is_pivot:
+            line.append(row.bucket)
+        if show_group_column:
+            line.append(row.group_label if has_groups else "")
+        line.extend(_xlsx_value(row.values.get(column.key)) for column in table.columns)
+        sheet.append(line)
+
+    totals_line: list[str | float] = []
+    if not is_pivot:
+        totals_line.append("Total")
+    if show_group_column:
+        totals_line.append("Total" if is_pivot else "")
+    totals_line.extend(_xlsx_value(table.totals.get(column.key)) for column in table.columns)
+    sheet.append(totals_line)
+
+
+def _xlsx_value(value: float | None) -> str | float:
+    """`None` -> the em dash (module docstring); otherwise the raw number,
+    written as a NUMBER cell (never a formatted string) so spreadsheet
+    formulas like `=AVERAGE()` work on the column — the load-bearing
+    requirement of issue 11's acceptance criteria."""
+    if value is None:
+        return XLSX_WITHHELD
+    return value
+
+
+def _write_report_info_sheet(
+    sheet, spec: ReportSpec, table: ReportTable, coverage: CoverageWindow
+) -> None:
+    metric_labels = [column.label for column in table.columns]
+
+    sheet.append(["Report info"])
+    sheet.append([])
+
+    sheet.append(["Report definition"])
+    sheet.append(["Metrics", ", ".join(metric_labels)])
+    sheet.append(["Date range", f"{spec.date_from.isoformat()} to {spec.date_to.isoformat()}"])
+    sheet.append(["Granularity", spec.granularity])
+    sheet.append(["Grouped by", _GROUP_COLUMN_LABELS.get(spec.group_by, "None")])
+    sheet.append(["Duration display", spec.duration_display])
+    sheet.append(["Layout", spec.layout])
+    sheet.append([])
+
+    sheet.append(["Coverage Window"])
+    sheet.append(["From", coverage.from_date])
+    sheet.append(["To", coverage.to_date])
+    sheet.append([])
+
+    units_note = _units_note(coverage)
+    sheet.append(["Units note"])
+    sheet.append([units_note.title])
+    sheet.append([units_note.body])
+    sheet.append([])
+
+    sheet.append(["Warnings"])
+    if table.warnings:
+        for warning in table.warnings:
+            sheet.append([warning])
+    else:
+        sheet.append(["None"])
+
+
+def _units_note(coverage: CoverageWindow):
+    """The hours-not-seconds note, read from the single assumptions source
+    (issue 09) — never copied or reworded here, so the coverage-banner
+    modal and this sheet cannot drift apart (issue 11 step 4b)."""
+    return next(note for note in build_assumptions(coverage) if note.id == "units_hours")

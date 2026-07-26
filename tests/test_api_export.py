@@ -11,6 +11,7 @@ import csv
 import io
 import json
 
+import openpyxl
 import pytest
 from fastapi.testclient import TestClient
 
@@ -89,6 +90,43 @@ def test_export_csv_route_requires_auth(client: TestClient) -> None:
 def test_export_csv_route_rejects_an_invalid_spec(client: TestClient) -> None:
     response = client.post(
         "/api/v1/export/csv",
+        json=_spec(date_from="2026-07-23", date_to="2026-07-10"),
+        headers=_auth_headers(),
+    )
+
+    assert response.status_code == 422
+
+
+def test_export_xlsx_route_returns_a_spreadsheet_content_type_with_both_sheets(
+    client: TestClient,
+) -> None:
+    response = client.post("/api/v1/export/xlsx", json=_spec(), headers=_auth_headers())
+
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith(
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    assert "attachment" in response.headers["content-disposition"]
+    assert response.headers["content-disposition"].endswith('.xlsx"')
+
+    wb = openpyxl.load_workbook(io.BytesIO(response.content))
+    assert wb.sheetnames == ["Data", "Report info"]
+
+    data_rows = list(wb["Data"].iter_rows(values_only=True))
+    assert data_rows[0] == ("Day", "Resolved")
+    assert data_rows[1] == ("total", 16372)
+    assert data_rows[2] == ("Total", 16372)
+
+
+def test_export_xlsx_route_requires_auth(client: TestClient) -> None:
+    response = client.post("/api/v1/export/xlsx", json=_spec())
+
+    assert response.status_code == 401
+
+
+def test_export_xlsx_route_rejects_an_invalid_spec(client: TestClient) -> None:
+    response = client.post(
+        "/api/v1/export/xlsx",
         json=_spec(date_from="2026-07-23", date_to="2026-07-10"),
         headers=_auth_headers(),
     )

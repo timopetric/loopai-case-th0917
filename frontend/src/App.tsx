@@ -7,6 +7,8 @@ import { UNAUTHORIZED_EVENT, apiFetch } from "./lib/apiClient";
 import { getStoredApiKey } from "./lib/apiKey";
 import type { AssumptionNote } from "./lib/assumptions";
 import { fetchAssumptions } from "./lib/assumptions";
+import type { ExportFormat } from "./lib/export";
+import { exportReport, triggerDownload } from "./lib/export";
 import type { Meta } from "./lib/meta";
 import { fetchMeta } from "./lib/meta";
 import type { ReportSpec, ReportTable as ReportTableData, SortSpec } from "./lib/report";
@@ -55,6 +57,10 @@ export function App() {
   const [assumptions, setAssumptions] = useState<AssumptionNote[] | null>(null);
   const [showAssumptions, setShowAssumptions] = useState(false);
   const [reportError, setReportError] = useState<string | null>(null);
+  /** CSV/Excel download errors (issue 10, issue 11, user stories 32/34):
+   * kept separate from `reportError` so a failed download never clears or is
+   * confused with the on-screen report, which may still be perfectly fine. */
+  const [exportError, setExportError] = useState<string | null>(null);
   /**
    * Duration display (issue 05, user story 14): per-ticket average ("how
    * fast") vs period total ("how much work") for Duration Metrics.
@@ -124,6 +130,54 @@ export function App() {
     setColumnsOrder(next);
   }
 
+  /**
+   * The exact `ReportSpec` the on-screen table was built from — the single
+   * builder used by both the preview fetch and the export downloads, so a
+   * download can never diverge from what the report route just rendered
+   * (user story 34, "the exported file matches exactly what is on screen").
+   */
+  function buildReportSpec(): ReportSpec {
+    return {
+      metrics,
+      date_from: dateFrom,
+      date_to: dateTo,
+      granularity,
+      group_by: groupBy,
+      duration_display: durationDisplay,
+      sort,
+      columns_order: columnsOrder,
+      layout,
+      chart_metric: chartMetric,
+    };
+  }
+
+  /**
+   * Download the current report as CSV or Excel (issue 10, issue 11).
+   * `exportReport` already goes through `apiFetch`, so the shared key
+   * attaches and a 401 still bounces to sign-in exactly like every other
+   * call — this handler only has to react to a refused date range (the same
+   * 422 the preview can hit) and any other failure, rather than doing
+   * nothing visible on click.
+   */
+  async function handleExport(format: ExportFormat) {
+    setExportError(null);
+    try {
+      const { blob, filename } = await exportReport(buildReportSpec(), format);
+      triggerDownload(blob, filename);
+    } catch (err) {
+      if (err instanceof ReportRefusedError) {
+        setExportError(
+          err.coverage
+            ? `That date range has no data. The Coverage Window is ` +
+              `${err.coverage.from_date} – ${err.coverage.to_date}.`
+            : err.message,
+        );
+        return;
+      }
+      setExportError(`Could not download the ${format.toUpperCase()} export.`);
+    }
+  }
+
   // A metric that stops being selected can leave `sort`/`chartMetric`
   // pointing at a column that no longer exists — the backend validator
   // would 422 that spec (architecture.md §2: both must be ∈ metrics), so
@@ -167,18 +221,7 @@ export function App() {
       setReportError("The start date must be on or before the end date.");
       return;
     }
-    fetchReport({
-      metrics,
-      date_from: dateFrom,
-      date_to: dateTo,
-      granularity,
-      group_by: groupBy,
-      duration_display: durationDisplay,
-      sort,
-      columns_order: columnsOrder,
-      layout,
-      chart_metric: chartMetric,
-    })
+    fetchReport(buildReportSpec())
       .then((result) => {
         setTable(result);
         setReportError(null);
@@ -414,6 +457,15 @@ export function App() {
         )}
       </fieldset>
       {reportError && <p role="alert">{reportError}</p>}
+      <div style={{ marginBottom: "1rem" }}>
+        <button type="button" onClick={() => handleExport("csv")} disabled={!table}>
+          Download CSV
+        </button>{" "}
+        <button type="button" onClick={() => handleExport("xlsx")} disabled={!table}>
+          Download Excel
+        </button>
+      </div>
+      {exportError && <p role="alert">{exportError}</p>}
       {table && (
         <ReportTable
           table={table}

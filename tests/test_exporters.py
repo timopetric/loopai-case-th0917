@@ -12,10 +12,16 @@ import csv
 import io
 import json
 
+import openpyxl
+import pytest
+
+from app.assumptions import AssumptionNote, build_assumptions
 from app.engine import execute
-from app.exporters import to_csv
+from app.exporters import to_csv, to_xlsx
 from app.models import ColumnMeta, Metric, ReportRow, ReportSpec, ReportTable
 from app.upstream import _DEV_FIXTURE_PATH, CoverageWindow, _normalise_dataset
+
+COVERAGE = CoverageWindow(from_date="2026-07-10", to_date="2026-07-23")
 
 
 def _spec(**overrides) -> ReportSpec:
@@ -250,3 +256,195 @@ def test_csv_content_matches_the_real_report_table_from_the_committed_fixture() 
     assert rows[1] == ["total", str(int(table.rows[0].values["resolved"]))]
     assert rows[1][1] == "16372"
     assert rows[2] == ["Total", "16372"]
+
+
+# --- to_xlsx (issue 11) -----------------------------------------------------
+
+
+def _workbook(spec: ReportSpec, table: ReportTable, coverage: CoverageWindow = COVERAGE):
+    return openpyxl.load_workbook(io.BytesIO(to_xlsx(spec, table, coverage)))
+
+
+def test_workbook_has_a_data_sheet_and_a_report_info_sheet() -> None:
+    table = ReportTable(
+        columns=[ColumnMeta(key="resolved", label="Resolved", kind="counter", unit="count")],
+        rows=[
+            ReportRow(
+                bucket="2026-07-10", group_key=None, group_label=None, values={"resolved": 5}
+            )
+        ],
+        totals={"resolved": 5},
+    )
+
+    wb = _workbook(_spec(), table)
+
+    assert wb.sheetnames == ["Data", "Report info"]
+
+
+def test_data_sheet_matches_the_csv_except_the_withheld_encoding() -> None:
+    """The data sheet is laid out identically to the CSV — same header, same
+    rows, same totals row — with exactly one deliberate difference: a
+    withheld cell is an em dash here, an empty field in the CSV (module
+    docstring's documented split, not a discrepancy)."""
+    table = ReportTable(
+        columns=[
+            ColumnMeta(key="actioned_emails", label="Actioned emails", kind="counter", unit="count")
+        ],
+        rows=[
+            ReportRow(
+                bucket="2026-07-10",
+                group_key="a1",
+                group_label="Alice",
+                values={"actioned_emails": 3},
+            )
+        ],
+        totals={"actioned_emails": None},
+    )
+    spec = _spec(metrics=["actioned_emails"], group_by="agent")
+
+    csv_rows = _read_csv(to_csv(spec, table))
+    wb = _workbook(spec, table)
+    data_sheet = wb["Data"]
+    xlsx_rows = [[cell.value for cell in row] for row in data_sheet.iter_rows()]
+
+    assert xlsx_rows[0] == csv_rows[0]
+    assert xlsx_rows[1] == ["2026-07-10", "Alice", 3]
+    assert csv_rows[1] == ["2026-07-10", "Alice", "3"]
+    # The withheld total: CSV empty field vs XLSX em dash.
+    assert csv_rows[-1][-1] == ""
+    assert xlsx_rows[-1][-1] == "—"
+
+
+def test_duration_values_are_written_as_numeric_cells_not_numeric_looking_strings() -> None:
+    """The load-bearing assertion (issue 11): a duration written as text
+    looks identical on screen but silently breaks `=AVERAGE()`. Assert the
+    cell's Python type read back by openpyxl, not just its printed value."""
+    table = ReportTable(
+        columns=[
+            ColumnMeta(key="resolve_time", label="Resolve time", kind="duration", unit="hours")
+        ],
+        rows=[
+            ReportRow(
+                bucket="2026-07-10",
+                group_key=None,
+                group_label=None,
+                values={"resolve_time": 1.5},
+            )
+        ],
+        totals={"resolve_time": 1.5},
+    )
+    spec = _spec(metrics=["resolve_time"])
+
+    wb = _workbook(spec, table)
+    data_sheet = wb["Data"]
+
+    header_row = next(data_sheet.iter_rows(min_row=1, max_row=1))
+    assert header_row[-1].value == "Resolve time (h)"
+
+    data_row = next(data_sheet.iter_rows(min_row=2, max_row=2))
+    totals_row = next(data_sheet.iter_rows(min_row=3, max_row=3))
+    assert isinstance(data_row[-1].value, int | float)
+    assert data_row[-1].value == 1.5
+    assert isinstance(totals_row[-1].value, int | float)
+
+
+def test_report_info_sheet_carries_definition_coverage_units_note_and_warnings() -> None:
+    """A spec that groups `actioned_emails` by Actor raises the non-additive
+    Warning (`engine._totals`) — used here as a real Warning that must
+    genuinely reach the sheet, not a hand-built `ReportTable.warnings` list."""
+    dataset = _normalise_dataset(
+        json.loads(_DEV_FIXTURE_PATH.read_text())["response_json"], COVERAGE
+    )
+    spec = ReportSpec(
+        metrics=[Metric.ACTIONED_EMAILS],
+        date_from="2026-07-10",
+        date_to="2026-07-23",
+        granularity="total",
+        group_by="agent",
+    )
+    table = execute(spec, dataset)
+    assert table.warnings  # sanity: this spec really does raise a Warning
+
+    wb = _workbook(spec, table, COVERAGE)
+    info_sheet = wb["Report info"]
+    text = "\n".join(
+        str(cell.value) for row in info_sheet.iter_rows() for cell in row if cell.value is not None
+    )
+
+    # Report definition.
+    assert "Actioned emails" in text
+    assert "2026-07-10" in text and "2026-07-23" in text
+    assert "agent" in spec.group_by  # sanity on the fixture spec itself
+    assert "Actor" in text  # the human label for group_by == "agent"
+
+    # Coverage Window.
+    assert COVERAGE.from_date in text
+    assert COVERAGE.to_date in text
+
+    # Units note — the same text `build_assumptions` produces, not a paraphrase.
+    units_note = next(n for n in build_assumptions(COVERAGE) if n.id == "units_hours")
+    assert units_note.title in text
+    assert units_note.body in text
+
+    # The real Warning raised for this spec.
+    for warning in table.warnings:
+        assert warning in text
+
+
+def test_report_info_sheet_states_no_warnings_when_none_were_raised() -> None:
+    table = ReportTable(
+        columns=[ColumnMeta(key="resolved", label="Resolved", kind="counter", unit="count")],
+        rows=[
+            ReportRow(
+                bucket="2026-07-10", group_key=None, group_label=None, values={"resolved": 5}
+            )
+        ],
+        totals={"resolved": 5},
+        warnings=[],
+    )
+
+    wb = _workbook(_spec(), table)
+    info_sheet = wb["Report info"]
+    text = "\n".join(
+        str(cell.value) for row in info_sheet.iter_rows() for cell in row if cell.value is not None
+    )
+
+    assert "None" in text
+
+
+def test_report_info_sheet_defers_the_units_note_to_the_shared_assumptions_source(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The decisive drift-proofing test, mirrored from
+    `test_assumptions_route_has_no_hardcoded_second_copy`: patch the shared
+    source to return a sentinel `units_hours` note, and require the
+    workbook to carry that sentinel text verbatim. A test that only checked
+    for the expected sentences would pass just as well against a copy-pasted
+    duplicate — this one fails the moment the exporter stops calling
+    `build_assumptions`."""
+    sentinel = AssumptionNote(
+        id="units_hours", title="Sentinel units title", body="Sentinel units body"
+    )
+
+    import app.exporters as exporters_module
+
+    monkeypatch.setattr(exporters_module, "build_assumptions", lambda coverage: [sentinel])
+
+    table = ReportTable(
+        columns=[ColumnMeta(key="resolved", label="Resolved", kind="counter", unit="count")],
+        rows=[
+            ReportRow(
+                bucket="2026-07-10", group_key=None, group_label=None, values={"resolved": 5}
+            )
+        ],
+        totals={"resolved": 5},
+    )
+
+    wb = _workbook(_spec(), table)
+    info_sheet = wb["Report info"]
+    text = "\n".join(
+        str(cell.value) for row in info_sheet.iter_rows() for cell in row if cell.value is not None
+    )
+
+    assert sentinel.title in text
+    assert sentinel.body in text
