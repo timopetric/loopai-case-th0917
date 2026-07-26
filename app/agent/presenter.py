@@ -35,7 +35,7 @@ Translation rules (architecture.md §6):
 from __future__ import annotations
 
 import time
-from collections.abc import Callable, Iterable, Iterator
+from collections.abc import AsyncIterable, AsyncIterator, Callable, Iterable, Iterator
 
 from app.agent.events import (
     ChipsEvent,
@@ -129,6 +129,69 @@ def _repair_chip(repair: Repair) -> str:
     return f"Adjusted: {_REPAIR_TEXT.get(repair.code, _DEFAULT_REPAIR_TEXT)}"
 
 
+class _PresenterState:
+    """The translation state machine shared by `present()` (sync — the fake
+    model, issue 15/16) and `present_async()` (async — the real model loop,
+    issue 17, which must `await` the provider between events). Both callers
+    just feed `RawEvent`s to `handle()` one at a time and forward whatever
+    `PresenterEvent`s come back; keeping the state here means the actual
+    translation rules exist in exactly one place regardless of which loop
+    drives them.
+    """
+
+    def __init__(
+        self, *, include_reasoning_text: bool, now: Callable[[], float]
+    ) -> None:
+        self._include_reasoning_text = include_reasoning_text
+        self._now = now
+        self._in_reasoning = False
+        self._reasoning_started_at: float | None = None
+        self.spec_version = 0
+
+    def handle(self, event: RawEvent) -> list[PresenterEvent]:
+        out: list[PresenterEvent] = []
+
+        if isinstance(event, ReasoningDelta):
+            if not self._in_reasoning:
+                self._in_reasoning = True
+                self._reasoning_started_at = self._now()
+                out.append(ThinkingEvent(state="start"))
+            if self._include_reasoning_text:
+                out.append(ThinkingTextEvent(text=event.text))
+            return out
+
+        if self._in_reasoning:
+            elapsed_ms = 0
+            if self._reasoning_started_at is not None:
+                elapsed_ms = max(0, round((self._now() - self._reasoning_started_at) * 1000))
+            out.append(ThinkingEvent(state="end", ms=elapsed_ms))
+            self._in_reasoning = False
+            self._reasoning_started_at = None
+
+        if isinstance(event, ToolCallStarted):
+            out.append(StatusEvent(text=_STATUS_TEXT.get(event.name, _DEFAULT_STATUS_TEXT)))
+
+        elif isinstance(event, ToolCallFinished):
+            if event.ok and event.spec_after is not None:
+                chips = _diff_chips(event.spec_before, event.spec_after, event.adjusted)
+                out.append(ChipsEvent(chips=chips))
+                out.append(SpecEvent(spec=event.spec_after))
+                self.spec_version += 1
+            else:
+                out.append(ErrorEvent(text=_TOOL_FAILURE_TEXT))
+
+        elif isinstance(event, ContentDelta):
+            out.append(TokenEvent(text=event.text))
+
+        elif isinstance(event, TurnDone):
+            out.append(DoneEvent(summary=event.summary, spec_version=self.spec_version))
+
+        elif isinstance(event, TurnError):
+            out.append(ErrorEvent(text=_ERROR_TEXT.get(event.category, _DEFAULT_ERROR_TEXT)))
+
+        return out
+
+
 def present(
     raw_events: Iterable[RawEvent],
     *,
@@ -142,48 +205,25 @@ def present(
     function does not know or care why, it just gates `ThinkingTextEvent`.
     `now` is an injection seam for tests that need a deterministic `ms`.
     """
-    in_reasoning = False
-    reasoning_started_at: float | None = None
-    spec_version = 0
-
+    state = _PresenterState(include_reasoning_text=include_reasoning_text, now=now)
     for event in raw_events:
-        if isinstance(event, ReasoningDelta):
-            if not in_reasoning:
-                in_reasoning = True
-                reasoning_started_at = now()
-                yield ThinkingEvent(state="start")
-            if include_reasoning_text:
-                yield ThinkingTextEvent(text=event.text)
-            continue
+        yield from state.handle(event)
 
-        if in_reasoning:
-            elapsed_ms = 0
-            if reasoning_started_at is not None:
-                elapsed_ms = max(0, round((now() - reasoning_started_at) * 1000))
-            yield ThinkingEvent(state="end", ms=elapsed_ms)
-            in_reasoning = False
-            reasoning_started_at = None
 
-        if isinstance(event, ToolCallStarted):
-            yield StatusEvent(text=_STATUS_TEXT.get(event.name, _DEFAULT_STATUS_TEXT))
-
-        elif isinstance(event, ToolCallFinished):
-            if event.ok and event.spec_after is not None:
-                chips = _diff_chips(event.spec_before, event.spec_after, event.adjusted)
-                yield ChipsEvent(chips=chips)
-                yield SpecEvent(spec=event.spec_after)
-                spec_version += 1
-            else:
-                yield ErrorEvent(text=_TOOL_FAILURE_TEXT)
-
-        elif isinstance(event, ContentDelta):
-            yield TokenEvent(text=event.text)
-
-        elif isinstance(event, TurnDone):
-            yield DoneEvent(summary=event.summary, spec_version=spec_version)
-
-        elif isinstance(event, TurnError):
-            yield ErrorEvent(text=_ERROR_TEXT.get(event.category, _DEFAULT_ERROR_TEXT))
+async def present_async(
+    raw_events: AsyncIterable[RawEvent],
+    *,
+    include_reasoning_text: bool = False,
+    now: Callable[[], float] = time.monotonic,
+) -> AsyncIterator[PresenterEvent]:
+    """`present()`'s async twin (issue 17): the real model loop is an
+    `AsyncIterator[RawEvent]` because it awaits the provider between
+    events, so the router needs an `async for`-able translator too. Same
+    `_PresenterState`, same rules — see `present()`'s docstring."""
+    state = _PresenterState(include_reasoning_text=include_reasoning_text, now=now)
+    async for event in raw_events:
+        for ui_event in state.handle(event):
+            yield ui_event
 
 
 def _diff_chips(before: ReportSpec, after: ReportSpec, adjusted: list[Repair]) -> list[str]:

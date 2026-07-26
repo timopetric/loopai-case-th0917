@@ -1,6 +1,6 @@
 # 17 — Live model and Tool Step budget
 
-Status: ready-for-agent
+Status: done
 
 ## Parent
 

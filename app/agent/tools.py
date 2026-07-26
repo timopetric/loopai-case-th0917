@@ -170,6 +170,49 @@ _ARGS_MODEL: dict[str, type[BaseModel]] = {
     "get_meta": GetMetaArgs,
 }
 
+# One short, fixed description per tool for the OpenAI-compatible `tools`
+# schema (issue 17) — kept next to `_ARGS_MODEL` so the two stay in sync by
+# construction (`build_tool_definitions` iterates `_ARGS_MODEL`, so a new
+# tool without an entry here raises `KeyError` immediately rather than
+# silently shipping an undocumented tool to the model).
+_TOOL_DESCRIPTIONS: dict[str, str] = {
+    "set_date_range": "Set the report's date range. Both bounds together, never separately.",
+    "set_metrics": "Replace the full list of metrics shown on the report.",
+    "set_grouping": "Set the grouping dimension: none, agent (an Actor), or mailbox.",
+    "set_sort": "Sort report rows within each bucket by one currently-selected metric.",
+    "set_columns": "Set the left-to-right display order of columns.",
+    "set_chart": "Set which metric the chart shows (added to metrics if not already selected).",
+    "set_layout": "Set report granularity (day/total) and layout (long/pivot).",
+    "run_report": "Execute the current report spec and return a compact table summary.",
+    "get_meta": "Look up actors, mailboxes, the metric catalogue, and the Coverage Window.",
+}
+
+
+def build_tool_definitions() -> list[dict]:
+    """The OpenAI-compatible `tools` array (issue 17), generated from the
+    same pydantic argument models each tool validates its call against
+    (`_ARGS_MODEL`) — one source of truth for both what a call must look
+    like and what schema is advertised to the model, rather than a
+    hand-maintained second copy that can drift."""
+    definitions: list[dict] = []
+    for name, model in _ARGS_MODEL.items():
+        schema = model.model_json_schema()
+        schema.pop("title", None)
+        for prop in schema.get("properties", {}).values():
+            if isinstance(prop, dict):
+                prop.pop("title", None)
+        definitions.append(
+            {
+                "type": "function",
+                "function": {
+                    "name": name,
+                    "description": _TOOL_DESCRIPTIONS[name],
+                    "parameters": schema,
+                },
+            }
+        )
+    return definitions
+
 
 # ── Call / outcome shapes ────────────────────────────────────────────────
 
