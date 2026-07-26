@@ -242,7 +242,17 @@ export function ReportTable({
 
       <div
         ref={scrollParentRef}
-        className="min-h-0 flex-1 overflow-auto rounded-lg border border-hairline bg-canvas"
+        // The min-height floor belongs HERE, on the scrolling grid, not on
+        // an outer wrapper: the Warnings banner and the density row are
+        // siblings inside this component, so a floor further out is spent on
+        // them first — with two warnings that left exactly one visible row.
+        // The floor is viewport-relative rather than a fixed rem: inside the
+        // pane's own scroll container `flex-1` does not reclaim the spare
+        // room, so a fixed floor left the grid the same few rows on a tall
+        // window as on a short one. 40vh is ~5 rows at 620px and ~9 at
+        // 1000px. Past that the pane scrolls (ReportPane is
+        // `overflow-y-auto`) rather than compressing the report to nothing.
+        className="min-h-[40vh] flex-1 overflow-auto rounded-lg border border-hairline bg-canvas"
       >
         {/* `border-separate` + zero spacing, not `border-collapse`: sticky
             positioning on `<th>`/`<td>` is unreliable under

@@ -107,7 +107,12 @@ export function ReportPane({
           viewport — past this the pane scrolls instead of crushing the
           report. */}
       {table && (
-        <div className="mt-4 flex min-h-64 min-w-0 flex-1 flex-col">
+        // `min-h-0` is load-bearing: without it a flex item's min-height is
+        // `auto`, so this wrapper refuses to shrink below its content, grows
+        // to the table's full 67,000px and hands the virtualiser an unbounded
+        // viewport — putting every row back in the DOM. The row floor lives
+        // on the scrolling grid inside ReportTable, not here.
+        <div className="mt-4 flex min-h-0 min-w-0 flex-1 flex-col">
           <ReportTable
             table={table}
             groupBy={groupBy}

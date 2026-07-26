@@ -72,3 +72,26 @@ Both need a decision that is not this rework's to make.
   NVDA/VoiceOver announcement behaviour is unverified.
 - The clamped and refused date ranges, the assumptions modal's focus restore, and column reordering
   were verified structurally rather than clicked through.
+
+## Follow-up, same day — the table collapsed to one row
+
+Reported from a real window: the table showed only its header and the Total row, with nothing
+scrollable to reach.
+
+The min-height floor from fix (4) was on the *outer wrapper*, but the Warnings banner and the
+density row are siblings **inside** `ReportTable`. With two warnings (selecting `actioned_emails`
+adds the non-additivity Warning) the banner alone spent ~120px of the 256px floor, leaving about
+one row.
+
+Three corrections, verified at 620px and 1000px viewport heights:
+
+- the floor moved onto the **scrolling grid itself**, so it guarantees rows rather than whatever is
+  left after the banners
+- the wrapper regained **`min-h-0`** — removing it left `min-height: auto`, which refused to shrink
+  and put all 1,526 rows back in the DOM, reintroducing the original virtualisation bug within
+  minutes of fixing it
+- the floor is **`40vh`, not a fixed rem**: inside the pane's own scroll container `flex-1` does not
+  reclaim spare room, so a fixed floor gave a tall window the same few rows as a short one
+
+Now ~5 rows at 620px and ~9 at 1000px, with 21 rows in the DOM and the report column scrolling for
+the rest.
