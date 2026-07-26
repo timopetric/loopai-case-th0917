@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 
+import { AssumptionsModal } from "./AssumptionsModal";
 import { ReportTable } from "./ReportTable";
 import { SignIn } from "./SignIn";
 import { UNAUTHORIZED_EVENT, apiFetch } from "./lib/apiClient";
 import { getStoredApiKey } from "./lib/apiKey";
+import type { AssumptionNote } from "./lib/assumptions";
+import { fetchAssumptions } from "./lib/assumptions";
 import type { Meta } from "./lib/meta";
 import { fetchMeta } from "./lib/meta";
 import type { ReportSpec, ReportTable as ReportTableData, SortSpec } from "./lib/report";
@@ -43,6 +46,14 @@ export function App() {
   const [status, setStatus] = useState<"checking" | "ok" | "error">("checking");
   const [meta, setMeta] = useState<Meta | null>(null);
   const [table, setTable] = useState<ReportTableData | null>(null);
+  /**
+   * The coverage banner's modal (issue 09, user story 28). `assumptions` is
+   * fetched once alongside `meta`; the banner is always clickable once it
+   * loads, and the modal renders `assumptions` verbatim — see
+   * `AssumptionsModal`'s docstring for why it holds no text of its own.
+   */
+  const [assumptions, setAssumptions] = useState<AssumptionNote[] | null>(null);
+  const [showAssumptions, setShowAssumptions] = useState(false);
   const [reportError, setReportError] = useState<string | null>(null);
   /**
    * Duration display (issue 05, user story 14): per-ticket average ("how
@@ -141,6 +152,9 @@ export function App() {
     fetchMeta()
       .then(setMeta)
       .catch(() => setMeta(null));
+    fetchAssumptions()
+      .then(setAssumptions)
+      .catch(() => setAssumptions(null));
   }, [signedIn]);
 
   useEffect(() => {
@@ -229,7 +243,27 @@ export function App() {
       {meta && (
         <p>
           Coverage Window: {meta.coverage_window.from_date} – {meta.coverage_window.to_date}
+          {" · "}
+          <button
+            type="button"
+            onClick={() => setShowAssumptions(true)}
+            disabled={!assumptions}
+            style={{
+              background: "none",
+              border: "none",
+              padding: 0,
+              color: "#0d6efd",
+              textDecoration: "underline",
+              cursor: assumptions ? "pointer" : "default",
+              font: "inherit",
+            }}
+          >
+            What assumptions does this report make?
+          </button>
         </p>
+      )}
+      {showAssumptions && assumptions && (
+        <AssumptionsModal notes={assumptions} onClose={() => setShowAssumptions(false)} />
       )}
       <p>Backend status: {status}</p>
       <h2>Report builder</h2>

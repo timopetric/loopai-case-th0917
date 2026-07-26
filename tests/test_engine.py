@@ -445,7 +445,11 @@ class TestActionedEmailsNonAdditiveAcrossActors:
         table = execute(spec, dataset)
 
         assert table.totals["actioned_emails"] == 19024
-        assert table.warnings == []
+        # No actioned_emails-specific warning — but the range still includes
+        # the Coverage Window's partial final day (issue 09), so that
+        # warning alone is expected here.
+        assert not any("actioned_emails" in w for w in table.warnings)
+        assert any("partial" in w.lower() for w in table.warnings)
 
     def test_ungrouped_the_same_metric_also_totals_normally(self, dataset) -> None:
         spec = ReportSpec(
@@ -459,7 +463,11 @@ class TestActionedEmailsNonAdditiveAcrossActors:
         table = execute(spec, dataset)
 
         assert table.totals["actioned_emails"] == 19024
-        assert table.warnings == []
+        # No actioned_emails-specific warning — but the range still includes
+        # the Coverage Window's partial final day (issue 09), so that
+        # warning alone is expected here.
+        assert not any("actioned_emails" in w for w in table.warnings)
+        assert any("partial" in w.lower() for w in table.warnings)
 
 
 class TestSingleBucketCollapseIsFirstClassForBothMetricFamilies:
@@ -918,6 +926,69 @@ class TestUnsupportedMetrics:
 
         with pytest.raises(UnsupportedMetricError):
             execute(spec, dataset)
+
+
+class TestPartialFinalDayFlag:
+    """Issue 09 hygiene touch: the Coverage Window's last day
+    (2026-07-23 in the fixture) holds partial data — 330 resolved versus
+    2534 the day before — and will drag down any trailing average or "last
+    N days" view that includes it. `execute()` flags this with a warning
+    whenever the selected range's last Bucket is the window's last day,
+    rather than letting it silently distort a trend (api-report-fresh.md
+    §5.3, §5.5)."""
+
+    def test_a_range_including_the_final_day_is_flagged(self, dataset) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-20",
+            date_to="2026-07-23",
+            granularity="day",
+            group_by="none",
+        )
+
+        table = execute(spec, dataset)
+
+        assert any("partial" in w.lower() and "2026-07-23" in w for w in table.warnings)
+
+    def test_a_range_that_stops_short_of_the_final_day_is_not_flagged(self, dataset) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-15",
+            date_to="2026-07-18",
+            granularity="day",
+            group_by="none",
+        )
+
+        table = execute(spec, dataset)
+
+        assert not any("partial" in w.lower() for w in table.warnings)
+
+    def test_the_flag_applies_to_a_total_granularity_report_too(self, dataset) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="total",
+            group_by="none",
+        )
+
+        table = execute(spec, dataset)
+
+        assert any("partial" in w.lower() and "2026-07-23" in w for w in table.warnings)
+
+    def test_the_flag_applies_to_pivot_layout_too(self, dataset) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-20",
+            date_to="2026-07-23",
+            granularity="day",
+            group_by="none",
+            layout="pivot",
+        )
+
+        table = execute(spec, dataset)
+
+        assert any("partial" in w.lower() and "2026-07-23" in w for w in table.warnings)
 
 
 class TestCoverageValidation:

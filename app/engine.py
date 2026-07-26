@@ -188,10 +188,11 @@ def execute(spec: ReportSpec, dataset: Dataset) -> ReportTable:
     spec, coverage_warnings = clamp_to_coverage(spec, dataset.coverage)
 
     indices = _selected_bucket_indices(dataset.ticks, spec.date_from, spec.date_to)
+    partial_day_warnings = _partial_final_day_warning(dataset, indices)
 
     if spec.layout == "pivot":
         table = _execute_pivot(spec, dataset, indices)
-        table.warnings = coverage_warnings + table.warnings
+        table.warnings = coverage_warnings + partial_day_warnings + table.warnings
         return table
 
     columns = [_column_meta(m) for m in _ordered_metrics(spec)]
@@ -210,7 +211,7 @@ def execute(spec: ReportSpec, dataset: Dataset) -> ReportTable:
         rows=rows,
         totals=totals,
         total_counts=total_counts,
-        warnings=coverage_warnings + warnings,
+        warnings=coverage_warnings + partial_day_warnings + warnings,
     )
 
 
@@ -294,6 +295,25 @@ def _selected_bucket_indices(ticks: list[str], date_from: date, date_to: date) -
     arrays (api-report-fresh.md §4.2: value[i] is anchored to ticks[i]), so
     the final tick is a boundary, never a bucket, and is excluded here."""
     return [i for i, tick in enumerate(ticks[:-1]) if date_from <= _bucket_day(tick) <= date_to]
+
+
+def _partial_final_day_warning(dataset: Dataset, indices: list[int]) -> list[str]:
+    """Issue 09 hygiene touch: the Coverage Window's last day is a partial
+    day upstream (api-report-fresh.md §5.3 — 2026-07-23 has ~17% of the
+    preceding weekday's volume, consistent with a capture mid-day rather
+    than a real drop). Any average or trend that folds it in will read as
+    worse than reality. Flagged here, once, so every layout (long, pivot,
+    any granularity) that includes that Bucket carries the same warning
+    rather than each caller remembering to check."""
+    if not indices:
+        return []
+    window_last_day = date.fromisoformat(dataset.coverage.to_date)
+    if _bucket_day(dataset.ticks[max(indices)]) != window_last_day:
+        return []
+    return [
+        f"{window_last_day.isoformat()} is the final day of the Coverage Window and holds "
+        "partial data — it will drag down any trailing average or trend that includes it."
+    ]
 
 
 def _metric_total_and_count(
