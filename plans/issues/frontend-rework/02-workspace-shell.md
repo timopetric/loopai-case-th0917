@@ -1,6 +1,6 @@
 # 02 — Three-pane workspace shell with the Assistant docked right
 
-Status: ready-for-agent
+Status: done
 
 ## Parent
 

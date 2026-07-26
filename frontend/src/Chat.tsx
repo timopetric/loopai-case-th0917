@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { streamAgentMessage } from "./lib/agentStream";
-import type { ReportSpec } from "./lib/report";
+import { useReportSpecStore } from "./store/reportSpecStore";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -9,27 +9,26 @@ interface ChatMessage {
   chips: string[];
 }
 
-interface ChatProps {
-  /** The exact spec the on-screen builder currently shows — sent as the
-   * starting point for the Assistant's next turn (architecture.md §6: "a
-   * POST carrying state"). */
-  spec: ReportSpec;
-  /** Applies a full spec to the SAME store the builder controls edit
-   * (`App.tsx`'s `applySpec`) — called on every `spec` event, so the
-   * controls visibly move one field at a time as the Assistant works
-   * (user story 38, ADR-0002). */
-  onApplySpec: (spec: ReportSpec) => void;
-}
-
 /**
- * The Assistant chat panel (issue 15). Renders the presenter's small, fixed
- * vocabulary — a thinking row with an elapsed counter, chips as tags on the
- * Assistant's message, and streamed prose (architecture.md §6, §7). Never
- * touches a tool name, a raw argument or reasoning text outside the
- * dev-only panel below — those never arrive here in the first place, since
- * `app/agent/presenter.py` is the chokepoint that keeps them off the wire.
+ * The Assistant chat panel (issue 15; docked as `AssistantPane` in issue
+ * 02). Renders the presenter's small, fixed vocabulary — a thinking row
+ * with an elapsed counter, chips as tags on the Assistant's message, and
+ * streamed prose (architecture.md §6, §7). Never touches a tool name, a raw
+ * argument or reasoning text outside the dev-only panel below — those never
+ * arrive here in the first place, since `app/agent/presenter.py` is the
+ * chokepoint that keeps them off the wire.
+ *
+ * Reads and writes the single Report Spec store (`store/reportSpecStore.ts`)
+ * directly rather than taking a spec via props: `buildSpec()` is the exact
+ * spec the on-screen builder currently shows, sent as the starting point for
+ * the Assistant's next turn (architecture.md §6: "a POST carrying state");
+ * `applySpec` is called on every `spec` event, so the controls visibly move
+ * one field at a time as the Assistant works (user story 38, ADR-0002) —
+ * through the SAME store `BuilderPane`'s controls edit.
  */
-export function Chat({ spec, onApplySpec }: ChatProps) {
+export function Chat() {
+  const buildSpec = useReportSpecStore((state) => state.buildSpec);
+  const applySpec = useReportSpecStore((state) => state.applySpec);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -45,8 +44,6 @@ export function Chat({ spec, onApplySpec }: ChatProps) {
 
   const timerRef = useRef<number | null>(null);
   const thinkingStartRef = useRef<number | null>(null);
-  const specRef = useRef(spec);
-  specRef.current = spec;
 
   useEffect(
     () => () => {
@@ -96,7 +93,7 @@ export function Chat({ spec, onApplySpec }: ChatProps) {
     }
 
     try {
-      await streamAgentMessage(text, specRef.current, {
+      await streamAgentMessage(text, buildSpec(), {
         onThinking: (event) => {
           if (event.state === "start") {
             setThinking(true);
@@ -113,7 +110,7 @@ export function Chat({ spec, onApplySpec }: ChatProps) {
             chips: [...message.chips, ...event.chips],
           }));
         },
-        onSpec: (event) => onApplySpec(event.spec),
+        onSpec: (event) => applySpec(event.spec),
         onToken: (event) => {
           updateLastAssistantMessage((message) => ({
             ...message,
@@ -160,7 +157,7 @@ export function Chat({ spec, onApplySpec }: ChatProps) {
       >
         {messages.length === 0 && (
           <p style={{ color: "#888", margin: 0 }}>
-            Ask for a report in plain English — e.g. "resolved and handle time by agent".
+            Ask for a report in plain English — e.g. "resolved and handle time by Actor".
           </p>
         )}
         {messages.map((message, index) => (
@@ -225,7 +222,7 @@ export function Chat({ spec, onApplySpec }: ChatProps) {
           onKeyDown={(event) => {
             if (event.key === "Enter") send();
           }}
-          placeholder='e.g. "resolved and handle time by agent"'
+          placeholder='e.g. "resolved and handle time by Actor"'
           disabled={busy}
           style={{ flex: 1 }}
         />
