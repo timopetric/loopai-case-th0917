@@ -74,6 +74,40 @@ export interface ReportRow {
   counts: Record<string, number>;
 }
 
+/** Mirrors `app/models.py`'s `ChartPoint` (issue 14). `value` is `null` for
+ * a withheld cell — a zero-count Duration Metric average — and must render
+ * as a gap in the line, never a drop to `0`. */
+export interface ChartPoint {
+  bucket: string;
+  value: number | null;
+}
+
+/** Mirrors `app/models.py`'s `ChartSeries` (issue 14). `color_slot` is a
+ * stable index (0-7) into the frontend's own fixed palette
+ * (`CHART_PALETTE` in `Chart.tsx`), assigned server-side from a hash of
+ * `key` (the entity id) — never from this series' position in the array,
+ * so an Actor keeps its colour when the date range reshuffles the ranking
+ * (`app/engine.py::_color_slot`). The hex values themselves are a
+ * rendering constant that lives only here — nothing upstream needs them —
+ * so they are not duplicated into Python. */
+export interface ChartSeries {
+  key: string;
+  label: string;
+  color_slot: number;
+  points: ChartPoint[];
+}
+
+/** Mirrors `app/models.py`'s `ChartData` (issue 14) — the chart's own view
+ * of this same `ReportTable`, never a second data path. */
+export interface ChartData {
+  metric: string;
+  series: ChartSeries[];
+  /** Group rows beyond the eight shown, dropped rather than folded into an
+   * "Other" aggregate (wrong for the non-additive `actioned_emails`,
+   * meaningless for durations) — the legend discloses this count. */
+  dropped: number;
+}
+
 export interface ReportTable {
   columns: ColumnMeta[];
   rows: ReportRow[];
@@ -85,6 +119,9 @@ export interface ReportTable {
   /** The Σcount behind each Duration Metric total, mirroring `ReportRow.counts`. */
   total_counts: Record<string, number>;
   warnings: string[];
+  /** The line chart's data (issue 14) — `null` when `granularity ===
+   * "total"`, since there is no time axis to plot against. */
+  chart: ChartData | null;
 }
 
 /**

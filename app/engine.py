@@ -61,10 +61,27 @@ Issue 07 adds three presentation controls that share this one engine pass:
   silently dropping the user's other selected columns, a warning says so.
 """
 
+import hashlib
 from datetime import date
 
-from app.models import ColumnMeta, Metric, ReportRow, ReportSpec, ReportTable, SortSpec
+from app.models import (
+    ChartData,
+    ChartPoint,
+    ChartSeries,
+    ColumnMeta,
+    Metric,
+    ReportRow,
+    ReportSpec,
+    ReportTable,
+    SortSpec,
+)
 from app.upstream import METRIC_CATALOGUE, CoverageWindow, Dataset, EntityBreakdown
+
+# The chart's fixed categorical palette has exactly 8 slots (issue 14,
+# architecture.md §7, dataviz skill's validated default order) — "never
+# generate a 9th hue" is enforced structurally by capping selection at this
+# many series, not by clamping an out-of-range index.
+_CHART_PALETTE_SIZE = 8
 
 _METRIC_INFO_BY_KEY = {info.key: info for info in METRIC_CATALOGUE}
 _COUNTER_KEYS = frozenset(info.key for info in METRIC_CATALOGUE if info.kind == "counter")
@@ -189,10 +206,12 @@ def execute(spec: ReportSpec, dataset: Dataset) -> ReportTable:
 
     indices = _selected_bucket_indices(dataset.ticks, spec.date_from, spec.date_to)
     partial_day_warnings = _partial_final_day_warning(dataset, indices)
+    chart = _build_chart(spec, dataset, indices)
 
     if spec.layout == "pivot":
         table = _execute_pivot(spec, dataset, indices)
         table.warnings = coverage_warnings + partial_day_warnings + table.warnings
+        table.chart = chart
         return table
 
     columns = [_column_meta(m) for m in _ordered_metrics(spec)]
@@ -212,6 +231,7 @@ def execute(spec: ReportSpec, dataset: Dataset) -> ReportTable:
         totals=totals,
         total_counts=total_counts,
         warnings=coverage_warnings + partial_day_warnings + warnings,
+        chart=chart,
     )
 
 
@@ -467,6 +487,79 @@ def _totals(
             total_counts[m.value] = total_count
 
     return totals, total_counts, warnings
+
+
+def _color_slot(entity_id: str) -> int:
+    """A palette slot (0-7) from a stable hash of `entity_id` — never from
+    its position in a ranking (architecture.md §7, issue 14 user story 57).
+
+    `hashlib.sha256` is used deliberately instead of the builtin `hash()`:
+    Python randomises `hash()` for `str` per process (`PYTHONHASHSEED`), so
+    the same Actor would get a different slot on every server restart. A
+    cryptographic hash is overkill for the purpose but is stable across
+    processes and versions, which is the one property that matters here.
+    """
+    digest = hashlib.sha256(entity_id.encode("utf-8")).digest()
+    return digest[0] % _CHART_PALETTE_SIZE
+
+
+def _build_chart(spec: ReportSpec, dataset: Dataset, indices: list[int]) -> ChartData | None:
+    """The chart's own view of the same Report Table (module docstring,
+    issue 14) — never a second data path: it is built from the identical
+    `_rows_ungrouped`/`_rows_grouped` the long layout uses, over the same
+    `indices`, so a chart point is always the exact number the day×group
+    table cell would show.
+
+    Hidden entirely when the report has no time axis to plot
+    (`granularity == "total"`, user story 60) — returns `None` rather than
+    a chart with one point per series.
+
+    Series are capped at the eight largest by **raw `Σvalue`** (never a
+    display value): ranking by an already-averaged `duration_display ==
+    "avg"` cell would be exactly the "averaging averages" defect the module
+    docstring warns against, so this reuses `_metric_total_and_count`'s
+    `total_value` — the same quantity `_totals` computes — rather than
+    summing the per-day cells the chart plots.
+    """
+    if spec.granularity == "total":
+        return None
+
+    metric = spec.effective_chart_metric
+
+    if spec.group_by == "none":
+        rows = _rows_ungrouped(spec, dataset, indices)
+        points = [ChartPoint(bucket=row.bucket, value=row.values[metric.value]) for row in rows]
+        series = [ChartSeries(key="total", label=_label(metric.value), color_slot=0, points=points)]
+        return ChartData(metric=metric.value, series=series, dropped=0)
+
+    entities = dataset.actors if spec.group_by == "agent" else dataset.mailboxes
+    rows = _rows_grouped(spec, entities, dataset.ticks, indices)
+
+    points_by_entity: dict[str, list[ChartPoint]] = {entity.id: [] for entity in entities}
+    for row in rows:
+        assert row.group_key is not None  # group_by != "none" here
+        points_by_entity[row.group_key].append(
+            ChartPoint(bucket=row.bucket, value=row.values[metric.value])
+        )
+
+    def _ranking_total(entity: EntityBreakdown) -> float:
+        total_value, _ = _metric_total_and_count(entity.metrics, entity.counts, metric, indices)
+        return total_value
+
+    ranked = sorted(entities, key=_ranking_total, reverse=True)
+    top = ranked[:_CHART_PALETTE_SIZE]
+    dropped = len(ranked) - len(top)
+
+    series = [
+        ChartSeries(
+            key=entity.id,
+            label=entity.name,
+            color_slot=_color_slot(entity.id),
+            points=points_by_entity[entity.id],
+        )
+        for entity in top
+    ]
+    return ChartData(metric=metric.value, series=series, dropped=dropped)
 
 
 def _execute_pivot(spec: ReportSpec, dataset: Dataset, indices: list[int]) -> ReportTable:

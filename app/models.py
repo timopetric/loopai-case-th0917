@@ -165,6 +165,50 @@ class ReportRow(BaseModel):
     the UI surfaces it as a cell tooltip, not a rendered row."""
 
 
+class ChartPoint(BaseModel):
+    """One point on a chart series: a Bucket and its value.
+
+    `value` is `None` for a withheld cell — a zero-count Duration Metric
+    average (issue 05's sentinel, same rule as `ReportRow.values`) — and
+    must render as a gap in the line, never as a drop to `0.0` (issue 14)."""
+
+    bucket: str
+    value: float | None
+
+
+class ChartSeries(BaseModel):
+    """One line on the chart — one group row, capped at the eight largest
+    by total (issue 14, user story 56).
+
+    `color_slot` is a stable index (0-7) into a fixed eight-hue palette,
+    assigned from a hash of `key` (the entity id) — never from rank in the
+    series list. The palette itself (including its light/dark hex pairs) is
+    a rendering constant and lives in the frontend only; the backend hands
+    over the slot index so an Actor's colour cannot change just because the
+    date range changed the sort order (architecture.md §7, issue 14 user
+    story 57)."""
+
+    key: str
+    label: str
+    color_slot: int
+    points: list[ChartPoint]
+
+
+class ChartData(BaseModel):
+    """The chart's own view of the Report Table (issue 14): one metric,
+    at most eight series, with the remainder disclosed as a count rather
+    than folded into an "Other" aggregate (wrong for the non-additive
+    `actioned_emails`, meaningless for durations). `None` on `ReportTable`
+    when the report has no time axis to plot (`granularity == "total"`)."""
+
+    metric: str
+    series: list[ChartSeries]
+    dropped: int
+    """How many group rows beyond the eight shown were dropped (issue 14,
+    user story 56) — always `0` when `group_by == "none"` or when there are
+    eight or fewer entities."""
+
+
 class ReportTable(BaseModel):
     """The executed result of a Report Spec (CONTEXT.md): columns, rows,
     totals — raw numbers and metadata, formatting happens at render time.
@@ -181,3 +225,7 @@ class ReportTable(BaseModel):
     total_counts: dict[str, float] = Field(default_factory=dict)
     """The Σcount behind each Duration Metric total, mirroring `ReportRow.counts`."""
     warnings: list[str] = Field(default_factory=list)
+    chart: ChartData | None = None
+    """The line chart's data, derived from this same Report Table rather
+    than a second data path (issue 14): `None` when `granularity == "total"`
+    (no time axis to plot), computed by `engine._build_chart` otherwise."""

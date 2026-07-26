@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { AssumptionsModal } from "./AssumptionsModal";
+import { Chart } from "./Chart";
 import { ReportTable } from "./ReportTable";
 import { SignIn } from "./SignIn";
 import { UNAUTHORIZED_EVENT, apiFetch } from "./lib/apiClient";
@@ -642,6 +643,18 @@ export function App() {
         // placeholder dates above) — a labelled loading state here, not a
         // blank gap, is what stands in for the table until then.
         <p role="status">Loading report…</p>
+      )}
+      {table && (
+        <Chart
+          chart={table.chart}
+          metricUnit={
+            (meta?.metrics.find((m) => m.key === table.chart?.metric)
+              ?.unit as "count" | "hours" | "replies" | undefined) ?? null
+          }
+          metrics={metrics}
+          chartMetric={chartMetric}
+          onChartMetricChange={setChartMetric}
+        />
       )}
       {table && (
         <ReportTable
