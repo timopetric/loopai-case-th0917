@@ -193,9 +193,18 @@ def test_withheld_value_is_a_distinct_component_never_a_bare_dash_string() -> No
 
 
 def test_warnings_render_as_a_banner_not_a_bare_list() -> None:
-    """'Warnings render as a banner above the table, not loose paragraphs'."""
+    """'Warnings render as a banner above the table, not loose paragraphs'.
+
+    The role is `status`, not `alert`: issue 09's browser pass found that an
+    assertive region interrupted the user on every report rebuild, and every
+    control change rebuilds the report. These Warnings are a standing property
+    of the result, so they are announced politely."""
     source = _read(TABLE_FILE)
-    assert 'role="alert"' in source
+    assert 'role="status"' in source
+    assert 'role="alert"' not in source, (
+        "the Warnings banner must announce politely — an assertive region cuts "
+        "across whatever the user is reading each time the report rebuilds"
+    )
     # A banner has a surface/border, not just a bare <ul>.
     assert "rounded-lg" in source and "border" in source
     assert "<ul" in source and "warning" in source.lower()

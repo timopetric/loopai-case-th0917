@@ -272,7 +272,11 @@ export function Chart({
       {chart.series.length === 0 ? (
         <p className="text-body-sm text-steel">No series to plot.</p>
       ) : (
-        <ResponsiveContainer width="100%" height={320}>
+        // 240 rather than 320: the chart and the Report Table share one
+        // column, and at 320 plus its legend the table was left about 130px
+        // on a 900px viewport — the report is the centre of the product and
+        // was the smallest thing on screen.
+        <ResponsiveContainer width="100%" height={240}>
           {/* Right margin makes room for the direct labels riding the line
               ends (≤4 series) without clipping them at the plot edge. */}
           <LineChart data={data} margin={{ top: 8, right: showDirectLabels ? 72 : 24, left: 8, bottom: 8 }}>

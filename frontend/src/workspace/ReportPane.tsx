@@ -61,7 +61,11 @@ export function ReportPane({
     // min-h-0`, the flexbox idiom for "take the rest of the space, but
     // don't grow past it."
     <section
-      className="flex min-w-0 flex-1 flex-col overflow-hidden bg-canvas p-4"
+      // Scrolls itself rather than the document. With the table holding a
+      // min-height floor, a short viewport would otherwise push the whole
+      // page taller than the screen — which scrolls the docked Assistant and
+      // the builder rail out of view, undoing the point of the shell.
+      className="flex min-w-0 flex-1 flex-col overflow-y-auto bg-canvas p-4"
       aria-busy={loading}
     >
       {reportError && (
@@ -98,8 +102,12 @@ export function ReportPane({
           onChartMetricChange={setChartMetric}
         />
       )}
+      {/* The table carries a min-height floor, so the chart and the Warnings
+          banner can never squeeze it down to a couple of rows on a short
+          viewport — past this the pane scrolls instead of crushing the
+          report. */}
       {table && (
-        <div className="mt-4 flex min-h-0 flex-1 flex-col">
+        <div className="mt-4 flex min-h-64 min-w-0 flex-1 flex-col">
           <ReportTable
             table={table}
             groupBy={groupBy}

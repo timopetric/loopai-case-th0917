@@ -238,8 +238,8 @@ export function Chat({ meta }: { meta: Meta | null }) {
           onClick={send}
           disabled={busy || !input.trim()}
           className="h-11 rounded-md bg-primary px-4 text-body-sm-medium font-medium text-on-primary
-            hover:bg-primary-deep disabled:cursor-not-allowed disabled:bg-hairline-strong
-            disabled:text-muted"
+            hover:bg-primary-deep disabled:cursor-not-allowed disabled:bg-hairline
+            disabled:text-stone"
         >
           {busy ? "Sending…" : "Send"}
         </button>

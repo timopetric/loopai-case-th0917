@@ -73,8 +73,8 @@ export function SignIn({ onSignedIn }: SignInProps) {
             disabled={checking || key.length === 0}
             className="mt-5 h-11 w-full rounded-md bg-primary text-button-md font-medium
               text-on-primary transition-colors duration-[var(--motion-base)] ease-brand
-              hover:bg-primary-deep disabled:cursor-not-allowed disabled:bg-hairline-strong
-              disabled:text-muted"
+              hover:bg-primary-deep disabled:cursor-not-allowed disabled:bg-hairline
+              disabled:text-stone"
           >
             {checking ? "Checking…" : "Sign in"}
           </button>

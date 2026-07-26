@@ -205,7 +205,14 @@ export function WorkspaceShell() {
   ]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-canvas">
+    // `min-h-screen` alone is a *minimum*: it never caps the flex chain, so
+    // every `min-h-0 flex-1 overflow-auto` below grew to its content instead
+    // of scrolling, the table's scroll parent reported a 67,000px client
+    // height, and the virtualiser correctly concluded all 1,512 rows were
+    // visible and rendered every one of them. `lg:h-screen` gives the chain a
+    // definite height to distribute so the panes actually bound; below that
+    // breakpoint the panes stack and the page is meant to scroll.
+    <div className="flex min-h-screen flex-col bg-canvas overflow-x-hidden lg:h-screen lg:min-h-0 lg:overflow-hidden">
       <Header
         meta={meta}
         assumptions={assumptions}

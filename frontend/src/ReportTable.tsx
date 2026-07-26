@@ -214,10 +214,14 @@ export function ReportTable({
     virtualRows.length > 0 ? totalSizePx - virtualRows[virtualRows.length - 1].end : 0;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col">
       {table.warnings.length > 0 && (
         <div
-          role="alert"
+          // `status` (polite), not `alert`: these Warnings are a standing
+          // property of the report, not an interruption, and every control
+          // change rebuilds the report — an assertive region would cut across
+          // whatever the user was reading each time.
+          role="status"
           className="mb-3 rounded-lg border border-beige-deep bg-cream px-4 py-3 text-body-sm text-ink-tint"
         >
           <p className="mb-1 text-micro-uppercase font-semibold text-steel">Warnings</p>
@@ -229,9 +233,9 @@ export function ReportTable({
         </div>
       )}
 
-      <div className="mb-2 flex items-center justify-end gap-2">
+      <div className="mb-2 flex flex-wrap items-center justify-end gap-2">
         <span className="text-micro font-medium uppercase tracking-wide text-muted">Density</span>
-        <div className="w-44">
+        <div className="max-w-full">
           <SegmentedControl name="Row density" options={DENSITY_OPTIONS} value={density} onChange={setDensity} />
         </div>
       </div>

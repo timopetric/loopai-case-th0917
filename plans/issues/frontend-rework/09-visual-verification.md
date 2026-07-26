@@ -1,6 +1,6 @@
 # 09 — Browser-driven self-correction loop against the built image
 
-Status: ready-for-agent
+Status: done
 
 ## Parent
 
@@ -19,12 +19,11 @@ calls, so iterate until the interface is actually good rather than merely comple
 starting. If it is unavailable, stop and say so rather than substituting curl checks and declaring
 the interface verified — a screenshot is the entire point of this slice.
 
-**Status of that prerequisite, 2026-07-26:** the owner configured the MCP server and reloaded
-plugins partway through the implementation run. It did not become visible to the running session —
-three probes (keyword search and a direct lookup by tool name) found nothing, because the tool
-roster is fixed when a session starts. **It is expected to work in a fresh session; start one and
-re-confirm before running this slice.** Two earlier sessions reported the tool missing outright,
-so re-confirm rather than assume.
+**Outcome, 2026-07-26:** the owner configured the MCP server and reloaded plugins during the run,
+and it became available. This slice was then run against the built image. See
+[`09-verification-record.md`](09-verification-record.md) for what was confirmed, what was fixed —
+including virtualisation not binding at all behind a `min-h-screen` root — and the two findings
+deliberately left for a decision.
 
 Run against the **built image, not the development server**. The rework adds a CSS build step and
 bundled font files, which are exactly what works locally and fails in the image.

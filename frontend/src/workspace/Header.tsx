@@ -81,21 +81,23 @@ export function Header({
 }) {
   return (
     <header className="border-b border-hairline bg-cream-soft px-4 py-3">
-      {meta?.dev_fake_upstream && (
+      {/* One compact row rather than two stacked blocks: as full-width
+          banners these cost ~100px of the viewport before the report even
+          started, and the report is what the screen is for. Both are still
+          always visible whenever a fake is active (ADR-0003) — a screenshot
+          must never be mistakable for live evidence. */}
+      {(meta?.dev_fake_upstream || meta?.dev_fake_llm) && (
         <p
           role="status"
-          className="mb-2 rounded-md border border-beige-deep bg-cream px-3 py-2 text-body-sm-medium font-semibold text-ink-tint"
+          className="mb-2 flex flex-wrap gap-x-3 gap-y-1 rounded-md border border-beige-deep
+            bg-cream px-3 py-1.5 text-body-sm-medium font-semibold text-ink-tint"
         >
-          DEV_FAKE_UPSTREAM is on — this report is built from the committed fixture, not live
-          data.
-        </p>
-      )}
-      {meta?.dev_fake_llm && (
-        <p
-          role="status"
-          className="mb-2 rounded-md border border-beige-deep bg-cream px-3 py-2 text-body-sm-medium font-semibold text-ink-tint"
-        >
-          DEV_FAKE_LLM is on — the Assistant runs a scripted conversation, not a real model.
+          {meta?.dev_fake_upstream && (
+            <span>DEV_FAKE_UPSTREAM — the report is the committed fixture, not live data.</span>
+          )}
+          {meta?.dev_fake_llm && (
+            <span>DEV_FAKE_LLM — the Assistant is scripted, not a real model.</span>
+          )}
         </p>
       )}
       {urlWarning && (
@@ -139,7 +141,7 @@ export function Header({
             type="button"
             onClick={onExportCsv}
             disabled={exportDisabled}
-            className="h-11 rounded-md bg-primary px-3 text-body-sm-medium font-medium text-on-primary hover:bg-primary-deep disabled:cursor-not-allowed disabled:bg-hairline-strong disabled:text-muted"
+            className="h-11 rounded-md bg-primary px-3 text-body-sm-medium font-medium text-on-primary hover:bg-primary-deep disabled:cursor-not-allowed disabled:bg-hairline disabled:text-stone"
           >
             Download CSV
           </button>
@@ -147,7 +149,7 @@ export function Header({
             type="button"
             onClick={onExportXlsx}
             disabled={exportDisabled}
-            className="h-11 rounded-md bg-primary px-3 text-body-sm-medium font-medium text-on-primary hover:bg-primary-deep disabled:cursor-not-allowed disabled:bg-hairline-strong disabled:text-muted"
+            className="h-11 rounded-md bg-primary px-3 text-body-sm-medium font-medium text-on-primary hover:bg-primary-deep disabled:cursor-not-allowed disabled:bg-hairline disabled:text-stone"
           >
             Download Excel
           </button>
