@@ -1,6 +1,6 @@
 # 05 — Chart in the new visual system
 
-Status: ready-for-agent
+Status: done
 
 ## Parent
 

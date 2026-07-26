@@ -8,9 +8,14 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import type {
+  DefaultLegendContentProps,
+  LabelProps as RechartsLabelProps,
+  TooltipContentProps,
+} from "recharts";
 
 import { formatMetricLabel } from "./lib/report";
-import type { ChartData } from "./lib/report";
+import type { ChartData, ChartSeries } from "./lib/report";
 
 /**
  * The fixed, ordered categorical palette (dataviz skill's validated default,
@@ -21,6 +26,12 @@ import type { ChartData } from "./lib/report";
  * — the hex values themselves have no meaning anywhere outside the browser,
  * so they live here and only here rather than being duplicated into Python
  * for nothing to check.
+ *
+ * NOT part of the rebrand (issue 05): brand colour must never enter this
+ * array, and it is a fixed-length literal, never grown or computed at
+ * runtime — `series.color_slot` is always looked up directly, never via
+ * modulo, so a bug that produced an out-of-range slot would fail loudly
+ * instead of silently wrapping onto an existing hue.
  */
 const CHART_PALETTE: readonly string[] = [
   "#2a78d6", // 0 blue
@@ -33,19 +44,122 @@ const CHART_PALETTE: readonly string[] = [
   "#e34948", // 7 red
 ];
 
+/** With four or fewer series, identity must not depend on colour alone
+ * (architecture.md §7 gap this slice closes) — each line also gets a
+ * direct label at its last plotted point, not just a legend entry. */
+const DIRECT_LABEL_THRESHOLD = 4;
+
+function seriesColor(series: ChartSeries): string {
+  return CHART_PALETTE[series.color_slot];
+}
+
+/** The index of the last non-null point in a series — a withheld value
+ * renders as a gap (`connectNulls={false}`), so the direct label must sit
+ * at the last real value, not at a trailing gap. */
+function lastPlottedIndex(series: ChartSeries): number {
+  for (let i = series.points.length - 1; i >= 0; i--) {
+    if (series.points[i].value !== null) return i;
+  }
+  return -1;
+}
+
 /**
- * The line chart above the table (issue 14). Hidden entirely when
- * `chart` is `null` — the report has been collapsed to a single Bucket
- * (`granularity: "total"`), so there is no time axis to plot against
- * (user story 60); the caller (`App.tsx`) doesn't need to know this rule,
- * it just always renders `<Chart chart={table.chart} .../>`.
+ * A custom tooltip content renderer (recharts `Tooltip`'s `content` prop).
+ * Recharts' default tooltip colours each row's text with the series'
+ * stroke colour, which is exactly the "identity depends on colour" failure
+ * §7 rules out for values and labels — text here stays in text tokens
+ * (`text-ink`/`text-steel`); only the small line-key swatch before each
+ * label carries the series hue, per the dataviz skill's "line keys, not
+ * boxes" guidance.
+ */
+function ChartTooltip({
+  active,
+  payload,
+  label,
+  chart,
+  isHours,
+}: TooltipContentProps & { chart: ChartData; isHours: boolean }) {
+  if (!active || !payload || payload.length === 0) return null;
+  return (
+    <div className="rounded-md border border-hairline bg-canvas px-3 py-2 shadow-sm">
+      <p className="mb-1 text-micro font-semibold text-steel">{label}</p>
+      <ul className="flex flex-col gap-1">
+        {payload.map((entry) => {
+          const series = chart.series.find((s) => s.key === entry.dataKey);
+          const entryLabel = series?.label ?? String(entry.dataKey);
+          const value = entry.value;
+          return (
+            <li key={String(entry.dataKey)} className="flex items-center gap-2">
+              <span
+                aria-hidden
+                className="h-0.5 w-3 shrink-0 rounded-full"
+                style={{ backgroundColor: series ? seriesColor(series) : "var(--color-muted)" }}
+              />
+              <span className="text-body-sm text-ink-tint">{entryLabel}</span>
+              <span className="ml-auto font-mono text-body-sm-medium tabular-nums text-ink">
+                {value === null || value === undefined
+                  ? "—"
+                  : isHours
+                    ? `${value} h`
+                    : String(value)}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+/**
+ * A custom legend content renderer (recharts `Legend`'s `content` prop).
+ * Same reasoning as `ChartTooltip`: recharts' default legend colours item
+ * *text* by series colour, which this replaces with a text token plus a
+ * colour swatch — the legend is always present for ≥2 series (§7) and is
+ * the dependable identity channel direct labels merely supplement.
+ */
+function ChartLegend({
+  payload,
+  chart,
+}: DefaultLegendContentProps & { chart: ChartData }) {
+  if (!payload || payload.length === 0) return null;
+  return (
+    <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1.5">
+      {payload.map((entry) => {
+        const series = chart.series.find((s) => s.key === entry.dataKey);
+        const entryLabel = series?.label ?? String(entry.dataKey);
+        return (
+          <li
+            key={String(entry.dataKey)}
+            className="flex items-center gap-1.5 text-body-sm-medium text-ink-tint"
+          >
+            <span
+              aria-hidden
+              className="h-0.5 w-3 shrink-0 rounded-full"
+              style={{ backgroundColor: series ? seriesColor(series) : "var(--color-muted)" }}
+            />
+            {entryLabel}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+/**
+ * The line chart above the table (issue 14, restyled in issue 05). Hidden
+ * entirely when `chart` is `null` — the report has been collapsed to a
+ * single Bucket (`granularity: "total"`), so there is no time axis to plot
+ * against (user story 60); the caller (`ReportPane.tsx`) doesn't need to
+ * know this rule, it just always renders `<Chart chart={table.chart} .../>`.
  *
  * `chart` is `ReportTable.chart` verbatim — the same Report Table the
  * table below renders, never a second fetch (issue 14 acceptance
  * criteria). Top-eight selection and colour-slot assignment already
  * happened server-side (`app/engine.py::_build_chart`/`_color_slot`,
  * tested against the committed fixture in `tests/test_chart.py`); this
- * component only lays the given series out and answers "what unit".
+ * component only lays the given series out, styles the frame with the
+ * token layer, and answers "what unit".
  */
 export function Chart({
   chart,
@@ -66,6 +180,7 @@ export function Chart({
 
   const isHours = metricUnit === "hours";
   const yAxisLabel = `${formatMetricLabel(chart.metric)}${isHours ? " (h)" : ""}`;
+  const showDirectLabels = chart.series.length <= DIRECT_LABEL_THRESHOLD;
 
   // Every series in `chart.series` was built from the same `indices` over
   // the same Buckets (`app/engine.py::_build_chart`), so their `points`
@@ -81,14 +196,15 @@ export function Chart({
   });
 
   return (
-    <section style={{ marginBottom: "1.5rem" }}>
-      <div style={{ display: "flex", alignItems: "baseline", gap: "0.75rem", marginBottom: "0.5rem" }}>
-        <h2 style={{ margin: 0 }}>Chart</h2>
-        <label>
-          Metric:{" "}
+    <section className="mb-4 rounded-lg border border-hairline bg-canvas p-4">
+      <div className="mb-2 flex items-baseline justify-between gap-3">
+        <h2 className="text-heading-5 font-semibold text-ink">Chart</h2>
+        <label className="flex items-center gap-2 text-body-sm text-steel">
+          Metric:
           <select
             value={chartMetric ?? metrics[0] ?? ""}
             onChange={(event) => onChartMetricChange(event.target.value)}
+            className="rounded-md border border-hairline-strong bg-canvas px-2 py-1 text-body-sm text-ink-tint"
           >
             {metrics.map((key) => (
               <option key={key} value={key}>
@@ -99,57 +215,97 @@ export function Chart({
         </label>
       </div>
       {chart.series.length === 0 ? (
-        <p>No series to plot.</p>
+        <p className="text-body-sm text-steel">No series to plot.</p>
       ) : (
         <ResponsiveContainer width="100%" height={320}>
-          <LineChart data={data} margin={{ top: 8, right: 24, left: 8, bottom: 8 }}>
-            <CartesianGrid stroke="#e1e0d9" strokeDasharray="0" vertical={false} />
-            <XAxis dataKey="bucket" tick={{ fontSize: 12, fill: "#52514e" }} stroke="#c3c2b7" />
-            <YAxis
-              tick={{ fontSize: 12, fill: "#52514e" }}
-              stroke="#c3c2b7"
-              label={{ value: yAxisLabel, angle: -90, position: "insideLeft", fill: "#52514e" }}
+          {/* Right margin makes room for the direct labels riding the line
+              ends (≤4 series) without clipping them at the plot edge. */}
+          <LineChart data={data} margin={{ top: 8, right: showDirectLabels ? 72 : 24, left: 8, bottom: 8 }}>
+            {/* Recessive grid (architecture.md §7): a hairline, one step
+                off the canvas, never the strong border. */}
+            <CartesianGrid stroke="var(--color-hairline)" strokeDasharray="0" vertical={false} />
+            <XAxis
+              dataKey="bucket"
+              tick={{ fill: "var(--color-steel)", fontSize: 12 }}
+              stroke="var(--color-hairline-strong)"
+              tickLine={false}
+              axisLine={{ stroke: "var(--color-hairline-strong)" }}
             />
-            <Tooltip
-              formatter={(value, name) => {
-                const series = chart.series.find((s) => s.key === name);
-                const label = series?.label ?? String(name);
-                if (value === null || value === undefined) return ["—", label];
-                return [isHours ? `${value} h` : String(value), label];
+            <YAxis
+              tick={{ fill: "var(--color-steel)", fontSize: 12 }}
+              stroke="var(--color-hairline-strong)"
+              tickLine={false}
+              axisLine={{ stroke: "var(--color-hairline-strong)" }}
+              label={{
+                value: yAxisLabel,
+                angle: -90,
+                position: "insideLeft",
+                fill: "var(--color-steel)",
               }}
+            />
+            {/* Crosshair + tooltip on hover by default (architecture.md
+                §7); custom content keeps values/labels in text tokens
+                rather than recharts' default per-series text colour. */}
+            <Tooltip
+              content={(props) => <ChartTooltip {...props} chart={chart} isHours={isHours} />}
+              cursor={{ stroke: "var(--color-hairline-strong)", strokeWidth: 1 }}
             />
             {/* Legend is always present (never colour-alone identity, user
                 story 59); the dropped count is disclosed here rather than
                 folded into a fabricated "Other" series (issue 14). */}
-            <Legend
-              formatter={(_value, entry) => {
-                const series = chart.series.find((s) => s.key === entry.dataKey);
-                return series?.label ?? String(entry.dataKey);
-              }}
-            />
-            {chart.series.map((series) => (
-              <Line
-                key={series.key}
-                type="monotone"
-                dataKey={series.key}
-                name={series.key}
-                stroke={CHART_PALETTE[series.color_slot]}
-                strokeWidth={2}
-                dot={{ r: 3 }}
-                activeDot={{ r: 5 }}
-                // `connectNulls` defaults to `false`, kept explicit: a
-                // withheld zero-count Duration average (`ChartPoint.value
-                // === null`) must render as a gap in the line, never
-                // interpolated across or dropped to 0 (issue 14).
-                connectNulls={false}
-                isAnimationActive={false}
-              />
-            ))}
+            <Legend content={(props) => <ChartLegend {...props} chart={chart} />} />
+            {chart.series.map((series) => {
+              const lastIndex = lastPlottedIndex(series);
+              return (
+                <Line
+                  key={series.key}
+                  type="monotone"
+                  dataKey={series.key}
+                  name={series.key}
+                  stroke={seriesColor(series)}
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 5 }}
+                  // `connectNulls` defaults to `false`, kept explicit: a
+                  // withheld zero-count Duration average (`ChartPoint.value
+                  // === null`) must render as a gap in the line, never
+                  // interpolated across or dropped to 0 (issue 14).
+                  connectNulls={false}
+                  isAnimationActive={false}
+                  // Close the §7 gap: with 4 or fewer series, label each
+                  // directly (at its last plotted point) as well as in the
+                  // legend, so identity never depends on colour alone.
+                  // Label text wears a text token, never the series colour.
+                  label={
+                    showDirectLabels
+                      ? (props: RechartsLabelProps) => {
+                          const x = Number(props.x);
+                          const y = Number(props.y);
+                          if (props.index !== lastIndex || Number.isNaN(x) || Number.isNaN(y)) {
+                            return <g />;
+                          }
+                          return (
+                            <text
+                              x={x + 8}
+                              y={y}
+                              dy={4}
+                              textAnchor="start"
+                              className="fill-ink-tint text-[11px] font-medium"
+                            >
+                              {series.label}
+                            </text>
+                          );
+                        }
+                      : undefined
+                  }
+                />
+              );
+            })}
           </LineChart>
         </ResponsiveContainer>
       )}
       {chart.dropped > 0 && (
-        <p style={{ color: "#52514e", fontSize: "0.875rem" }}>
+        <p className="mt-2 text-body-sm text-steel">
           +{chart.dropped} more not shown (capped at the 8 largest by total).
         </p>
       )}
