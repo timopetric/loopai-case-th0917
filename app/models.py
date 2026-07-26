@@ -2,12 +2,12 @@
 
 `ReportSpec` is the single validated contract shared by the builder UI, the
 report route, and — in later slices — the Assistant and the URL. Issue 04
-carried `metrics`, a date range and a single `group_by`; issue 05 adds
+carried `metrics`, a date range and a single `group_by`; issue 05 added
 `duration_display`, the toggle between the per-ticket average and the period
-total for Duration Metrics. The remaining contract fields (`sort`,
-`columns_order`, `layout`, `chart_metric`) belong to later slices (06–07) and
-are deliberately absent here — adding them early would let code start
-depending on fields the engine cannot yet execute.
+total for Duration Metrics. Issue 07 adds the table-presentation fields —
+`sort`, `columns_order`, `layout`, `chart_metric` — that `engine.py` now
+executes: sort-within-Bucket, explicit column order, and the pivot layout
+that puts Buckets across the top as columns for a single metric.
 
 The load-bearing constraint lives in `group_by`: it is a single
 `Literal["none", "agent", "mailbox"]`, never a list or a pair of booleans, so
@@ -46,6 +46,21 @@ class Metric(StrEnum):
     HANDLE_TIME = "handle_time"
 
 
+class SortSpec(BaseModel):
+    """One column to rank by (architecture.md §2, issue 07, user story 9).
+
+    `column` must name one of `ReportSpec.metrics` — sort ranks a metric
+    column, never the bucket or the group label — enforced by
+    `ReportSpec._sort_and_chart_metric_reference_selected_metrics` below so
+    the engine can never be handed a sort target that doesn't exist. The
+    engine applies it *within* each Bucket, never globally (architecture.md
+    "Table semantics"): see `engine._sort_rows_within_bucket`.
+    """
+
+    column: str
+    direction: Literal["asc", "desc"] = "desc"
+
+
 class ReportSpec(BaseModel):
     """The declarative definition of a report (CONTEXT.md).
 
@@ -66,12 +81,49 @@ class ReportSpec(BaseModel):
     count-weighted mean `Σvalue / Σcount` ("how fast" — the default); "total"
     is the raw period sum in hours ("how much work"). Applies only to columns
     of `kind == "duration"`; Counters are unaffected by this field."""
+    sort: SortSpec | None = None
+    columns_order: list[str] | None = None
+    """Explicit left-to-right column order (issue 07, user story 12) — a list
+    of metric keys. Unknown keys are ignored and any selected metric left
+    unmentioned is appended afterwards, so a partial reorder never drops a
+    column (`engine._ordered_metrics`). `None` means "use `metrics` order as
+    given"."""
+    layout: Literal["long", "pivot"] = "long"
+    """`"long"`: rows = Bucket × group (the default). `"pivot"`: Buckets
+    across the top as columns, for a compact scan of one metric over the
+    period — several metrics would multiply the column count and make the
+    export unreadable, so pivot always renders `chart_metric` only, and the
+    engine says so via a warning (architecture.md §2, issue 07)."""
+    chart_metric: Metric | None = None
+    """`None` defaults to `metrics[0]`. Must be a member of `metrics` —
+    enforced below — so pivot and the (later, issue 14) chart can never
+    point at a column that isn't on the report."""
 
     @model_validator(mode="after")
     def _date_range_is_ordered(self) -> "ReportSpec":
         if self.date_from > self.date_to:
             raise ValueError(f"date_from ({self.date_from}) must be <= date_to ({self.date_to})")
         return self
+
+    @model_validator(mode="after")
+    def _sort_and_chart_metric_reference_selected_metrics(self) -> "ReportSpec":
+        metric_values = {m.value for m in self.metrics}
+        if self.sort is not None and self.sort.column not in metric_values:
+            raise ValueError(
+                f"sort.column ({self.sort.column!r}) must be one of the selected "
+                f"metrics {sorted(metric_values)}"
+            )
+        if self.chart_metric is not None and self.chart_metric.value not in metric_values:
+            raise ValueError(
+                f"chart_metric ({self.chart_metric.value!r}) must be one of the "
+                f"selected metrics {sorted(metric_values)}"
+            )
+        return self
+
+    @property
+    def effective_chart_metric(self) -> Metric:
+        """`chart_metric` if set, else `metrics[0]` (architecture.md §2)."""
+        return self.chart_metric or self.metrics[0]
 
 
 class ColumnMeta(BaseModel):

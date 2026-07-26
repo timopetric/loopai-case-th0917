@@ -6,7 +6,7 @@ import { UNAUTHORIZED_EVENT, apiFetch } from "./lib/apiClient";
 import { getStoredApiKey } from "./lib/apiKey";
 import type { Meta } from "./lib/meta";
 import { fetchMeta } from "./lib/meta";
-import type { ReportSpec, ReportTable as ReportTableData } from "./lib/report";
+import type { ReportSpec, ReportTable as ReportTableData, SortSpec } from "./lib/report";
 import { fetchReport, formatMetricLabel } from "./lib/report";
 
 /**
@@ -64,6 +64,21 @@ export function App() {
   const [granularity, setGranularity] = useState<ReportSpec["granularity"]>(DEFAULT_GRANULARITY);
   const [groupBy, setGroupBy] = useState<ReportSpec["group_by"]>(DEFAULT_GROUP_BY);
 
+  /**
+   * Table presentation (issue 07): sort ranks within each Bucket, never
+   * globally (a `granularity: "total"` report has one Bucket, so the same
+   * state/handler ranks the whole table — no special case here either).
+   * `columnsOrder` starts `null` ("use `metrics` order as given") and is set
+   * the first time a move button is used, seeded from the table's own
+   * current column order so a move is always relative to what's on screen.
+   * `layout`/`chartMetric` add the pivot toggle; pivot renders
+   * `chartMetric` only (`null` = server default `metrics[0]`).
+   */
+  const [sort, setSort] = useState<SortSpec | null>(null);
+  const [columnsOrder, setColumnsOrder] = useState<string[] | null>(null);
+  const [layout, setLayout] = useState<ReportSpec["layout"]>("long");
+  const [chartMetric, setChartMetric] = useState<string | null>(null);
+
   function toggleMetric(key: string) {
     setMetrics((prev) => {
       if (prev.includes(key)) {
@@ -74,6 +89,41 @@ export function App() {
       return [...prev, key];
     });
   }
+
+  function toggleSort(columnKey: string) {
+    setSort((prev) => {
+      if (prev && prev.column === columnKey) {
+        return { column: columnKey, direction: prev.direction === "desc" ? "asc" : "desc" };
+      }
+      return { column: columnKey, direction: "desc" };
+    });
+  }
+
+  function moveColumn(columnKey: string, direction: "left" | "right") {
+    // The table's own current order (post `columns_order`, post-engine) is
+    // the only source of truth for "what's on screen right now" — seed from
+    // it rather than from possibly-stale local state.
+    const current = table ? table.columns.map((c) => c.key) : metrics;
+    const from = current.indexOf(columnKey);
+    if (from === -1) return;
+    const to = direction === "left" ? from - 1 : from + 1;
+    if (to < 0 || to >= current.length) return;
+    const next = [...current];
+    [next[from], next[to]] = [next[to], next[from]];
+    setColumnsOrder(next);
+  }
+
+  // A metric that stops being selected can leave `sort`/`chartMetric`
+  // pointing at a column that no longer exists — the backend validator
+  // would 422 that spec (architecture.md §2: both must be ∈ metrics), so
+  // clear them here rather than let the request fail (a minimal client-side
+  // echo of the "Repair" idea; the full agent-facing repair module is a
+  // later slice).
+  useEffect(() => {
+    setSort((prev) => (prev && !metrics.includes(prev.column) ? null : prev));
+    setChartMetric((prev) => (prev && !metrics.includes(prev) ? null : prev));
+    setColumnsOrder((prev) => (prev ? prev.filter((key) => metrics.includes(key)) : prev));
+  }, [metrics]);
 
   useEffect(() => {
     function handleUnauthorized() {
@@ -110,13 +160,29 @@ export function App() {
       granularity,
       group_by: groupBy,
       duration_display: durationDisplay,
+      sort,
+      columns_order: columnsOrder,
+      layout,
+      chart_metric: chartMetric,
     })
       .then((result) => {
         setTable(result);
         setReportError(null);
       })
       .catch(() => setReportError("Could not load the report."));
-  }, [signedIn, metrics, dateFrom, dateTo, granularity, groupBy, durationDisplay]);
+  }, [
+    signedIn,
+    metrics,
+    dateFrom,
+    dateTo,
+    granularity,
+    groupBy,
+    durationDisplay,
+    sort,
+    columnsOrder,
+    layout,
+    chartMetric,
+  ]);
 
   if (!signedIn) {
     return <SignIn onSignedIn={() => setSignedIn(true)} />;
@@ -251,8 +317,61 @@ export function App() {
           Period total (how much work)
         </label>
       </fieldset>
+
+      <fieldset style={{ marginBottom: "1rem", display: "inline-block" }}>
+        <legend>Layout</legend>
+        <label style={{ marginRight: "1rem" }}>
+          <input
+            type="radio"
+            name="layout"
+            value="long"
+            checked={layout === "long"}
+            onChange={() => setLayout("long")}
+          />
+          Table (rows = Bucket × group)
+        </label>
+        <label style={{ marginRight: "1rem" }}>
+          <input
+            type="radio"
+            name="layout"
+            value="pivot"
+            checked={layout === "pivot"}
+            onChange={() => setLayout("pivot")}
+          />
+          Pivot (Buckets as columns)
+        </label>
+        {layout === "pivot" && (
+          // Pivot renders exactly one metric (architecture.md §2) — this is
+          // the *only* way to pick which one; the report table's own
+          // warning banner (from `table.warnings`) states why the other
+          // selected metrics aren't shown.
+          <label>
+            {" "}
+            Chart metric:{" "}
+            <select
+              value={chartMetric ?? metrics[0] ?? ""}
+              onChange={(event) => setChartMetric(event.target.value)}
+            >
+              {metrics.map((key) => (
+                <option key={key} value={key}>
+                  {formatMetricLabel(key)}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+      </fieldset>
       {reportError && <p role="alert">{reportError}</p>}
-      {table && <ReportTable table={table} groupBy={groupBy} />}
+      {table && (
+        <ReportTable
+          table={table}
+          groupBy={groupBy}
+          layout={layout ?? "long"}
+          sort={sort}
+          onSort={toggleSort}
+          onMoveColumn={moveColumn}
+        />
+      )}
     </main>
   );
 }

@@ -24,7 +24,7 @@ import json
 import pytest
 
 from app.engine import UnsupportedMetricError, execute
-from app.models import Metric, ReportSpec
+from app.models import Metric, ReportSpec, SortSpec
 from app.upstream import _DEV_FIXTURE_PATH, CoverageWindow, _normalise_dataset
 
 FIXTURE_RAW = json.loads(_DEV_FIXTURE_PATH.read_text())["response_json"]
@@ -594,6 +594,314 @@ class TestSingleBucketCollapseIsFirstClassForBothMetricFamilies:
         total_table = execute(total_spec, dataset)
         total_row = next(r for r in total_table.rows if r.group_key == "user_yoJRgsMu")
         assert total_row.values["resolve_time"] == 0.0
+
+
+class TestSortWithinBucket:
+    """Issue 07, user stories 9-10: sorting reorders rows *within* each
+    Bucket while Buckets themselves stay in their original (chronological,
+    for `granularity: "day"`) order. A global sort would destroy the time
+    series the day × Actor report exists to show."""
+
+    def test_sort_reorders_rows_within_each_day_while_day_order_is_preserved(
+        self, dataset
+    ) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="day",
+            group_by="agent",
+            sort=SortSpec(column="resolved", direction="desc"),
+        )
+
+        table = execute(spec, dataset)
+
+        # The 14 Buckets are still in chronological order — sorting must not
+        # reorder days, only the ~108 Actor rows sitting inside each day.
+        seen_buckets = []
+        for row in table.rows:
+            if row.bucket not in seen_buckets:
+                seen_buckets.append(row.bucket)
+        assert seen_buckets == [
+            "2026-07-10",
+            "2026-07-11",
+            "2026-07-12",
+            "2026-07-13",
+            "2026-07-14",
+            "2026-07-15",
+            "2026-07-16",
+            "2026-07-17",
+            "2026-07-18",
+            "2026-07-19",
+            "2026-07-20",
+            "2026-07-21",
+            "2026-07-22",
+            "2026-07-23",
+        ]
+
+        # Within each day's contiguous run, resolved counts are non-increasing.
+        by_bucket: dict[str, list[float]] = {}
+        for row in table.rows:
+            by_bucket.setdefault(row.bucket, []).append(row.values["resolved"])
+        for bucket, values in by_bucket.items():
+            assert values == sorted(values, reverse=True), f"bucket {bucket} not sorted desc"
+
+    def test_sort_a_single_bucket_report_ranks_across_the_whole_table(self, dataset) -> None:
+        """`granularity: "total"` collapses to one Bucket, so the same
+        within-Bucket sort mechanism ranks every row — this is what makes
+        the agent leaderboard preset work, with no special-casing."""
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="total",
+            group_by="agent",
+            sort=SortSpec(column="resolved", direction="desc"),
+        )
+
+        table = execute(spec, dataset)
+
+        assert len(table.rows) == 108
+        assert all(row.bucket == "total" for row in table.rows)
+        values = [row.values["resolved"] for row in table.rows]
+        assert values == sorted(values, reverse=True)
+        # Top of the descending leaderboard is a real, positive figure.
+        assert values[0] > 0
+
+    def test_sort_ascending_also_ranks_the_single_bucket_table(self, dataset) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="total",
+            group_by="agent",
+            sort=SortSpec(column="resolved", direction="asc"),
+        )
+
+        table = execute(spec, dataset)
+
+        values = [row.values["resolved"] for row in table.rows]
+        assert values == sorted(values)
+
+
+class TestSortHandlesNoneDurationCells:
+    """Issue 05 left an explicit hazard note for this slice: a zero-count
+    Duration Metric average is `None`, and sorting must neither crash on it
+    (`sorted()` comparing `None` to `float` raises `TypeError`) nor coerce it
+    to `0.0` (which would float a zero-ticket Actor to the top of an
+    ascending leaderboard). The defensible answer: an entity with no data is
+    not ranked among those that have it, so `None` sorts to the end in BOTH
+    directions."""
+
+    def test_none_duration_cells_sort_last_ascending(self, dataset) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVE_TIME],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="total",
+            group_by="agent",
+            duration_display="avg",
+            sort=SortSpec(column="resolve_time", direction="asc"),
+        )
+
+        table = execute(spec, dataset)
+
+        values = [row.values["resolve_time"] for row in table.rows]
+        real_values = [v for v in values if v is not None]
+        none_count = len(values) - len(real_values)
+
+        assert none_count > 0  # user_yoJRgsMu (0 tickets) must be among the rows
+        # All None cells trail every real value, in either direction.
+        assert values[-none_count:] == [None] * none_count
+        assert None not in values[:-none_count]
+        assert real_values == sorted(real_values)
+
+    def test_none_duration_cells_sort_last_descending(self, dataset) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVE_TIME],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="total",
+            group_by="agent",
+            duration_display="avg",
+            sort=SortSpec(column="resolve_time", direction="desc"),
+        )
+
+        table = execute(spec, dataset)
+
+        values = [row.values["resolve_time"] for row in table.rows]
+        real_values = [v for v in values if v is not None]
+        none_count = len(values) - len(real_values)
+
+        assert none_count > 0
+        # A zero-ticket Actor must never rank above real resolvers, even
+        # descending — the exact regression this hazard warns about.
+        assert values[-none_count:] == [None] * none_count
+        assert real_values == sorted(real_values, reverse=True)
+
+    def test_sorting_a_duration_column_never_raises(self, dataset) -> None:
+        """The precondition failure mode: plain `sorted()` on a list mixing
+        `None` and `float` raises `TypeError`. Executing the spec must not."""
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVE_TIME],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="total",
+            group_by="agent",
+            duration_display="avg",
+            sort=SortSpec(column="resolve_time", direction="asc"),
+        )
+
+        table = execute(spec, dataset)  # must not raise TypeError
+
+        assert len(table.rows) == 108
+
+
+class TestColumnOrder:
+    """Issue 07, user story 12: explicit column order is honoured in the
+    Report Table itself (`ReportTable.columns`), not only in how the
+    frontend happens to render it — the exporters (issues 10-11) read the
+    same list, so they cannot silently disagree with the screen."""
+
+    def test_explicit_column_order_is_honoured(self, dataset) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED, Metric.NEW_TICKETS, Metric.REPLIES],
+            date_from="2026-07-10",
+            date_to="2026-07-10",
+            granularity="day",
+            group_by="none",
+            columns_order=["replies", "resolved", "new_tickets"],
+        )
+
+        table = execute(spec, dataset)
+
+        assert [c.key for c in table.columns] == ["replies", "resolved", "new_tickets"]
+
+    def test_a_metric_left_out_of_columns_order_is_appended_not_dropped(self, dataset) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED, Metric.NEW_TICKETS, Metric.REPLIES],
+            date_from="2026-07-10",
+            date_to="2026-07-10",
+            granularity="day",
+            group_by="none",
+            columns_order=["replies"],
+        )
+
+        table = execute(spec, dataset)
+
+        assert [c.key for c in table.columns] == ["replies", "resolved", "new_tickets"]
+
+    def test_no_columns_order_keeps_the_metrics_list_order(self, dataset) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.NEW_TICKETS, Metric.RESOLVED],
+            date_from="2026-07-10",
+            date_to="2026-07-10",
+            granularity="day",
+            group_by="none",
+        )
+
+        table = execute(spec, dataset)
+
+        assert [c.key for c in table.columns] == ["new_tickets", "resolved"]
+
+
+class TestPivotLayout:
+    """Issue 07, user stories 16-17: pivot puts Buckets across the top as
+    columns for a compact scan of one metric. Because several metrics would
+    multiply the column count and make the export unreadable, pivot renders
+    `chart_metric` only, and the UI is told why the other selected columns
+    are missing via `ReportTable.warnings`."""
+
+    def test_pivot_renders_buckets_as_columns(self, dataset) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-10",
+            date_to="2026-07-13",
+            granularity="day",
+            group_by="none",
+            layout="pivot",
+        )
+
+        table = execute(spec, dataset)
+
+        assert [c.key for c in table.columns] == [
+            "2026-07-10",
+            "2026-07-11",
+            "2026-07-12",
+            "2026-07-13",
+        ]
+        assert len(table.rows) == 1
+        assert table.rows[0].values["2026-07-10"] == DAILY_RESOLVED[0]
+        assert table.rows[0].values["2026-07-11"] == DAILY_RESOLVED[1]
+        assert table.rows[0].values["2026-07-12"] == DAILY_RESOLVED[2]
+        assert table.rows[0].values["2026-07-13"] == DAILY_RESOLVED[3]
+
+    def test_pivot_renders_a_single_metric_and_says_so(self, dataset) -> None:
+        """Several metrics selected, but pivot shows only `chart_metric`
+        (default `metrics[0]`) — and states this in `warnings` rather than
+        silently dropping `new_tickets`/`replies` (user story 17)."""
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED, Metric.NEW_TICKETS, Metric.REPLIES],
+            date_from="2026-07-10",
+            date_to="2026-07-13",
+            granularity="day",
+            group_by="none",
+            layout="pivot",
+        )
+
+        table = execute(spec, dataset)
+
+        # Only Bucket columns, no `new_tickets`/`replies` columns at all.
+        assert {c.key for c in table.columns} == {
+            "2026-07-10",
+            "2026-07-11",
+            "2026-07-12",
+            "2026-07-13",
+        }
+        assert any("chart metric only" in w for w in table.warnings)
+        assert table.rows[0].values["2026-07-10"] == DAILY_RESOLVED[0]
+
+    def test_pivot_honours_an_explicit_chart_metric_other_than_metrics_zero(self, dataset) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED, Metric.NEW_TICKETS],
+            date_from="2026-07-10",
+            date_to="2026-07-10",
+            granularity="day",
+            group_by="none",
+            layout="pivot",
+            chart_metric=Metric.NEW_TICKETS,
+        )
+
+        table = execute(spec, dataset)
+
+        # The pivot cell must be new_tickets (the explicit chart_metric), not
+        # the default metrics[0] (resolved) — read the raw dataset value
+        # independently of engine.py's own aggregation to confirm which
+        # metric actually landed in the cell.
+        expected_new_tickets = dataset.metrics["new_tickets"][0]
+        assert table.columns[0].key == "2026-07-10"
+        assert table.rows[0].values["2026-07-10"] == expected_new_tickets
+        assert expected_new_tickets != DAILY_RESOLVED[0]
+
+    def test_pivot_grouped_by_actor_puts_one_row_per_actor(self, dataset) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="day",
+            group_by="agent",
+            layout="pivot",
+        )
+
+        table = execute(spec, dataset)
+
+        assert len(table.rows) == 108
+        assert len(table.columns) == 14
+        # Reconciles against the same top-level total as the long layout.
+        total_across_actors = sum(
+            v for row in table.rows for v in row.values.values() if v is not None
+        )
+        assert total_across_actors == TOTAL_RESOLVED
 
 
 class TestUnsupportedMetrics:

@@ -1,6 +1,6 @@
 # 07 — Sort, column order and pivot layout
 
-Status: ready-for-agent
+Status: done
 
 ## Parent
 

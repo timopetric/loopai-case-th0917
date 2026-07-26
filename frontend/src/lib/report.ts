@@ -1,6 +1,14 @@
 import { apiFetch } from "./apiClient";
 
-/** Mirrors `app/models.py` (issues 04–05). */
+/** Mirrors `app/models.py`'s `SortSpec` (issue 07). `column` must be one of
+ * `ReportSpec.metrics` — the engine ranks a metric column, never the bucket
+ * or the group label. */
+export interface SortSpec {
+  column: string;
+  direction: "asc" | "desc";
+}
+
+/** Mirrors `app/models.py` (issues 04–07). */
 export interface ReportSpec {
   metrics: string[];
   date_from: string;
@@ -11,6 +19,21 @@ export interface ReportSpec {
    * raw period sum in hours ("how much work"). Only affects `kind ===
    * "duration"` columns. */
   duration_display?: "avg" | "total";
+  /** Ranks rows *within* each Bucket, never globally (architecture.md §2
+   * "Table semantics") — a `granularity: "total"` report has one Bucket, so
+   * the same mechanism ranks the whole table (issue 07). `null`/omitted =
+   * unsorted (engine/dataset order). */
+  sort?: SortSpec | null;
+  /** Explicit left-to-right metric-column order (issue 07, user story 12).
+   * Unknown keys are ignored server-side and any selected metric left
+   * unmentioned is appended, so a stale order never drops a column. */
+  columns_order?: string[] | null;
+  /** "long" (default): rows = Bucket × group. "pivot": Buckets across the
+   * top as columns, rendering `chart_metric` only (issue 07). */
+  layout?: "long" | "pivot";
+  /** The metric `layout: "pivot"` renders. `null`/omitted defaults to
+   * `metrics[0]` server-side; must be a member of `metrics`. */
+  chart_metric?: string | null;
 }
 
 export interface ColumnMeta {

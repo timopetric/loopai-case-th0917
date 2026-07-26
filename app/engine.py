@@ -35,11 +35,35 @@ Two rules only this module enforces:
   totals, and the grand totals row — via the single `_display_value` used by
   all three. `duration_display == "total"` is unaffected: a period total of
   `0.0` for an entity that did no work is a true, not undefined, number.
+
+Issue 07 adds three presentation controls that share this one engine pass:
+
+- **Sort applies within each Bucket, never globally** (architecture.md §2
+  "Table semantics"): a day × Actor report keeps its days in chronological
+  order and reorders only the rows inside each day. `_sort_rows_within_bucket`
+  groups the already-built row list into contiguous per-Bucket runs (the
+  builders above already emit rows Bucket-major) and sorts each run
+  independently — a `granularity: "total"` report has exactly one run, so
+  the *same* code path ranks the whole table, which is what makes a
+  leaderboard preset work without a special case.
+- **A `None` duration cell always sorts last, in both directions.** Coercing
+  it to `0.0` would float a zero-ticket Actor to the top of an ascending
+  leaderboard — exactly the defect issue 05 fixed at the cell level; letting
+  Python's default `sorted()` compare `None` to a `float` instead raises
+  `TypeError`. `_sort_rows_within_bucket` treats "no data" as "not ranked
+  among those that have it" and puts it after every real value regardless of
+  `direction`.
+- **Column order and pivot layout share the same `ReportTable.columns`
+  list** that the frontend and the (issue 10/11) exporters both read, so
+  ordering only needs to be correct once, here. `columns_order` reorders the
+  metric columns (`_ordered_metrics`); `layout == "pivot"` replaces them
+  entirely with one column per Bucket, rendering only `chart_metric` — never
+  silently dropping the user's other selected columns, a warning says so.
 """
 
 from datetime import date
 
-from app.models import ColumnMeta, Metric, ReportRow, ReportSpec, ReportTable
+from app.models import ColumnMeta, Metric, ReportRow, ReportSpec, ReportTable, SortSpec
 from app.upstream import METRIC_CATALOGUE, Dataset, EntityBreakdown
 
 _METRIC_INFO_BY_KEY = {info.key: info for info in METRIC_CATALOGUE}
@@ -70,7 +94,11 @@ def execute(spec: ReportSpec, dataset: Dataset) -> ReportTable:
         )
 
     indices = _selected_bucket_indices(dataset.ticks, spec.date_from, spec.date_to)
-    columns = [_column_meta(m) for m in spec.metrics]
+
+    if spec.layout == "pivot":
+        return _execute_pivot(spec, dataset, indices)
+
+    columns = [_column_meta(m) for m in _ordered_metrics(spec)]
 
     if spec.group_by == "none":
         rows = _rows_ungrouped(spec, dataset, indices)
@@ -78,10 +106,73 @@ def execute(spec: ReportSpec, dataset: Dataset) -> ReportTable:
         entities = dataset.actors if spec.group_by == "agent" else dataset.mailboxes
         rows = _rows_grouped(spec, entities, dataset.ticks, indices)
 
+    rows = _sort_rows_within_bucket(rows, spec.sort)
+
     totals, total_counts, warnings = _totals(spec, dataset, indices)
     return ReportTable(
         columns=columns, rows=rows, totals=totals, total_counts=total_counts, warnings=warnings
     )
+
+
+def _ordered_metrics(spec: ReportSpec) -> list[Metric]:
+    """Column order (issue 07, user story 12): `columns_order` names metric
+    keys in the desired left-to-right order. Unknown keys are ignored (no
+    crash on stale state, e.g. after a metric was dropped) and any selected
+    metric not mentioned is appended afterwards in its original `metrics`
+    order — so a partial reorder never drops a column. `None` keeps
+    `metrics` order as given."""
+    if spec.columns_order is None:
+        return spec.metrics
+    by_key = {m.value: m for m in spec.metrics}
+    ordered = [by_key[key] for key in spec.columns_order if key in by_key]
+    seen = {m.value for m in ordered}
+    remaining = [m for m in spec.metrics if m.value not in seen]
+    return ordered + remaining
+
+
+def _sort_rows_within_bucket(rows: list[ReportRow], sort: SortSpec | None) -> list[ReportRow]:
+    """Sort each Bucket's rows independently, preserving Bucket order
+    (architecture.md §2 "Table semantics", issue 07 user stories 9-10).
+
+    Rows arrive already grouped Bucket-major (every row builder above loops
+    Buckets in the outer loop), so a stable pass that buckets the existing
+    list into contiguous same-`bucket` runs — without re-sorting the runs
+    themselves — and sorts inside each run reproduces "days stay
+    chronological, rows reorder within a day". A `granularity: "total"`
+    report has exactly one run, so the same code sorts the whole table,
+    which is what makes the leaderboard preset a ranking rather than a
+    special case.
+
+    A `None` cell (an undefined Duration Metric average, issue 05) is never
+    compared to a `float` — that raises `TypeError` in plain `sorted()` — and
+    is never coerced to `0.0`, which would rank a zero-ticket entity above
+    everyone who did the work on an ascending sort. It sorts last,
+    regardless of `direction`: an entity with no data is not ranked among
+    those that have it.
+    """
+    if sort is None:
+        return rows
+
+    reverse = sort.direction == "desc"
+
+    def sort_key(row: ReportRow) -> tuple[int, float]:
+        value = row.values.get(sort.column)
+        if value is None:
+            return (1, 0.0)
+        return (0, -value if reverse else value)
+
+    ordered_buckets: list[str] = []
+    runs: dict[str, list[ReportRow]] = {}
+    for row in rows:
+        if row.bucket not in runs:
+            runs[row.bucket] = []
+            ordered_buckets.append(row.bucket)
+        runs[row.bucket].append(row)
+
+    sorted_rows: list[ReportRow] = []
+    for bucket in ordered_buckets:
+        sorted_rows.extend(sorted(runs[bucket], key=sort_key))
+    return sorted_rows
 
 
 def _column_meta(metric: Metric) -> ColumnMeta:
@@ -256,3 +347,103 @@ def _totals(
             total_counts[m.value] = total_count
 
     return totals, total_counts, warnings
+
+
+def _execute_pivot(spec: ReportSpec, dataset: Dataset, indices: list[int]) -> ReportTable:
+    """Buckets across the top as columns (architecture.md §2, issue 07):
+    a compact scan of exactly one metric — `spec.effective_chart_metric`,
+    defaulting to `metrics[0]` — over the period. Several metrics would
+    multiply the column count and make the export unreadable, so pivot
+    always renders the chart metric only; the caller is told via
+    `ReportTable.warnings`, never left to silently lose the other selected
+    columns (user story 17).
+
+    Rows are entities (`group_by != "none"`) or a single row for the whole
+    selection (`group_by == "none"`); each row's `values` are keyed by
+    Bucket (an ISO day, or `"total"` under `granularity: "total"`, when
+    there is exactly one Bucket-column) rather than by metric key — the same
+    `ColumnMeta`/`values`-by-`column.key` contract as the long layout, just
+    with Buckets standing in the metric-column slot. `spec.sort` is not
+    applied here: it is validated to name a metric, and pivot's column keys
+    are Bucket dates, so there is no meaningful column for it to rank by in
+    this layout.
+    """
+    chart_metric = spec.effective_chart_metric
+    info = _METRIC_INFO_BY_KEY[chart_metric.value]
+
+    if spec.granularity == "total":
+        bucket_columns: list[tuple[str, str, list[int]]] = [("total", "total", indices)]
+        row_bucket = "total"
+    else:
+        bucket_columns = []
+        for i in indices:
+            day = _bucket_day(dataset.ticks[i]).isoformat()
+            bucket_columns.append((day, day, [i]))
+        row_bucket = "pivot"
+
+    columns = [
+        ColumnMeta(key=key, label=label, kind=info.kind, unit=info.unit)
+        for key, label, _ in bucket_columns
+    ]
+
+    def cell(
+        values: dict[str, list[float]], counts: dict[str, list[float]], idxs: list[int]
+    ) -> tuple[float | None, float | None]:
+        total_value, total_count = _metric_total_and_count(values, counts, chart_metric, idxs)
+        return _display_value(total_value, total_count, spec.duration_display), total_count
+
+    def build_row(
+        values_source: dict[str, list[float]],
+        counts_source: dict[str, list[float]],
+        group_key: str | None,
+        group_label: str | None,
+    ) -> ReportRow:
+        row_values: dict[str, float | None] = {}
+        row_counts: dict[str, float] = {}
+        for key, _, idxs in bucket_columns:
+            value, count = cell(values_source, counts_source, idxs)
+            row_values[key] = value
+            if count is not None:
+                row_counts[key] = count
+        return ReportRow(
+            bucket=row_bucket,
+            group_key=group_key,
+            group_label=group_label,
+            values=row_values,
+            counts=row_counts,
+        )
+
+    if spec.group_by == "none":
+        rows = [build_row(dataset.metrics, dataset.counts, None, None)]
+    else:
+        entities = dataset.actors if spec.group_by == "agent" else dataset.mailboxes
+        rows = [build_row(e.metrics, e.counts, e.id, e.name) for e in entities]
+
+    is_chart_metric_non_additive = chart_metric.value == _NON_ADDITIVE_ACROSS_ACTORS
+    non_additive = spec.group_by == _NON_ADDITIVE_GROUPING and is_chart_metric_non_additive
+    warnings = [
+        f"Pivot layout shows the chart metric only ({_label(chart_metric.value)}); "
+        "your other selected metrics are not displayed in this layout."
+    ]
+    if non_additive:
+        warnings.append(
+            "actioned_emails is not additive across Actors: an email actioned by "
+            "several Actors is credited to each of them, so the total would "
+            "over-count by roughly 52% (api-report-fresh.md §4.5). Shown per "
+            "Actor, omitted as a total."
+        )
+
+    totals: dict[str, float | None] = {}
+    total_counts: dict[str, float] = {}
+    for key, _, idxs in bucket_columns:
+        if non_additive:
+            totals[key] = None
+            continue
+        value, count = cell(dataset.metrics, dataset.counts, idxs)
+        totals[key] = value
+        if count is not None:
+            total_counts[key] = count
+
+    return ReportTable(
+        columns=columns, rows=rows, totals=totals, total_counts=total_counts, warnings=warnings
+    )
