@@ -54,6 +54,24 @@ function WithheldValue() {
   );
 }
 
+/**
+ * A Duration Metric arrives as a number of HOURS (`api-report-fresh.md` — the
+ * documented seconds are wrong) already rounded to two decimals by
+ * `engine._display_value`. `11.48` reads as a decimal nobody converts in
+ * their head, so the table shows `11h 29m`.
+ *
+ * This is the one place the screen and the exported file deliberately
+ * disagree: the CSV and the workbook keep the number, so a spreadsheet can
+ * still sum and chart the column. Decided explicitly with the owner; recorded
+ * in `plans/issues/frontend-rework/09-verification-record.md`.
+ */
+function formatHours(value: number): string {
+  const totalMinutes = Math.round(value * 60);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `${hours}h ${String(minutes).padStart(2, "0")}m`;
+}
+
 type Density = "comfortable" | "compact";
 
 const DENSITY_OPTIONS = [
@@ -67,13 +85,13 @@ const DENSITY_OPTIONS = [
  * the rendered `<td>`, `ROW_HEIGHT_PX[density]` for `estimateSize`) so they
  * cannot drift apart into a rendered row that doesn't match the space the
  * virtualizer reserved for it. */
-/** How many rows the grid shows at once. This is a VIEWPORT size, not a
- * page size: every row stays in the Report Table and in both exports, and
- * the remaining rows are reached by scrolling exactly as before. Picking
- * 100 makes the grid tall enough for 100 rows; it does not fetch, slice or
- * paginate anything. */
-const VISIBLE_ROWS_OPTIONS = [10, 15, 25, 50, 100];
-const VISIBLE_ROWS_DEFAULT = 15;
+/** How many rows the grid shows at once — a VIEWPORT size, not a page size.
+ * Every row stays in the Report Table and in both exports; the rest are
+ * reached by scrolling the grid, exactly as before. Nothing here slices,
+ * fetches or paginates. Pinned at 10 rather than offered as a control: it
+ * leaves the chart and the Warnings visible on a laptop without the middle
+ * column needing to be scrolled first. */
+const VISIBLE_ROWS = 10;
 
 const ROW_HEIGHT_CLASS: Record<Density, string> = { comfortable: "h-11", compact: "h-8" };
 const ROW_HEIGHT_PX: Record<Density, number> = { comfortable: 44, compact: 32 };
@@ -162,7 +180,6 @@ export function ReportTable({
   onMoveColumn: (columnKey: string, direction: "left" | "right") => void;
 }) {
   const [density, setDensity] = useState<Density>("comfortable");
-  const [visibleRows, setVisibleRows] = useState<number>(VISIBLE_ROWS_DEFAULT);
   const groupLabel = groupColumnLabel(groupBy);
   const hasGroups = groupLabel !== null && table.rows.some((row) => row.group_label !== null);
   const isPivot = layout === "pivot";
@@ -244,22 +261,6 @@ export function ReportTable({
       )}
 
       <div className="mb-2 flex flex-wrap items-center justify-end gap-2">
-        <label className="flex items-center gap-2">
-          <span className="text-micro font-medium uppercase tracking-wide text-muted">Rows</span>
-          <select
-            value={visibleRows}
-            onChange={(event) => setVisibleRows(Number(event.target.value))}
-            aria-label="Rows shown at once"
-            className="h-11 rounded-md border border-hairline-strong bg-canvas px-2 text-body-sm
-              text-ink-tint"
-          >
-            {VISIBLE_ROWS_OPTIONS.map((count) => (
-              <option key={count} value={count}>
-                {count}
-              </option>
-            ))}
-          </select>
-        </label>
         <span className="text-micro font-medium uppercase tracking-wide text-muted">Density</span>
         <div className="max-w-full">
           <SegmentedControl name="Row density" options={DENSITY_OPTIONS} value={density} onChange={setDensity} />
@@ -276,7 +277,7 @@ export function ReportTable({
         // ask for 25 rows and you get 25. Past the pane's height the pane
         // scrolls (ReportPane is `overflow-y-auto`); the rows beyond the
         // chosen count are reached by scrolling the grid, as before.
-        style={{ height: visibleRows * rowHeightPx + HEADER_ROW_PX * 2 }}
+        style={{ height: VISIBLE_ROWS * rowHeightPx + HEADER_ROW_PX * 2 }}
         // `shrink-0` is load-bearing: a flex item shrinks below its own
         // height by default, so the chosen row count collapsed back to a
         // single row whenever the pane was tight. Holding the height makes
@@ -446,7 +447,13 @@ export function ReportTable({
                           border-hairline-soft px-3 text-right align-middle font-mono
                           tabular-nums whitespace-nowrap text-ink group-hover:bg-cream-soft`}
                       >
-                        {value === null ? <WithheldValue /> : value}
+                        {value === null ? (
+                          <WithheldValue />
+                        ) : column.unit === "hours" ? (
+                          formatHours(value)
+                        ) : (
+                          value
+                        )}
                       </td>
                     );
                   })}
@@ -479,7 +486,13 @@ export function ReportTable({
                     className="sticky bottom-0 z-20 h-11 border-t-2 border-hairline-strong bg-canvas
                       px-3 text-right align-middle font-mono tabular-nums font-semibold text-ink"
                   >
-                    {value === null ? <WithheldValue /> : value}
+                    {value === null ? (
+                      <WithheldValue />
+                    ) : column.unit === "hours" ? (
+                      formatHours(value)
+                    ) : (
+                      value
+                    )}
                   </td>
                 );
               })}

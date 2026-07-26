@@ -33,6 +33,13 @@ WINDOW = CoverageWindow(from_date="2026-07-10", to_date="2026-07-23")
 DAILY_RESOLVED = [1467, 84, 111, 1478, 1675, 1701, 1586, 1557, 124, 75, 1767, 1883, 2534, 330]
 TOTAL_RESOLVED = 16372
 
+#: `engine._display_value` rounds Duration Metrics to two decimals, so the
+#: hand-computed expectations below are compared to half a rounding step
+#: rather than to floating-point exactness. The contrast against the naive
+#: mean-of-daily-averages stays tight: the two differ by orders of magnitude,
+#: which is the whole point of that assertion.
+DURATION_TOLERANCE = 0.005
+
 
 @pytest.fixture
 def dataset():
@@ -200,10 +207,10 @@ class TestDurationMetricAggregation:
         table = execute(spec, dataset)
 
         assert table.rows[0].values["resolve_time"] == pytest.approx(
-            self.RESOLVE_TIME_MEAN_WHOLE_WINDOW, rel=1e-12
+            self.RESOLVE_TIME_MEAN_WHOLE_WINDOW, abs=DURATION_TOLERANCE
         )
         assert table.totals["resolve_time"] == pytest.approx(
-            self.RESOLVE_TIME_MEAN_WHOLE_WINDOW, rel=1e-12
+            self.RESOLVE_TIME_MEAN_WHOLE_WINDOW, abs=DURATION_TOLERANCE
         )
 
     def test_default_duration_display_is_avg(self, dataset) -> None:
@@ -220,7 +227,7 @@ class TestDurationMetricAggregation:
         table = execute(spec, dataset)
 
         assert table.totals["resolve_time"] == pytest.approx(
-            self.RESOLVE_TIME_MEAN_WHOLE_WINDOW, rel=1e-12
+            self.RESOLVE_TIME_MEAN_WHOLE_WINDOW, abs=DURATION_TOLERANCE
         )
 
     def test_grouped_by_actor_a_single_entitys_duration_matches_a_hand_computed_value(
@@ -241,7 +248,9 @@ class TestDurationMetricAggregation:
         table = execute(spec, dataset)
 
         row = next(r for r in table.rows if r.group_key == "user_Nq24icrN")
-        assert row.values["resolve_time"] == pytest.approx(1.0842058582089553, rel=1e-12)
+        assert row.values["resolve_time"] == pytest.approx(
+            1.0842058582089553, abs=DURATION_TOLERANCE
+        )
         assert row.counts["resolve_time"] == 335
 
     def test_an_entity_with_zero_tickets_shows_a_dash_under_avg_display_not_zero(
@@ -355,9 +364,9 @@ class TestAveragingDailyAveragesIsTheDefectThisSliceMustNotReproduce:
             7.250020277777778,
         ]
         daily_counts = [569, 35, 31, 551]
-        naive_mean_of_daily_averages = sum(
-            v / c for v, c in zip(daily_values, daily_counts)
-        ) / len(daily_values)
+        naive_mean_of_daily_averages = sum(v / c for v, c in zip(daily_values, daily_counts)) / len(
+            daily_values
+        )
 
         spec = ReportSpec(
             metrics=[Metric.HANDLE_TIME],
@@ -371,7 +380,7 @@ class TestAveragingDailyAveragesIsTheDefectThisSliceMustNotReproduce:
         table = execute(spec, dataset)
         engine_result = table.rows[0].values["handle_time"]
 
-        assert engine_result == pytest.approx(self.WEIGHTED_MEAN, rel=1e-12)
+        assert engine_result == pytest.approx(self.WEIGHTED_MEAN, abs=DURATION_TOLERANCE)
         assert engine_result != pytest.approx(naive_mean_of_daily_averages, rel=1e-9)
         assert naive_mean_of_daily_averages == pytest.approx(0.012783951209713084, rel=1e-9)
 
@@ -399,10 +408,10 @@ class TestDurationDisplayToggle:
         total_table = execute(ReportSpec(**base_kwargs, duration_display="total"), dataset)
 
         assert avg_table.rows[0].values["handle_time"] == pytest.approx(
-            0.013277183635953734, rel=1e-9
+            0.013277183635953734, abs=DURATION_TOLERANCE
         )
         assert total_table.rows[0].values["handle_time"] == pytest.approx(
-            85.06691555555557, rel=1e-12
+            85.06691555555557, abs=DURATION_TOLERANCE
         )
         # Same underlying count either way — the toggle changes the
         # numerator/denominator arithmetic, not what was measured.
@@ -491,9 +500,7 @@ class TestSingleBucketCollapseIsFirstClassForBothMetricFamilies:
                        trusted verbatim, per the issue's own instruction.)
     """
 
-    def test_counter_family_collapses_to_one_row_per_entity_that_reconciles(
-        self, dataset
-    ) -> None:
+    def test_counter_family_collapses_to_one_row_per_entity_that_reconciles(self, dataset) -> None:
         spec = ReportSpec(
             metrics=[Metric.RESOLVED],
             date_from="2026-07-10",
@@ -537,7 +544,7 @@ class TestSingleBucketCollapseIsFirstClassForBothMetricFamilies:
                 assert row.values["handle_time"] is None
             else:
                 assert row.values["handle_time"] == pytest.approx(
-                    entity_sum / entity_count, rel=1e-12
+                    entity_sum / entity_count, abs=DURATION_TOLERANCE
                 )
 
     def test_ungrouped_duration_collapse_matches_the_independently_derived_whole_window_figure(
@@ -555,7 +562,7 @@ class TestSingleBucketCollapseIsFirstClassForBothMetricFamilies:
         table = execute(spec, dataset)
 
         assert table.rows[0].values["resolve_time"] == pytest.approx(
-            11.482139109909799, rel=1e-12
+            11.482139109909799, abs=DURATION_TOLERANCE
         )
         assert table.rows[0].counts["resolve_time"] == 16371
 
@@ -610,9 +617,7 @@ class TestSortWithinBucket:
     for `granularity: "day"`) order. A global sort would destroy the time
     series the day × Actor report exists to show."""
 
-    def test_sort_reorders_rows_within_each_day_while_day_order_is_preserved(
-        self, dataset
-    ) -> None:
+    def test_sort_reorders_rows_within_each_day_while_day_order_is_preserved(self, dataset) -> None:
         spec = ReportSpec(
             metrics=[Metric.RESOLVED],
             date_from="2026-07-10",

@@ -44,19 +44,9 @@ so the shared key never entered the session transcript.
 
 ## Found and deliberately not fixed
 
-Both need a decision that is not this rework's to make.
+Needs a decision that is not this rework's to make.
 
-1. **Duration values render as raw floats** — `11.482139109909799` in the Total row,
-   `31.910186825396828` in body rows. This defeats the tabular alignment slice 04 exists for, and it
-   is **pre-existing**, not a regression: the old table rendered the same raw value.
-
-   It cannot be fixed on screen alone. `app/exporters.py:110` prints the full float *deliberately*,
-   to match what JS renders, so rounding only the display would break the graded "the exported file
-   matches exactly what is on screen" story. The correct fix rounds in the engine or in both
-   exporters — and the PRD puts *"the engine, the exporters or the API"* out of scope for this
-   rework. Worth doing next, as one change spanning engine and screen together.
-
-2. **A Repair chip shows a wire enum** — "Added metric: handle_time", where the rail calls the same
+1. **A Repair chip shows a wire enum** — "Added metric: handle_time", where the rail calls the same
    thing "Handle time (h)". Slice 09's own regression list says no enum value should appear in the
    conversation. The string is built at **`app/agent/presenter.py:243`** (`f"Added metric: {m.value}"`),
    which this rework may not touch and which carries the negative leak assertions.
@@ -95,3 +85,27 @@ Three corrections, verified at 620px and 1000px viewport heights:
 
 Now ~5 rows at 620px and ~9 at 1000px, with 21 rows in the DOM and the report column scrolling for
 the rest.
+
+
+## Follow-up — durations, and the row count
+
+**Durations now read as `31h 55m` on screen and stay numeric in the exports.**
+`engine._display_value` rounds every Duration Metric to two decimals at the single place one is
+produced, so `11.482139109909799` is now `11.48` in the CSV and the workbook, and the browser
+renders that as `11h 29m`.
+
+**Screen and file deliberately disagree here, and that was decided explicitly with the owner.**
+The alternative — formatting hours and minutes in the exporters too, to preserve "the file matches
+the screen" literally — would make the duration column *text* in Excel, so nobody could sum,
+average or chart it. Keeping the number is what an export is for. `test_frontend_report_table.py`
+guards the split in both directions: the formatter must exist in the browser and must NOT appear in
+`app/exporters.py`.
+
+The engine tests that pinned unrounded means now compare to `DURATION_TOLERANCE` (0.005, half a
+rounding step). The assertion contrasting the weighted mean against the naive mean-of-daily-averages
+is deliberately left tight — those differ by orders of magnitude, which is its whole point.
+
+**The grid is pinned at 10 visible rows.** It was briefly a 10–100 picker; pinning keeps the chart
+and the Warnings on screen without scrolling the middle column first. Still a viewport size, never a
+page size — every row stays in the Report Table and both exports, verified again after the change:
+1,514 CSV lines against 23 rows in the DOM.

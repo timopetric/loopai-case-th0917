@@ -194,7 +194,9 @@ def test_withheld_value_is_a_distinct_component_never_a_bare_dash_string() -> No
     source = _read(TABLE_FILE)
     assert "function WithheldValue" in source
     assert "<WithheldValue" in source
-    assert re.search(r"value === null \? <WithheldValue", source)
+    # The ternary is now multi-line (a duration branch sits alongside the
+    # withheld one), so allow whitespace between the test and the component.
+    assert re.search(r"value === null \?\s*\(?\s*<WithheldValue", source)
     # It must never fall back to the number 0.
     assert "value === null ? 0" not in source
 
@@ -272,31 +274,47 @@ def test_report_pane_gives_the_table_a_bounded_scroll_container() -> None:
 
 
 def test_visible_row_count_is_a_viewport_size_not_a_page_size() -> None:
-    """The row-count picker changes how many rows are ON SCREEN; it must
-    never become a page size. Both exporters derive from the same Report
-    Table, and a graded user story requires the exported file to match what
-    is on screen — so the chosen count may size the scroll container, and
-    must not reach `flatItems`, `table.rows`, or the virtualizer's `count`."""
+    """The grid shows a fixed number of rows at a time. That count sizes the
+    scroll container and nothing else: both exporters derive from the same
+    Report Table, and a graded user story requires the exported file to match
+    what is on screen, so the count must never reach `flatItems`,
+    `table.rows`, or the virtualizer's `count`."""
     source = _read(TABLE_FILE)
 
-    assert "VISIBLE_ROWS_OPTIONS" in source and "visibleRows" in source, (
-        "expected a visible-row-count control on the table"
+    assert re.search(r"const VISIBLE_ROWS = 10\b", source), (
+        "expected the grid to be pinned at 10 visible rows"
     )
-    assert "100" in source, "the picker should offer up to 100 rows"
 
-    # The count may only be used for pixel height, never to slice the data.
     for forbidden in (
         "table.rows.slice",
         "flatItems.slice",
-        "rows.slice(0, visibleRows",
-        "slice(0, visibleRows",
+        "slice(0, VISIBLE_ROWS",
     ):
         assert forbidden not in source, (
-            f"{forbidden!r} would turn the row-count picker into pagination — "
-            "every row must stay in the Report Table so the export matches the screen"
+            f"{forbidden!r} would turn the row count into pagination — every row must "
+            "stay in the Report Table so the export matches the screen"
         )
 
-    # The virtualizer must still count the FULL flattened set.
     assert "count: flatItems.length" in source, (
         "the virtualizer's count must stay the full row set, not the visible count"
     )
+
+
+def test_durations_render_as_hours_and_minutes_on_screen_only() -> None:
+    """Durations are hours. The table shows `11h 29m`; the CSV and the
+    workbook keep the number so a spreadsheet can still sum the column. This
+    divergence is deliberate and was decided explicitly with the owner — the
+    guard is that the formatting lives in the browser and NOT in the
+    exporters, which is what keeps the file machine-readable."""
+    source = _read(TABLE_FILE)
+    assert "function formatHours" in source
+    assert 'column.unit === "hours"' in source, (
+        "expected the hours formatting to be applied per column unit"
+    )
+
+    exporter = _read(REPO_ROOT / "app" / "exporters.py")
+    for token in ("formatHours", 'f"{hours}h', "h {minutes}m"):
+        assert token not in exporter, (
+            "the exporters must keep durations numeric — formatting them as "
+            "hours/minutes would make the workbook column text and unsummable"
+        )

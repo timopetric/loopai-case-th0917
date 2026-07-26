@@ -86,6 +86,11 @@ _CHART_PALETTE_SIZE = 8
 _METRIC_INFO_BY_KEY = {info.key: info for info in METRIC_CATALOGUE}
 _COUNTER_KEYS = frozenset(info.key for info in METRIC_CATALOGUE if info.kind == "counter")
 _DURATION_KEYS = frozenset(info.key for info in METRIC_CATALOGUE if info.kind == "duration")
+
+#: Duration Metrics are hours. Two decimals is 36 seconds of precision —
+#: finer than the upstream data justifies, and enough that rounding never
+#: changes the minutes the browser renders from it.
+_DURATION_DECIMALS = 2
 _SUPPORTED_KEYS = _COUNTER_KEYS | _DURATION_KEYS
 
 # The one metric that double-counts when summed across Actors (CONTEXT.md,
@@ -372,11 +377,20 @@ def _display_value(
     — the same sentinel `actioned_emails` already uses for a total the
     engine cannot honestly produce — and rendered as a dash, never `0.0`
     and never a crash."""
-    if total_count is None or duration_display == "total":
+    if total_count is None:
         return total_value
+    # Duration Metrics are hours, and an unrounded mean prints as
+    # `11.482139109909799` — eighteen digits that defeat the table's tabular
+    # alignment and land verbatim in the workbook. Rounded once here, at the
+    # single place a duration is produced, so the table, the CSV and the
+    # workbook cannot disagree about the number. The browser renders this
+    # value as `11h 29m`; the exports keep it numeric (see
+    # `exporters._render`), which is a deliberate, recorded divergence.
+    if duration_display == "total":
+        return round(total_value, _DURATION_DECIMALS)
     if total_count == 0:
         return None
-    return total_value / total_count
+    return round(total_value / total_count, _DURATION_DECIMALS)
 
 
 def _row_values(
