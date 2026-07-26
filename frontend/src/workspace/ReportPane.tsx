@@ -23,11 +23,21 @@ export function ReportPane({
   table,
   reportError,
   presetsReady,
+  loading,
   meta,
 }: {
   table: ReportTableData | null;
   reportError: string | null;
   presetsReady: boolean;
+  /** True for the duration of any report round trip after the first —
+   * sorting a column, changing the date range, moving a column. Rendered
+   * as `aria-busy` plus a small status line ON TOP of the previous,
+   * still-good table (issue 08: frontend-rework accessibility polish;
+   * `WorkspaceShell.tsx`'s `reportLoading` docstring has the full
+   * reasoning). Never swaps the table out for a spinner — that would be
+   * the "disturb a good result" mistake this issue also calls out for
+   * export failures. */
+  loading: boolean;
   meta: Meta | null;
 }) {
   const {
@@ -50,7 +60,10 @@ export function ReportPane({
     // a fixed-height sibling above it; only the table area is `flex-1
     // min-h-0`, the flexbox idiom for "take the rest of the space, but
     // don't grow past it."
-    <section className="flex min-w-0 flex-1 flex-col overflow-hidden bg-canvas p-4">
+    <section
+      className="flex min-w-0 flex-1 flex-col overflow-hidden bg-canvas p-4"
+      aria-busy={loading}
+    >
       {reportError && (
         <p role="alert" className="mb-3 rounded-md bg-danger-soft px-4 py-3 text-body-sm text-danger">
           {reportError}
@@ -61,6 +74,14 @@ export function ReportPane({
         // no report has been requested at all — a labelled loading state
         // here, not a blank gap, is what stands in for the table until then.
         <p role="status">Loading report…</p>
+      )}
+      {/* Every SUBSEQUENT round trip (a sort click, a date change) — the
+          previous table stays on screen underneath this, so a slow
+          upstream response never reads as "nothing happened" (issue 08). */}
+      {table && loading && (
+        <p role="status" className="mb-3 text-body-sm text-steel">
+          Updating report…
+        </p>
       )}
       {table && (
         <Chart

@@ -8,6 +8,10 @@ import type { InputHTMLAttributes } from "react";
  * `<input>` props, which is how the rail keeps the date fields clamped to
  * the Coverage Window (`meta.coverage_window`) without this primitive
  * knowing anything about reports.
+ *
+ * `h-11` (44px, issue 08: frontend-rework accessibility polish) matches the
+ * design reference's "Form inputs render at 44px height" touch-target
+ * floor — this primitive was 36px (`h-9`) before this pass.
  */
 export function TextInput({
   label,
@@ -18,7 +22,7 @@ export function TextInput({
       <span className="mb-1 block text-body-sm-medium font-medium text-ink-tint">{label}</span>
       <input
         {...inputProps}
-        className="h-9 w-full rounded-md border border-hairline-strong bg-canvas px-3 text-body-sm
+        className="h-11 w-full rounded-md border border-hairline-strong bg-canvas px-3 text-body-sm
           text-ink outline-none transition-[border-color,box-shadow] duration-[var(--motion-base)]
           ease-brand focus:border-primary focus:ring-2 focus:ring-primary/20"
       />

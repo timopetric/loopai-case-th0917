@@ -32,7 +32,7 @@ export function AssistantPane({
           type="button"
           onClick={onToggleCollapse}
           aria-label="Expand the Assistant"
-          className="rounded-md p-2 text-body-sm text-steel hover:bg-cream-soft hover:text-ink"
+          className="flex h-11 w-11 items-center justify-center rounded-md text-body-sm text-steel hover:bg-cream-soft hover:text-ink"
         >
           «
         </button>
@@ -48,7 +48,7 @@ export function AssistantPane({
           type="button"
           onClick={onToggleCollapse}
           aria-label="Collapse the Assistant"
-          className="rounded-md px-2 py-1 text-body-sm text-steel hover:bg-cream-soft hover:text-ink"
+          className="flex h-11 w-11 items-center justify-center rounded-md text-body-sm text-steel hover:bg-cream-soft hover:text-ink"
         >
           »
         </button>

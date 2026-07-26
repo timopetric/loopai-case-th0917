@@ -1,6 +1,6 @@
 # 08 — Accessibility and interaction polish
 
-Status: ready-for-agent
+Status: done
 
 ## Parent
 

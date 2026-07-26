@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react";
+
 import type { AssumptionNote } from "./lib/assumptions";
 
 /**
@@ -15,7 +17,21 @@ import type { AssumptionNote } from "./lib/assumptions";
  * rather than a token: a neutral darkening overlay reads correctly behind
  * either theme's card, so it is intentionally NOT one of the surface
  * tokens that flips between light and dark.
+ *
+ * Focus management (issue 08: frontend-rework accessibility polish) — a
+ * dialog that opens without moving focus into itself, trapping Tab there,
+ * and giving focus back to whatever opened it is a keyboard dead end: the
+ * user's cursor either stays behind the backdrop (can't reach the modal at
+ * all without many Tabs) or, worse, can Tab OUT of the modal into content
+ * hidden behind the scrim. All three (move focus in, trap Tab within the
+ * dialog's own focusable elements, restore focus to the opener) are
+ * self-contained in the effect below rather than pushed onto every caller
+ * — `Header.tsx`'s "What assumptions..." link doesn't need to know or hold
+ * a ref, it just conditionally renders this component.
  */
+const FOCUSABLE_SELECTOR =
+  'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
 export function AssumptionsModal({
   notes,
   onClose,
@@ -23,6 +39,55 @@ export function AssumptionsModal({
   notes: AssumptionNote[];
   onClose: () => void;
 }) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Captured on mount, when `document.activeElement` is still whatever
+    // control the caller had just activated (the header's assumptions
+    // link) — restoring focus there on close is what "returns focus to
+    // the control that opened it" means.
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+
+    const dialog = dialogRef.current;
+    const focusables = dialog
+      ? Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR))
+      : [];
+    focusables[0]?.focus();
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+      if (event.key !== "Tab" || !dialog) return;
+
+      const current = Array.from(
+        dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+      ).filter((el) => !el.hasAttribute("disabled"));
+      if (current.length === 0) return;
+
+      const first = current[0];
+      const last = current[current.length - 1];
+      // Wrap Tab/Shift+Tab at the dialog's own edges instead of letting
+      // focus escape into the (visually hidden, but still in the DOM)
+      // page behind the backdrop — the trap itself.
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      previouslyFocused?.focus();
+    };
+  }, [onClose]);
+
   return (
     <div
       role="dialog"
@@ -32,6 +97,7 @@ export function AssumptionsModal({
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4"
     >
       <div
+        ref={dialogRef}
         onClick={(event) => event.stopPropagation()}
         className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-hairline
           bg-canvas p-6 text-ink shadow-xl"
@@ -42,7 +108,8 @@ export function AssumptionsModal({
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="rounded-md px-2 py-1 text-body-md text-steel hover:bg-cream-soft hover:text-ink"
+            className="flex h-11 w-11 items-center justify-center rounded-md text-body-md
+              text-steel hover:bg-cream-soft hover:text-ink"
           >
             ×
           </button>

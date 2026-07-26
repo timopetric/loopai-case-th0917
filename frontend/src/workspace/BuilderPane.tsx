@@ -89,7 +89,7 @@ export function BuilderPane({
           type="button"
           onClick={onToggleCollapse}
           aria-label="Expand the report builder"
-          className="rounded-md p-1.5 text-body-sm text-steel hover:bg-cream-deep hover:text-ink"
+          className="flex h-11 w-11 items-center justify-center rounded-md text-body-sm text-steel hover:bg-cream-deep hover:text-ink"
         >
           »
         </button>
@@ -113,7 +113,7 @@ export function BuilderPane({
           type="button"
           onClick={onToggleCollapse}
           aria-label="Collapse the report builder"
-          className="rounded-md px-2 py-1 text-body-sm text-steel hover:bg-cream-deep hover:text-ink"
+          className="flex h-11 w-11 items-center justify-center rounded-md text-body-sm text-steel hover:bg-cream-deep hover:text-ink"
         >
           «
         </button>

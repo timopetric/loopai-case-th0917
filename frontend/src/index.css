@@ -16,3 +16,56 @@
     @apply bg-canvas text-ink font-sans antialiased;
   }
 }
+
+/**
+ * Accessibility polish (issue 08: frontend-rework) — two rules that must
+ * beat every Tailwind utility class, including the several `outline-none`
+ * utilities already in the tree (SignIn's password field, TextInput,
+ * Chat's message box). Tailwind v4 wraps its own utilities in a named
+ * `utilities` layer; CSS cascade layers give UNLAYERED rules priority over
+ * every named layer regardless of selector order or specificity, so the
+ * two rules below are deliberately written OUTSIDE `@layer` — inside one,
+ * `outline-none`'s `outline: 2px solid transparent` would keep winning no
+ * matter how this file is ordered.
+ *
+ * 1. Focus visibility. The app previously had none at all: several
+ *    interactive elements set `outline-none` and replaced it only with a
+ *    20%-opacity `ring` glow, which is a decorative halo, not a focus
+ *    indicator with a measurable contrast ratio. One global rule instead of
+ *    per-component fixes, so no interactive element type (native button,
+ *    input, select, or a plain `<div role="dialog">`'s focusable children)
+ *    can be missed — including controls added after this pass, like the
+ *    table's sortable headers and column-order buttons, which never had
+ *    per-component focus styling to begin with. `:focus-visible` (not
+ *    `:focus`) so the ring appears for keyboard/programmatic focus but not
+ *    for a mouse click landing on a button, matching native browser
+ *    behaviour. Colour and measured contrast ratios: `tokens.css`'s
+ *    `--color-focus-ring` doc comment; both are re-verified by computed
+ *    WCAG contrast tests in `tests/test_frontend_accessibility.py`.
+ * 2. Reduced motion. `prefers-reduced-motion: reduce` collapses every
+ *    animation and transition to effectively nothing — the thinking
+ *    indicator's `animate-pulse` dot (`Chat.tsx`) is the one named in the
+ *    issue, but a blanket rule (rather than hunting down each
+ *    `transition-*`/`animate-*` utility individually) is what guarantees a
+ *    future animation doesn't reopen the same gap. `!important` is
+ *    deliberate and safe here: it is the standard "kill all motion"
+ *    pattern (the same one most CSS resets use), and since this rule only
+ *    ever fires inside the media query, it can never suppress motion for a
+ *    user who has not asked for it.
+ */
+:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

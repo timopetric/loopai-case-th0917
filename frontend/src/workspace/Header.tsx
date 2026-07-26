@@ -130,7 +130,7 @@ export function Header({
               key={preset.id}
               type="button"
               onClick={() => onApplyPreset(preset)}
-              className="rounded-md border border-hairline-strong bg-canvas px-3 py-1.5 text-body-sm text-ink hover:bg-cream-soft"
+              className="h-11 rounded-md border border-hairline-strong bg-canvas px-3 text-body-sm text-ink hover:bg-cream-soft"
             >
               {preset.label}
             </button>
@@ -139,7 +139,7 @@ export function Header({
             type="button"
             onClick={onExportCsv}
             disabled={exportDisabled}
-            className="rounded-md bg-primary px-3 py-1.5 text-body-sm-medium font-medium text-on-primary hover:bg-primary-deep disabled:cursor-not-allowed disabled:bg-hairline-strong disabled:text-muted"
+            className="h-11 rounded-md bg-primary px-3 text-body-sm-medium font-medium text-on-primary hover:bg-primary-deep disabled:cursor-not-allowed disabled:bg-hairline-strong disabled:text-muted"
           >
             Download CSV
           </button>
@@ -147,7 +147,7 @@ export function Header({
             type="button"
             onClick={onExportXlsx}
             disabled={exportDisabled}
-            className="rounded-md bg-primary px-3 py-1.5 text-body-sm-medium font-medium text-on-primary hover:bg-primary-deep disabled:cursor-not-allowed disabled:bg-hairline-strong disabled:text-muted"
+            className="h-11 rounded-md bg-primary px-3 text-body-sm-medium font-medium text-on-primary hover:bg-primary-deep disabled:cursor-not-allowed disabled:bg-hairline-strong disabled:text-muted"
           >
             Download Excel
           </button>

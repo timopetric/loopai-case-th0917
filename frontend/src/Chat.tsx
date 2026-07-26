@@ -50,6 +50,24 @@ export function Chat({ meta }: { meta: Meta | null }) {
   const [reasoning, setReasoning] = useState("");
   const devMode = Boolean(meta?.dev_fake_llm);
 
+  /**
+   * The polite, one-shot completion announcement (issue 08: frontend-rework
+   * accessibility polish) — "a screen reader user learns the Assistant
+   * answered without having the whole growing message re-read on every
+   * token." This is deliberately NOT derived from the growing
+   * `messages[...].text` itself: it is set exactly once, inside `onDone`
+   * (and once for a failed turn, inside `onError`), so it can only ever
+   * fire once per turn no matter how many `onToken` events land in
+   * between. `onToken` must never write to this state — that would
+   * reintroduce the exact per-token re-announcement this exists to avoid.
+   * Paired with `role="log"`'s `aria-relevant="additions"` below (which
+   * stops the log region itself from treating a text mutation inside an
+   * already-added bubble as a reportable change) — together, the growing
+   * bubble is silent while it grows and this region speaks once when it's
+   * done.
+   */
+  const [announcement, setAnnouncement] = useState("");
+
   const timerRef = useRef<number | null>(null);
   const thinkingStartRef = useRef<number | null>(null);
 
@@ -128,6 +146,7 @@ export function Chat({ meta }: { meta: Meta | null }) {
         onDone: () => {
           setStatus(null);
           setBusy(false);
+          setAnnouncement("Assistant replied.");
         },
         onError: (event) => {
           setStatus(null);
@@ -138,6 +157,7 @@ export function Chat({ meta }: { meta: Meta | null }) {
             ...message,
             text: message.text || event.text,
           }));
+          setAnnouncement("Assistant could not complete the reply.");
         },
         onThinkingText: (event) => {
           setReasoning((prev) => prev + event.text);
@@ -152,7 +172,18 @@ export function Chat({ meta }: { meta: Meta | null }) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div role="log" className="mb-2 min-h-0 flex-1 overflow-y-auto pr-1">
+      {/* `role="log"` implies `aria-live="polite"` with a default
+          `aria-relevant` of "additions text" — the "text" half is exactly
+          the naive-live-region bug (re-announcing the whole growing
+          message on every token, since each `onToken` mutates a text node
+          already inside this region). `aria-relevant="additions"` narrows
+          it to whole new messages only; the one-shot region below (outside
+          this log) is what announces the turn finishing. */}
+      <div
+        role="log"
+        aria-relevant="additions"
+        className="mb-2 min-h-0 flex-1 overflow-y-auto pr-1"
+      >
         {messages.length === 0 && (
           <p className="text-body-sm text-steel">
             Ask for a report in plain English — e.g. "resolved and handle time by Actor".
@@ -180,6 +211,14 @@ export function Chat({ meta }: { meta: Meta | null }) {
           </pre>
         </details>
       )}
+      {/* The one-shot completion announcement (see the `announcement`
+          state's docstring above) — visually hidden, so it never shows a
+          redundant "Assistant replied." line beneath a bubble that already
+          says as much, but present in the accessibility tree so a screen
+          reader user hears it exactly once per turn. */}
+      <div role="status" aria-live="polite" className="sr-only">
+        {announcement}
+      </div>
       <div className="flex gap-2">
         <input
           type="text"
@@ -190,7 +229,7 @@ export function Chat({ meta }: { meta: Meta | null }) {
           }}
           placeholder='e.g. "resolved and handle time by Actor"'
           disabled={busy}
-          className="h-9 flex-1 rounded-md border border-hairline-strong bg-canvas px-3 text-body-sm
+          className="h-11 flex-1 rounded-md border border-hairline-strong bg-canvas px-3 text-body-sm
             text-ink outline-none transition-[border-color,box-shadow] duration-[var(--motion-base)]
             ease-brand focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:bg-cream-soft"
         />
@@ -198,7 +237,7 @@ export function Chat({ meta }: { meta: Meta | null }) {
           type="button"
           onClick={send}
           disabled={busy || !input.trim()}
-          className="rounded-md bg-primary px-3 py-1.5 text-body-sm-medium font-medium text-on-primary
+          className="h-11 rounded-md bg-primary px-4 text-body-sm-medium font-medium text-on-primary
             hover:bg-primary-deep disabled:cursor-not-allowed disabled:bg-hairline-strong
             disabled:text-muted"
         >

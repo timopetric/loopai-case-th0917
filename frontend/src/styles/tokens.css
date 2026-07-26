@@ -219,6 +219,21 @@
   --color-danger: var(--feedback-danger);
   --color-danger-soft: var(--feedback-danger-soft);
 
+  /* Focus ring (issue 08: frontend-rework accessibility polish). Reuses
+     `--brand-primary` rather than a new hue: it is already the one colour
+     ADR-0004 confines to "CTAs and active states," and a focus indicator is
+     exactly that — the currently-active control. Measured against every
+     surface a focused control can sit on (WCAG 1.4.11 non-text 3:1 floor,
+     same floor `--border-hairline-strong` is held to above): light canvas
+     3.34:1, light cream 3.15:1, light page 3.20:1; dark canvas 5.46:1, dark
+     cream 4.61:1, dark page 5.81:1 — all clear 3:1 in both themes, computed
+     in `tests/test_frontend_accessibility.py::TestFocusRingContrast`. No
+     dark-specific override is needed: the value is identical to the light
+     one (same reasoning as the brand accent's existing invariance across
+     themes), so it lives once here rather than being duplicated into either
+     dark block. */
+  --color-focus-ring: var(--brand-primary);
+
   /* Type — families. Display sizes only ever pair with `font-display`;
      everything else pairs with `font-sans`. Tabular/monospaced figures
      (report table, exports) pair with `font-mono`. */

@@ -71,10 +71,13 @@ const ROW_HEIGHT_CLASS: Record<Density, string> = { comfortable: "h-11", compact
 const ROW_HEIGHT_PX: Record<Density, number> = { comfortable: 44, compact: 32 };
 
 /** The column header row and every Bucket group-header row share this exact
- * height (`h-10` = 40px), which is also why a group header's sticky offset
- * can be the static Tailwind class `top-10` instead of a computed value —
- * the header never changes height with density, only body rows do. */
-const HEADER_ROW_PX = 40;
+ * height (`h-11` = 44px — bumped from 40px in issue 08: frontend-rework so
+ * the sortable header buttons and column-order controls that live inside
+ * it clear the design reference's 44px touch-target floor, not just their
+ * own padding), which is also why a group header's sticky offset can be
+ * the static Tailwind class `top-11` instead of a computed value — the
+ * header never changes height with density, only body rows do. */
+const HEADER_ROW_PX = 44;
 
 type FlatItem =
   | { kind: "group"; bucket: string; label: string }
@@ -242,12 +245,34 @@ export function ReportTable({
             `border-collapse` in some engines (notably Safari drops the
             sticky offset entirely), which would silently break the header
             and leading-column stickiness this issue exists to add. */}
-        <table className="w-full border-separate border-spacing-0 text-body-sm">
+        {/*
+          Virtualisation (issue 04) means only a slice of `flatItems` is
+          ever a real `<tr>` at once — the constraint issue 08 exists to
+          protect is that this must not read as a SMALLER table to
+          assistive technology than it visually is. `aria-rowcount` states
+          the true total (every Bucket-group row, every data row, the
+          column header and the totals footer) and every `<tr>` below
+          carries an explicit `aria-rowindex` computed from its position in
+          the FULL row set — never from where it happens to land in the
+          currently-mounted window. `@tanstack/react-virtual`'s
+          `getVirtualItems()` already hands back `.index` as an index into
+          the full `count` passed to `useVirtualizer` (not a 0..N index
+          over just what's rendered), so `virtualRow.index` is already the
+          right number; it only needs the `+2` offset for the header row
+          (index 1) and 1-based counting. See
+          `tests/test_frontend_accessibility.py::TestVirtualizedTableSemantics`.
+        */}
+        <table
+          className="w-full border-separate border-spacing-0 text-body-sm"
+          aria-rowcount={flatItems.length + 2}
+          aria-colcount={totalColumnCount}
+        >
           <thead>
-            <tr className="h-10">
+            <tr className="h-11" aria-rowindex={1}>
               {showLeadColumn && (
                 <th
-                  className="sticky left-0 top-0 z-30 h-10 border-b border-hairline-strong bg-canvas
+                  scope="col"
+                  className="sticky left-0 top-0 z-30 h-11 border-b border-hairline-strong bg-canvas
                     px-3 text-left align-middle text-body-sm-medium font-semibold text-ink-tint"
                 >
                   {hasGroups ? groupLabel : ""}
@@ -256,7 +281,17 @@ export function ReportTable({
               {table.columns.map((column, index) => (
                 <th
                   key={column.key}
-                  className="sticky top-0 z-20 h-10 border-b border-hairline-strong bg-canvas
+                  scope="col"
+                  aria-sort={
+                    isPivot
+                      ? undefined
+                      : sort?.column === column.key
+                        ? sort.direction === "desc"
+                          ? "descending"
+                          : "ascending"
+                        : "none"
+                  }
+                  className="sticky top-0 z-20 h-11 border-b border-hairline-strong bg-canvas
                     px-3 text-right align-middle text-body-sm-medium font-semibold text-ink-tint"
                 >
                   {isPivot ? (
@@ -282,9 +317,9 @@ export function ReportTable({
                           disabled={index === 0}
                           onClick={() => onMoveColumn(column.key, "left")}
                           aria-label={`Move ${column.label} left`}
-                          className="rounded border border-hairline-strong bg-canvas px-1 text-micro
-                            leading-none text-steel hover:bg-cream-soft disabled:cursor-not-allowed
-                            disabled:opacity-40"
+                          className="inline-flex h-6 w-6 items-center justify-center rounded border
+                            border-hairline-strong bg-canvas text-micro leading-none text-steel
+                            hover:bg-cream-soft disabled:cursor-not-allowed disabled:opacity-40"
                         >
                           {"<"}
                         </button>
@@ -293,9 +328,9 @@ export function ReportTable({
                           disabled={index === table.columns.length - 1}
                           onClick={() => onMoveColumn(column.key, "right")}
                           aria-label={`Move ${column.label} right`}
-                          className="rounded border border-hairline-strong bg-canvas px-1 text-micro
-                            leading-none text-steel hover:bg-cream-soft disabled:cursor-not-allowed
-                            disabled:opacity-40"
+                          className="inline-flex h-6 w-6 items-center justify-center rounded border
+                            border-hairline-strong bg-canvas text-micro leading-none text-steel
+                            hover:bg-cream-soft disabled:cursor-not-allowed disabled:opacity-40"
                         >
                           {">"}
                         </button>
@@ -318,10 +353,13 @@ export function ReportTable({
 
               if (item.kind === "group") {
                 return (
-                  <tr key={`group-${item.bucket}-${virtualRow.index}`}>
+                  <tr
+                    key={`group-${item.bucket}-${virtualRow.index}`}
+                    aria-rowindex={virtualRow.index + 2}
+                  >
                     <td
                       colSpan={totalColumnCount}
-                      className="sticky top-10 z-10 h-10 border-b border-hairline-strong bg-cream
+                      className="sticky top-11 z-10 h-11 border-b border-hairline-strong bg-cream
                         px-3 align-middle text-body-sm-medium font-semibold text-ink-tint"
                     >
                       <span className="sticky left-3">{item.label}</span>
@@ -333,7 +371,11 @@ export function ReportTable({
               const { row, rowIndex } = item;
               const zebraBg = rowIndex % 2 === 1 ? "bg-surface" : "bg-canvas";
               return (
-                <tr key={`row-${rowIndex}`} className="group">
+                <tr
+                  key={`row-${rowIndex}`}
+                  className="group"
+                  aria-rowindex={virtualRow.index + 2}
+                >
                   {showLeadColumn && (
                     <td
                       className={`sticky left-0 z-10 ${ROW_HEIGHT_CLASS[density]} ${zebraBg}
@@ -368,10 +410,10 @@ export function ReportTable({
             )}
           </tbody>
           <tfoot>
-            <tr>
+            <tr aria-rowindex={flatItems.length + 2}>
               {showLeadColumn && (
                 <td
-                  className="sticky bottom-0 left-0 z-30 h-10 border-t-2 border-hairline-strong
+                  className="sticky bottom-0 left-0 z-30 h-11 border-t-2 border-hairline-strong
                     bg-canvas px-3 align-middle text-body-sm-medium font-semibold text-ink-tint"
                 >
                   Total
@@ -384,7 +426,7 @@ export function ReportTable({
                   <td
                     key={column.key}
                     title={count !== undefined ? `${count} ticket${count === 1 ? "" : "s"}` : undefined}
-                    className="sticky bottom-0 z-20 h-10 border-t-2 border-hairline-strong bg-canvas
+                    className="sticky bottom-0 z-20 h-11 border-t-2 border-hairline-strong bg-canvas
                       px-3 text-right align-middle font-mono tabular-nums font-semibold text-ink"
                   >
                     {value === null ? <WithheldValue /> : value}

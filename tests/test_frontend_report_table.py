@@ -147,8 +147,10 @@ def test_header_and_leading_columns_stick() -> None:
     assert "sticky left-0" in source, (
         "expected the leading entity/group column to stick while scrolling horizontally"
     )
-    assert "sticky top-10" in source, (
-        "expected the Bucket group-header rows to stick just beneath the column header"
+    assert "sticky top-11" in source, (
+        "expected the Bucket group-header rows to stick just beneath the column header "
+        "(top-11 = 44px, issue 08: frontend-rework's touch-target floor bumped the header "
+        "row from 40px to 44px)"
     )
 
 

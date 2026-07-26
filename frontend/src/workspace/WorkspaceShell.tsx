@@ -52,6 +52,18 @@ export function WorkspaceShell() {
 
   const [meta, setMeta] = useState<Meta | null>(null);
   const [table, setTable] = useState<ReportTableData | null>(null);
+  /** True for the duration of any report round trip — not just the very
+   * first one (`presetsReady` already covers that). Issue 08: frontend-
+   * rework accessibility polish names this explicitly: "sorting a large
+   * report currently looks like nothing happened," because the table
+   * simply sits there, stale, until the new `ReportTable` swaps in. A
+   * click that visibly does nothing for a second or more reads as broken,
+   * not busy, especially over a screen reader with no spinner to glance
+   * at. `ReportPane` renders this as an `aria-busy` region plus a small
+   * "Updating…" status, layered ON TOP of the still-good previous table
+   * (never a blank/loading swap) — the same "don't disturb a good result"
+   * principle the export-failure handling below already follows. */
+  const [reportLoading, setReportLoading] = useState(false);
   const [assumptions, setAssumptions] = useState<AssumptionNote[] | null>(null);
   const [showAssumptions, setShowAssumptions] = useState(false);
   const [reportError, setReportError] = useState<string | null>(null);
@@ -130,6 +142,7 @@ export function WorkspaceShell() {
     const wasRestoringFromUrl = restoringFromUrl.current;
     restoringFromUrl.current = false;
 
+    setReportLoading(true);
     fetchReport(buildSpec())
       .then((result) => {
         setTable(result);
@@ -154,7 +167,8 @@ export function WorkspaceShell() {
           return;
         }
         setReportError("Could not load the report.");
-      });
+      })
+      .finally(() => setReportLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     presetsReady,
@@ -212,7 +226,13 @@ export function WorkspaceShell() {
           collapsed={builderCollapsed}
           onToggleCollapse={() => setBuilderCollapsed((prev) => !prev)}
         />
-        <ReportPane table={table} reportError={reportError} presetsReady={presetsReady} meta={meta} />
+        <ReportPane
+          table={table}
+          reportError={reportError}
+          presetsReady={presetsReady}
+          loading={reportLoading}
+          meta={meta}
+        />
         <AssistantPane
           meta={meta}
           collapsed={assistantCollapsed}
