@@ -25,11 +25,14 @@ from app.upstream import UpstreamClient, get_upstream_client
 router = APIRouter()
 
 
-@router.post("/report")
-async def post_report(
-    spec: ReportSpec,
-    client: UpstreamClient = Depends(get_upstream_client),
-) -> ReportTable:
+async def resolve_report_table(spec: ReportSpec, client: UpstreamClient) -> ReportTable:
+    """`ReportSpec` -> `ReportTable`, translating the engine's domain errors
+    into the same 422s every caller of a Report Spec needs (issue 04, issue
+    08). Shared by `/report` (preview) and `/export/csv` (issue 10, and
+    issue 11's XLSX route) so the error handling — and the guarantee that an
+    export can never disagree with the preview because it runs the identical
+    `execute()` call — lives in exactly one place.
+    """
     dataset = await client.get_dataset()
     try:
         return execute(spec, dataset)
@@ -56,3 +59,11 @@ async def post_report(
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=str(exc)
         ) from exc
+
+
+@router.post("/report")
+async def post_report(
+    spec: ReportSpec,
+    client: UpstreamClient = Depends(get_upstream_client),
+) -> ReportTable:
+    return await resolve_report_table(spec, client)
