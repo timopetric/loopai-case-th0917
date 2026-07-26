@@ -1,0 +1,257 @@
+/**
+ * The token layer (issue 01: frontend-rework, ADR-0004).
+ *
+ * Adapted from `plans/decisions/design-reference-mistral.md`, a marketing
+ * site reference, per the PRD's adaptation table:
+ *   - Cream is an ACCENT surface (rails, cards, banners), never the page
+ *     background. The data surface (`--color-canvas`) stays white/near-white.
+ *   - The licensed `PP Editorial Old` display face is replaced by the OFL
+ *     `Instrument Serif`, used only at display sizes (`font-display` paired
+ *     with a `text-display-*` / `text-heading-1` size) — never for body text.
+ *   - The 84px hero size, the sunset gradient/stripe band and photography
+ *     are dropped outright; there is no hero in a report builder.
+ *   - A dark ramp is derived (the reference explicitly lists this as a
+ *     known gap) via the `prefers-color-scheme: dark` override below.
+ *
+ * Brand colour (`--color-primary`) is confined to CTAs and active states.
+ * It MUST NOT be used for the chart series palette — the eight
+ * entity-stable, CVD-safe hues in `architecture.md` §7 are a separate,
+ * unrelated set chosen by the dataviz skill in a later slice. See ADR-0004.
+ *
+ * Two layers:
+ *   1. Plain custom properties in `:root`, redefined under a dark media
+ *      query — this is what makes the ramp swappable at runtime rather
+ *      than baked into the build.
+ *   2. A Tailwind v4 `@theme` block that points at those custom properties,
+ *      so every later slice reaches for a utility class (`bg-canvas`,
+ *      `text-ink`, `rounded-lg`, `font-display`) instead of a raw hex value.
+ */
+
+:root {
+  /* Brand — CTAs and active states only. */
+  --brand-primary: #fa520f;
+  --brand-primary-deep: #cc3a05;
+  --brand-on-primary: #ffffff;
+
+  /* Cream — accent surface (rails, cards, banners), not the page background. */
+  --surface-cream: #fff8e0;
+  --surface-cream-soft: #fffaeb;
+  --surface-cream-deep: #fff0c2;
+  --border-beige-deep: #e6d5a8;
+
+  /* Data surface — where tables and charts live. Stays white. */
+  --surface-canvas: #ffffff;
+  --surface-page: #fafafa;
+
+  /* Ink scale. */
+  --text-ink: #1f1f1f;
+  --text-ink-tint: #3d3d3d;
+  --text-charcoal: #2c2c2c;
+  --text-slate: #4a4a4a;
+  --text-steel: #6a6a6a;
+  --text-stone: #8a8a8a;
+  --text-muted: #a8a8a8;
+
+  /* Hairline borders. */
+  --border-hairline: #e5e5e5;
+  --border-hairline-soft: #ededed;
+  --border-hairline-strong: #c7c7c7;
+
+  /* Dark surfaces (used on the two places the reference already went dark:
+     code blocks and photographic cards — repurposed here for future
+     dark-surface components such as the code/mono figure background). */
+  --surface-code: #1c1c1e;
+  --text-on-dark: #ffffff;
+  --text-on-dark-muted: #a8a8a8;
+
+  /* Feedback. Not in the reference (a marketing site has no form errors to
+     speak of) — added here because the sign-in screen needs one. Kept out
+     of the orange family so it never reads as a second brand hue. */
+  --feedback-danger: #c81e1e;
+  --feedback-danger-soft: #fdecec;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface-cream: #2b2410;
+    --surface-cream-soft: #241e0c;
+    --surface-cream-deep: #362b0e;
+    --border-beige-deep: #4a3c17;
+
+    --surface-canvas: #161513;
+    --surface-page: #0e0d0c;
+
+    --text-ink: #f2ede2;
+    --text-ink-tint: #d8d2c4;
+    --text-charcoal: #cfc9bc;
+    --text-slate: #b3ac9d;
+    --text-steel: #8f8879;
+    --text-stone: #75705f;
+    --text-muted: #5c5849;
+
+    --border-hairline: #2a2822;
+    --border-hairline-soft: #201f1a;
+    --border-hairline-strong: #3a3830;
+
+    --feedback-danger: #ff6b5e;
+    --feedback-danger-soft: #2a1512;
+  }
+}
+
+@theme {
+  /* Colour — every entry resolves through the runtime-swappable custom
+     properties above, so `bg-canvas` etc. respond to the dark override. */
+  --color-primary: var(--brand-primary);
+  --color-primary-deep: var(--brand-primary-deep);
+  --color-on-primary: var(--brand-on-primary);
+
+  --color-cream: var(--surface-cream);
+  --color-cream-soft: var(--surface-cream-soft);
+  --color-cream-deep: var(--surface-cream-deep);
+  --color-beige-deep: var(--border-beige-deep);
+
+  --color-canvas: var(--surface-canvas);
+  --color-surface: var(--surface-page);
+  --color-code: var(--surface-code);
+
+  --color-ink: var(--text-ink);
+  --color-ink-tint: var(--text-ink-tint);
+  --color-charcoal: var(--text-charcoal);
+  --color-slate: var(--text-slate);
+  --color-steel: var(--text-steel);
+  --color-stone: var(--text-stone);
+  --color-muted: var(--text-muted);
+  --color-on-dark: var(--text-on-dark);
+  --color-on-dark-muted: var(--text-on-dark-muted);
+
+  --color-hairline: var(--border-hairline);
+  --color-hairline-soft: var(--border-hairline-soft);
+  --color-hairline-strong: var(--border-hairline-strong);
+
+  --color-danger: var(--feedback-danger);
+  --color-danger-soft: var(--feedback-danger-soft);
+
+  /* Type — families. Display sizes only ever pair with `font-display`;
+     everything else pairs with `font-sans`. Tabular/monospaced figures
+     (report table, exports) pair with `font-mono`. */
+  --font-display: "Instrument Serif", ui-serif, Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  /* Type — scale. The 84px hero size is dropped (PRD adaptation table);
+     these are "the lower type registers" it says are kept. */
+  --text-display-lg: 4rem; /* 64px */
+  --text-display-lg--line-height: 1.1;
+  --text-display-lg--letter-spacing: -0.0625rem;
+
+  --text-heading-1: 3.25rem; /* 52px */
+  --text-heading-1--line-height: 1.15;
+  --text-heading-1--letter-spacing: -0.03125rem;
+
+  --text-heading-2: 2.25rem; /* 36px */
+  --text-heading-2--line-height: 1.2;
+  --text-heading-2--letter-spacing: -0.03125rem;
+
+  --text-heading-3: 1.75rem; /* 28px */
+  --text-heading-3--line-height: 1.25;
+
+  --text-heading-4: 1.375rem; /* 22px */
+  --text-heading-4--line-height: 1.3;
+
+  --text-heading-5: 1.125rem; /* 18px */
+  --text-heading-5--line-height: 1.4;
+
+  --text-subtitle: 1.125rem; /* 18px */
+  --text-subtitle--line-height: 1.5;
+
+  --text-body-md: 1rem; /* 16px */
+  --text-body-md--line-height: 1.55;
+
+  --text-body-md-medium: 1rem; /* 16px */
+  --text-body-md-medium--line-height: 1.55;
+
+  --text-body-sm: 0.875rem; /* 14px */
+  --text-body-sm--line-height: 1.5;
+
+  --text-body-sm-medium: 0.875rem; /* 14px */
+  --text-body-sm-medium--line-height: 1.5;
+
+  --text-caption: 0.8125rem; /* 13px */
+  --text-caption--line-height: 1.4;
+
+  --text-caption-bold: 0.8125rem; /* 13px */
+  --text-caption-bold--line-height: 1.4;
+
+  --text-micro: 0.75rem; /* 12px */
+  --text-micro--line-height: 1.4;
+
+  --text-micro-uppercase: 0.6875rem; /* 11px */
+  --text-micro-uppercase--line-height: 1.4;
+  --text-micro-uppercase--letter-spacing: 0.0625rem;
+
+  --text-button-md: 0.875rem; /* 14px */
+  --text-button-md--line-height: 1.3;
+
+  --text-stat-display: 3.5rem; /* 56px */
+  --text-stat-display--line-height: 1.1;
+  --text-stat-display--letter-spacing: -0.0625rem;
+
+  --text-code-md: 0.875rem; /* 14px */
+  --text-code-md--line-height: 1.5;
+
+  /* Radii. */
+  --radius-xs: 0.25rem; /* 4px */
+  --radius-sm: 0.375rem; /* 6px */
+  --radius-md: 0.5rem; /* 8px */
+  --radius-lg: 0.75rem; /* 12px */
+  --radius-xl: 1rem; /* 16px */
+  --radius-xxl: 1.25rem; /* 20px */
+  --radius-full: 9999px;
+
+  /* Motion. The reference lists no extracted timings (Known Gaps) beyond a
+     recommendation of "150-200ms ease for hover/focus" — taken as the fast
+     / base pair here, with a slow step added for larger surfaces (modals,
+     panel transitions) that a later slice will need. */
+  --ease-brand: cubic-bezier(0.4, 0, 0.2, 1);
+  --default-transition-duration: 150ms;
+  --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Duration steps as plain custom properties: Tailwind v4 has no themeable
+   `--duration-*` namespace (its bare `duration-<n>` utilities are already
+   token-free integers, not raw hex, so they're exempt from "no raw hex
+   outside the token layer"), but naming the three steps once here keeps
+   every consumer picking the same three values by name via
+   `duration-[var(--motion-base)]` rather than inventing new numbers. */
+:root {
+  --motion-fast: 150ms;
+  --motion-base: 200ms;
+  --motion-slow: 320ms;
+}
+
+/**
+ * Spacing. Deliberately NOT registered under Tailwind's `@theme` block.
+ *
+ * A first version defined `--spacing-xxs` … `--spacing-xxxl` inside
+ * `@theme`, mirroring the reference's named scale directly. That broke
+ * `max-w-sm`: Tailwind v4 resolves *every* sizing utility (`w-*`, `h-*`,
+ * `max-w-*`, `min-w-*`, `gap-*`, `inset-*`, …) against the `--spacing-*`
+ * namespace before falling back to a utility-specific scale like
+ * `--container-*` — so a custom `--spacing-sm: 0.75rem` silently replaced
+ * the built-in `max-w-sm` (24rem) with 12px everywhere `sm` was used as a
+ * size, not just as spacing. `hero` (120px) and `section-lg` (96px) are
+ * dropped from the reference's scale on top of that — there is no hero or
+ * marketing section in a report builder to space out.
+ *
+ * The fix: keep the named scale as documentation only (below), and use
+ * Tailwind's own numeric spacing utilities (`p-1` … `p-16`), which already
+ * derive from the single `--spacing` base (0.25rem) and don't collide with
+ * any other namespace. The mapping is exact:
+ *
+ *   xxs   →  1  (4px)      xxl        →  8  (32px)
+ *   xs    →  2  (8px)      xxxl       → 10  (40px)
+ *   sm    →  3  (12px)     section-sm → 12  (48px)
+ *   md    →  4  (16px)     section    → 16  (64px)
+ *   lg    →  5  (20px)
+ *   xl    →  6  (24px)
+ */

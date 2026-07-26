@@ -1,6 +1,6 @@
 # 01 — Tailwind and the token layer, proven on the sign-in screen
 
-Status: ready-for-agent
+Status: done
 
 ## Parent
 
