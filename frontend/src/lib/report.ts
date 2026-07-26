@@ -36,6 +36,23 @@ export interface ReportSpec {
   chart_metric?: string | null;
 }
 
+/**
+ * One server-defined preset (issue 12) — mirrors `app/api/v1/routers/
+ * meta.py`'s `PresetResponse`. `spec` is a fully-built `ReportSpec`, real
+ * Coverage Window dates already baked in server-side by `app/presets.py`'s
+ * `build_presets`: the frontend applies it verbatim (`App.tsx`'s
+ * `applyPreset`) and holds no preset definitions — no metric list, no sort
+ * column, no date default — of its own. That is deliberate: unlike this
+ * file's types, which `tsc` and every real `/api/v1/meta` response check,
+ * preset *values* hand-mirrored into a second TS file would be unchecked by
+ * anything, so the single source lives only in `app/presets.py`.
+ */
+export interface Preset {
+  id: string;
+  label: string;
+  spec: ReportSpec;
+}
+
 export interface ColumnMeta {
   key: string;
   label: string;

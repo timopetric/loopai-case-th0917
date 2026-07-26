@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { AssumptionsModal } from "./AssumptionsModal";
 import { ReportTable } from "./ReportTable";
@@ -11,23 +11,22 @@ import type { ExportFormat } from "./lib/export";
 import { exportReport, triggerDownload } from "./lib/export";
 import type { Meta } from "./lib/meta";
 import { fetchMeta } from "./lib/meta";
-import type { ReportSpec, ReportTable as ReportTableData, SortSpec } from "./lib/report";
+import type { Preset, ReportSpec, ReportTable as ReportTableData, SortSpec } from "./lib/report";
 import { ReportRefusedError, fetchReport, formatMetricLabel } from "./lib/report";
 
 /**
- * The client's literal ask (PRD user story 3): day × Actor, populated the
- * moment the app opens, no controls touched. `resolve_time` is included
- * alongside the Counters so the avg/total toggle has something to
- * demonstrate — Duration Metrics are aggregated as of issue 05. These are
- * only the *initial* values of the builder controls added in issue 06 —
- * every one of them is editable afterwards, and the date bounds are always
- * re-derived from `/api/v1/meta`, never hardcoded past this first paint.
+ * Placeholder values for the builder controls before `/api/v1/meta` (and the
+ * presets it now carries — issue 12) has answered. These are ONLY UI
+ * bootstrap values for the `<input>`s to have something non-empty to show —
+ * they are never sent as a report request: the report-fetching effect below
+ * is gated on `presetsReady`, which only becomes true once the real
+ * day-by-Actor preset (`meta.presets[0]`, built server-side against the real
+ * Coverage Window in `app/presets.py`) has been applied. This is what
+ * guarantees first paint never requests a date range outside the real
+ * window, even if the upstream window has moved since these were written.
  */
-const DEFAULT_METRICS = ["resolved", "replies", "new_tickets", "resolve_time"];
-const DEFAULT_DATE_FROM = "2026-07-10";
-const DEFAULT_DATE_TO = "2026-07-23";
-const DEFAULT_GRANULARITY: ReportSpec["granularity"] = "day";
-const DEFAULT_GROUP_BY: ReportSpec["group_by"] = "agent";
+const PLACEHOLDER_DATE_FROM = "2026-07-10";
+const PLACEHOLDER_DATE_TO = "2026-07-23";
 
 /**
  * Walking-skeleton page (issue 01), now behind the sign-in gate (issue 02),
@@ -75,11 +74,21 @@ export function App() {
    * refusing one that arrives some other way, e.g. a hand-edited URL or the
    * Assistant, is issue 08's job, not this one's).
    */
-  const [metrics, setMetrics] = useState<string[]>(DEFAULT_METRICS);
-  const [dateFrom, setDateFrom] = useState<string>(DEFAULT_DATE_FROM);
-  const [dateTo, setDateTo] = useState<string>(DEFAULT_DATE_TO);
-  const [granularity, setGranularity] = useState<ReportSpec["granularity"]>(DEFAULT_GRANULARITY);
-  const [groupBy, setGroupBy] = useState<ReportSpec["group_by"]>(DEFAULT_GROUP_BY);
+  const [metrics, setMetrics] = useState<string[]>([]);
+  const [dateFrom, setDateFrom] = useState<string>(PLACEHOLDER_DATE_FROM);
+  const [dateTo, setDateTo] = useState<string>(PLACEHOLDER_DATE_TO);
+  const [granularity, setGranularity] = useState<ReportSpec["granularity"]>("day");
+  const [groupBy, setGroupBy] = useState<ReportSpec["group_by"]>("agent");
+  /**
+   * Becomes `true` once the day-by-Actor preset served by `/api/v1/meta`
+   * has been applied (see the effect below) — the report-fetching effect
+   * is gated on this, not on `meta` alone, so the very first request the
+   * app makes always carries the real preset's real dates, never the
+   * placeholders above. `defaultPresetApplied` (a ref, not state) guards
+   * against re-applying the default preset on every `meta` refetch.
+   */
+  const [presetsReady, setPresetsReady] = useState(false);
+  const defaultPresetApplied = useRef(false);
 
   /**
    * Table presentation (issue 07): sort ranks within each Bucket, never
@@ -128,6 +137,30 @@ export function App() {
     const next = [...current];
     [next[from], next[to]] = [next[to], next[from]];
     setColumnsOrder(next);
+  }
+
+  /**
+   * Selecting a preset replaces the current Report Spec wholesale (issue 12,
+   * PRD user story 4) — every control below is set from `preset.spec`, the
+   * fully-built `ReportSpec` `/api/v1/meta` served (real Coverage Window
+   * dates already baked in server-side, `app/presets.py`'s `build_presets`).
+   * Nothing about the controls themselves changes: they are the same plain
+   * `useState` setters every individual control already uses, so a preset
+   * is a starting point, not a mode — every control remains individually
+   * editable immediately afterwards.
+   */
+  function applyPreset(preset: Preset) {
+    const spec = preset.spec;
+    setMetrics(spec.metrics);
+    setDateFrom(spec.date_from);
+    setDateTo(spec.date_to);
+    setGranularity(spec.granularity);
+    setGroupBy(spec.group_by);
+    setDurationDisplay(spec.duration_display ?? "avg");
+    setSort(spec.sort ?? null);
+    setColumnsOrder(spec.columns_order ?? null);
+    setLayout(spec.layout ?? "long");
+    setChartMetric(spec.chart_metric ?? null);
   }
 
   /**
@@ -204,7 +237,23 @@ export function App() {
       .then((res) => setStatus(res.ok ? "ok" : "error"))
       .catch(() => setStatus("error"));
     fetchMeta()
-      .then(setMeta)
+      .then((result) => {
+        setMeta(result);
+        // Day by Actor loads first, no controls touched (PRD user story
+        // 3) — apply the server's own first preset exactly once. Guarded
+        // by a ref (not state) so a later meta refetch never resets
+        // controls the user has since edited by hand.
+        if (!defaultPresetApplied.current) {
+          defaultPresetApplied.current = true;
+          if (result.presets.length > 0) {
+            applyPreset(result.presets[0]);
+          }
+          // Unblocks the report-fetching effect below even if `presets`
+          // ever came back empty — an empty preset list is not a reason
+          // to freeze the report on "loading" forever.
+          setPresetsReady(true);
+        }
+      })
       .catch(() => setMeta(null));
     fetchAssumptions()
       .then(setAssumptions)
@@ -212,7 +261,7 @@ export function App() {
   }, [signedIn]);
 
   useEffect(() => {
-    if (!signedIn) return;
+    if (!signedIn || !presetsReady) return;
     if (dateFrom > dateTo) {
       // Both inputs are individually clamped to the Coverage Window, but an
       // inverted range (from > to) is still reachable by editing the two
@@ -247,6 +296,7 @@ export function App() {
       });
   }, [
     signedIn,
+    presetsReady,
     metrics,
     dateFrom,
     dateTo,
@@ -310,6 +360,19 @@ export function App() {
       )}
       <p>Backend status: {status}</p>
       <h2>Report builder</h2>
+      <fieldset style={{ marginBottom: "1rem", display: "inline-block" }}>
+        <legend>Presets</legend>
+        {meta?.presets.map((preset) => (
+          <button
+            key={preset.id}
+            type="button"
+            onClick={() => applyPreset(preset)}
+            style={{ marginRight: "0.5rem" }}
+          >
+            {preset.label}
+          </button>
+        ))}
+      </fieldset>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem", marginBottom: "1rem" }}>
         <fieldset style={{ display: "inline-block" }}>
           <legend>Date range</legend>
@@ -466,6 +529,13 @@ export function App() {
         </button>
       </div>
       {exportError && <p role="alert">{exportError}</p>}
+      {!presetsReady && !reportError && (
+        // Before the day-by-Actor preset lands (`/api/v1/meta`'s `presets`),
+        // no report has been requested at all (issue 12: never with the
+        // placeholder dates above) — a labelled loading state here, not a
+        // blank gap, is what stands in for the table until then.
+        <p role="status">Loading report…</p>
+      )}
       {table && (
         <ReportTable
           table={table}
