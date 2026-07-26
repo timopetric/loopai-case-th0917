@@ -2,6 +2,8 @@ import { AssumptionsModal } from "../AssumptionsModal";
 import type { AssumptionNote } from "../lib/assumptions";
 import type { Meta } from "../lib/meta";
 import type { Preset } from "../lib/report";
+import { useThemeStore } from "../store/themeStore";
+import { SegmentedControl } from "../ui/SegmentedControl";
 
 /**
  * The workspace header (issue 02: frontend-rework) — product name, the
@@ -15,6 +17,41 @@ import type { Preset } from "../lib/report";
  * The old `App.tsx`'s developer-only status paragraph is gone — the PRD
  * requires the status line users used to see removed entirely.
  */
+/**
+ * The explicit theme override (issue 07: frontend-rework, architecture.md
+ * §7) — a three-way choice between following the operating system and
+ * pinning either theme for the session. Kept local to `Header.tsx` (not a
+ * `ui/` primitive): it is a one-off composition of the existing
+ * `SegmentedControl` primitive plus `store/themeStore.ts`, specific to
+ * this one chrome element, rather than a reusable building block other
+ * panes reach for the way `Chip`/`TextInput`/`SectionHeader` are.
+ *
+ * `SegmentedControl` is generic over a string union, so the store's `null`
+ * ("follow the OS") is represented here as the literal `"system"` and
+ * translated back to `null` in `onChange` — the store itself never sees
+ * the string `"system"`.
+ */
+function ThemeToggle() {
+  const override = useThemeStore((state) => state.override);
+  const setOverride = useThemeStore((state) => state.setOverride);
+  const value = override ?? "system";
+
+  return (
+    <div className="w-48">
+      <SegmentedControl
+        name="Theme"
+        value={value}
+        onChange={(next) => setOverride(next === "system" ? null : next)}
+        options={[
+          { value: "system", label: "System" },
+          { value: "light", label: "Light" },
+          { value: "dark", label: "Dark" },
+        ]}
+      />
+    </div>
+  );
+}
+
 export function Header({
   meta,
   assumptions,
@@ -87,6 +124,7 @@ export function Header({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <ThemeToggle />
           {presets.map((preset) => (
             <button
               key={preset.id}

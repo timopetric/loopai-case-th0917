@@ -1,6 +1,6 @@
 # 07 — Dark mode
 
-Status: ready-for-agent
+Status: done
 
 ## Parent
 

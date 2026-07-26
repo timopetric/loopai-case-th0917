@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { SignIn } from "./SignIn";
 import { UNAUTHORIZED_EVENT } from "./lib/apiClient";
 import { getStoredApiKey } from "./lib/apiKey";
+import { initThemeWatcher } from "./store/themeStore";
 import { WorkspaceShell } from "./workspace/WorkspaceShell";
 
 /**
@@ -21,6 +22,12 @@ import { WorkspaceShell } from "./workspace/WorkspaceShell";
  */
 export function App() {
   const [signedIn, setSignedIn] = useState<boolean>(() => getStoredApiKey() !== null);
+
+  // Applies the `data-theme` attribute and starts the OS `prefers-color-scheme`
+  // listener (`store/themeStore.ts`) for the whole app, including `SignIn` —
+  // dark mode is not gated on being signed in (issue 07's required-reading
+  // list names `SignIn.tsx` explicitly).
+  useEffect(() => initThemeWatcher(), []);
 
   useEffect(() => {
     function handleUnauthorized() {

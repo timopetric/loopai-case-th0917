@@ -15,6 +15,16 @@ rebrand. It must stay exactly eight hues, contain no brand colour, and no
 ninth hue may ever be generated — so this file parses both `Chart.tsx` and
 `tokens.css` and cross-checks them, rather than asserting on either file in
 isolation.
+
+Issue 07 (frontend-rework, dark mode) adds a second array,
+`CHART_PALETTE_DARK` — the dark-surface counterparts of the same eight
+slots (architecture.md §7: "a selected set of steps validated against the
+dark surface, not an automatic inversion"). Every guard below that used to
+assume exactly one palette array now treats BOTH arrays the same way: each
+must independently have exactly eight hues and no brand colour, and the
+"no raw hex outside a palette block" guard excludes both blocks rather than
+just the light one. The dark-mode-specific checks (contrast, CVD,
+same-length/order) live in `tests/test_frontend_dark_mode.py`.
 """
 
 import re
@@ -43,6 +53,19 @@ def _chart_palette_block(source: str) -> str:
     return match.group(1)
 
 
+def _chart_palette_dark_block(source: str) -> str:
+    match = re.search(
+        r"const CHART_PALETTE_DARK:\s*readonly string\[\]\s*=\s*\[(.*?)\];",
+        source,
+        re.DOTALL,
+    )
+    assert match, (
+        "expected a `const CHART_PALETTE_DARK: readonly string[] = [...]` array in "
+        "Chart.tsx (issue 07: dark-surface counterparts of CHART_PALETTE)"
+    )
+    return match.group(1)
+
+
 def _brand_hex_values(tokens_source: str) -> set[str]:
     values = set()
     for name in ("--brand-primary", "--brand-primary-deep", "--brand-on-primary"):
@@ -60,6 +83,14 @@ class TestPaletteIsUnchangedByTheRebrand:
         hexes = HEX_COLOR_PATTERN.findall(block)
         assert len(hexes) == 8, f"expected exactly 8 palette hues, found {len(hexes)}: {hexes}"
 
+    def test_dark_palette_has_exactly_eight_hues(self) -> None:
+        source = _read(CHART_FILE)
+        block = _chart_palette_dark_block(source)
+        hexes = HEX_COLOR_PATTERN.findall(block)
+        assert len(hexes) == 8, (
+            f"expected exactly 8 dark palette hues, found {len(hexes)}: {hexes}"
+        )
+
     def test_palette_contains_no_brand_colour(self) -> None:
         chart_source = _read(CHART_FILE)
         tokens_source = _read(TOKENS_FILE)
@@ -68,6 +99,15 @@ class TestPaletteIsUnchangedByTheRebrand:
         brand_hexes = _brand_hex_values(tokens_source)
         collision = palette_hexes & brand_hexes
         assert not collision, f"chart palette must not contain brand colour(s): {collision}"
+
+    def test_dark_palette_contains_no_brand_colour(self) -> None:
+        chart_source = _read(CHART_FILE)
+        tokens_source = _read(TOKENS_FILE)
+        palette_block = _chart_palette_dark_block(chart_source)
+        palette_hexes = {h.lower() for h in HEX_COLOR_PATTERN.findall(palette_block)}
+        brand_hexes = _brand_hex_values(tokens_source)
+        collision = palette_hexes & brand_hexes
+        assert not collision, f"dark chart palette must not contain brand colour(s): {collision}"
 
     def test_no_ninth_hue_can_ever_be_generated(self) -> None:
         """The palette is a fixed literal array indexed by a bounded
@@ -120,12 +160,14 @@ class TestChromeUsesTheTokenLayer:
         """Axes, grid, tooltip, legend and the disclosure must all resolve
         colour through the token layer (CSS custom properties / Tailwind
         classes) — the only hex literals allowed in the whole file are the
-        eight palette entries themselves."""
+        eight light-palette entries and (issue 07) the eight dark-palette
+        entries."""
         source = _read(CHART_FILE)
         palette_block = _chart_palette_block(source)
-        source_without_palette = source.replace(palette_block, "")
+        palette_dark_block = _chart_palette_dark_block(source)
+        source_without_palette = source.replace(palette_block, "").replace(palette_dark_block, "")
         hits = HEX_COLOR_PATTERN.findall(source_without_palette)
-        assert not hits, f"found raw hex colour(s) outside the palette block: {hits}"
+        assert not hits, f"found raw hex colour(s) outside the palette blocks: {hits}"
 
     def test_axis_and_grid_reference_token_css_variables(self) -> None:
         source = _read(CHART_FILE)

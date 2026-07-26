@@ -16,6 +16,7 @@ import type {
 
 import { formatMetricLabel } from "./lib/report";
 import type { ChartData, ChartSeries } from "./lib/report";
+import { useThemeStore } from "./store/themeStore";
 
 /**
  * The fixed, ordered categorical palette (dataviz skill's validated default,
@@ -44,13 +45,55 @@ const CHART_PALETTE: readonly string[] = [
   "#e34948", // 7 red
 ];
 
+/**
+ * The dark-surface counterpart of `CHART_PALETTE` (issue 07: frontend-rework,
+ * architecture.md §7 — "a selected set of steps validated against the dark
+ * surface, not an automatic inversion"). Same eight hue families, same
+ * order, same length — SLOT 3 IS SLOT 3 IN BOTH ARRAYS, which is what keeps
+ * an entity's colour identical across a theme change: `seriesColor` below
+ * always indexes both arrays with the exact same `series.color_slot`, never
+ * a derived or recomputed index.
+ *
+ * Every value here is a chosen dark-band step from the dataviz skill's own
+ * documented reference palette, re-validated with `scripts/validate_palette.js`
+ * against this app's actual dark canvas token (`--surface-canvas` under the
+ * dark ramp, see `tokens.css`) rather than the skill's own reference dark
+ * surface. All six checks pass at that surface — lightness band, chroma
+ * floor, CVD separation (adjacent pairs), the normal-vision floor, and
+ * contrast — with a strictly better contrast margin than the skill's own
+ * reference dark surface, since this app's dark canvas is darker still. The
+ * exact measured numbers are recorded in the issue report and in
+ * `tests/test_frontend_dark_mode.py`, not repeated here as literal hex
+ * values (this docstring is scanned by a test that forbids raw hex outside
+ * the two palette array bodies). The green slot is deliberately left
+ * unchanged from the light array: it already clears every check on both
+ * surfaces, so "selected, not inverted" here means "selected to be the same
+ * value," not a hue shift for its own sake.
+ */
+const CHART_PALETTE_DARK: readonly string[] = [
+  "#3987e5", // 0 blue
+  "#d95926", // 1 orange
+  "#199e70", // 2 aqua
+  "#c98500", // 3 yellow
+  "#d55181", // 4 magenta
+  "#008300", // 5 green
+  "#9085e9", // 6 violet
+  "#e66767", // 7 red
+];
+
 /** With four or fewer series, identity must not depend on colour alone
  * (architecture.md §7 gap this slice closes) — each line also gets a
  * direct label at its last plotted point, not just a legend entry. */
 const DIRECT_LABEL_THRESHOLD = 4;
 
-function seriesColor(series: ChartSeries): string {
-  return CHART_PALETTE[series.color_slot];
+/** Looks up the same `color_slot` in whichever array matches the resolved
+ * theme (`store/themeStore.ts`) — the slot itself never changes, only the
+ * value stored at it, which is the whole point: an Actor (or Mailbox) keeps
+ * its colour identity across a theme change exactly as it does across a
+ * date-range change, because both arrays are indexed by the same
+ * backend-assigned integer. */
+function seriesColor(series: ChartSeries, isDark: boolean): string {
+  return isDark ? CHART_PALETTE_DARK[series.color_slot] : CHART_PALETTE[series.color_slot];
 }
 
 /** The index of the last non-null point in a series — a withheld value
@@ -78,7 +121,8 @@ function ChartTooltip({
   label,
   chart,
   isHours,
-}: TooltipContentProps & { chart: ChartData; isHours: boolean }) {
+  isDark,
+}: TooltipContentProps & { chart: ChartData; isHours: boolean; isDark: boolean }) {
   if (!active || !payload || payload.length === 0) return null;
   return (
     <div className="rounded-md border border-hairline bg-canvas px-3 py-2 shadow-sm">
@@ -93,7 +137,9 @@ function ChartTooltip({
               <span
                 aria-hidden
                 className="h-0.5 w-3 shrink-0 rounded-full"
-                style={{ backgroundColor: series ? seriesColor(series) : "var(--color-muted)" }}
+                style={{
+                  backgroundColor: series ? seriesColor(series, isDark) : "var(--color-muted)",
+                }}
               />
               <span className="text-body-sm text-ink-tint">{entryLabel}</span>
               <span className="ml-auto font-mono text-body-sm-medium tabular-nums text-ink">
@@ -121,7 +167,8 @@ function ChartTooltip({
 function ChartLegend({
   payload,
   chart,
-}: DefaultLegendContentProps & { chart: ChartData }) {
+  isDark,
+}: DefaultLegendContentProps & { chart: ChartData; isDark: boolean }) {
   if (!payload || payload.length === 0) return null;
   return (
     <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1.5">
@@ -136,7 +183,9 @@ function ChartLegend({
             <span
               aria-hidden
               className="h-0.5 w-3 shrink-0 rounded-full"
-              style={{ backgroundColor: series ? seriesColor(series) : "var(--color-muted)" }}
+              style={{
+                backgroundColor: series ? seriesColor(series, isDark) : "var(--color-muted)",
+              }}
             />
             {entryLabel}
           </li>
@@ -176,6 +225,12 @@ export function Chart({
   chartMetric: string | null;
   onChartMetricChange: (metric: string) => void;
 }) {
+  // The single source of truth for "which theme is actually in effect"
+  // (`store/themeStore.ts`) — read here rather than a direct OS media-query
+  // check, so this component reacts the instant the Header's explicit
+  // toggle changes, not just when the OS setting does.
+  const isDark = useThemeStore((state) => state.resolved === "dark");
+
   if (!chart) return null;
 
   const isHours = metricUnit === "hours";
@@ -247,13 +302,15 @@ export function Chart({
                 §7); custom content keeps values/labels in text tokens
                 rather than recharts' default per-series text colour. */}
             <Tooltip
-              content={(props) => <ChartTooltip {...props} chart={chart} isHours={isHours} />}
+              content={(props) => (
+                <ChartTooltip {...props} chart={chart} isHours={isHours} isDark={isDark} />
+              )}
               cursor={{ stroke: "var(--color-hairline-strong)", strokeWidth: 1 }}
             />
             {/* Legend is always present (never colour-alone identity, user
                 story 59); the dropped count is disclosed here rather than
                 folded into a fabricated "Other" series (issue 14). */}
-            <Legend content={(props) => <ChartLegend {...props} chart={chart} />} />
+            <Legend content={(props) => <ChartLegend {...props} chart={chart} isDark={isDark} />} />
             {chart.series.map((series) => {
               const lastIndex = lastPlottedIndex(series);
               return (
@@ -262,7 +319,7 @@ export function Chart({
                   type="monotone"
                   dataKey={series.key}
                   name={series.key}
-                  stroke={seriesColor(series)}
+                  stroke={seriesColor(series, isDark)}
                   strokeWidth={2}
                   dot={{ r: 3 }}
                   activeDot={{ r: 5 }}

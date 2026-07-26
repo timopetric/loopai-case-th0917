@@ -11,18 +11,32 @@
  *   - The 84px hero size, the sunset gradient/stripe band and photography
  *     are dropped outright; there is no hero in a report builder.
  *   - A dark ramp is derived (the reference explicitly lists this as a
- *     known gap) via the `prefers-color-scheme: dark` override below.
+ *     known gap) via the `prefers-color-scheme: dark` override below, and
+ *     (issue 07) an explicit `:root[data-theme]` override the user can set
+ *     from the Header, stored in `sessionStorage` by `store/themeStore.ts`
+ *     — "persists for the session," not indefinitely, so `sessionStorage`
+ *     rather than `localStorage` is the deliberate choice, and neither is a
+ *     `VITE_*`/build-time value (AGENTS.md's hard rule).
  *
  * Brand colour (`--color-primary`) is confined to CTAs and active states.
  * It MUST NOT be used for the chart series palette — the eight
  * entity-stable, CVD-safe hues in `architecture.md` §7 are a separate,
- * unrelated set chosen by the dataviz skill in a later slice. See ADR-0004.
+ * unrelated set chosen by the dataviz skill (light in issue 05, dark
+ * counterparts in issue 07 — see `Chart.tsx`'s `CHART_PALETTE_DARK`).
+ * See ADR-0004.
  *
- * Two layers:
- *   1. Plain custom properties in `:root`, redefined under a dark media
- *      query — this is what makes the ramp swappable at runtime rather
- *      than baked into the build.
- *   2. A Tailwind v4 `@theme` block that points at those custom properties,
+ * Three layers:
+ *   1. Plain custom properties in `:root` (the light values).
+ *   2. The SAME custom properties, redefined twice for dark: once under
+ *      `@media (prefers-color-scheme: dark)` (follows the OS setting), once
+ *      under `:root[data-theme="dark"]` (the explicit override, which must
+ *      win even when the OS is light). The media block is guarded with
+ *      `:not([data-theme="light"])` so an explicit *light* override can
+ *      still beat a dark OS preference — this is what makes theme
+ *      swappable at runtime rather than baked into the build, and lets
+ *      "follow the system" and "explicit override" coexist without either
+ *      one silently losing.
+ *   3. A Tailwind v4 `@theme` block that points at those custom properties,
  *      so every later slice reaches for a utility class (`bg-canvas`,
  *      `text-ink`, `rounded-lg`, `font-display`) instead of a raw hex value.
  */
@@ -52,10 +66,23 @@
   --text-stone: #8a8a8a;
   --text-muted: #a8a8a8;
 
-  /* Hairline borders. */
+  /* Hairline borders. `-strong` is not decorative: it draws the boundary of
+     every text input, the segmented control and the table's column buttons,
+     which WCAG 1.4.11 treats as user interface components needing 3:1. It
+     was #c7c7c7, which is 1.69:1 on canvas — an outline you cannot see. The
+     value below clears 3:1 on all three surfaces it borders (canvas 3.40:1,
+     page 3.26:1, cream 3.20:1) and carries the ramp's warmth, matching the
+     same fix applied to its dark counterpart. Cream is the binding surface
+     here: a lighter grey that passes on canvas still fails against it. */
   --border-hairline: #e5e5e5;
   --border-hairline-soft: #ededed;
-  --border-hairline-strong: #c7c7c7;
+  --border-hairline-strong: #8f8b80;
+
+  /* Native form controls (date inputs, scrollbars, checkboxes) pick their
+     own chrome from this — `light dark` lets the browser follow whichever
+     ramp is actually in effect instead of always rendering light chrome
+     under a dark page. Each override below pins it to that mode instead. */
+  color-scheme: light dark;
 
   /* Dark surfaces (used on the two places the reference already went dark:
      code blocks and photographic cards — repurposed here for future
@@ -71,8 +98,42 @@
   --feedback-danger-soft: #fdecec;
 }
 
+/**
+ * Dark ramp (issue 07: frontend-rework, ADR-0004, architecture.md §7).
+ *
+ * Derived deliberately against the dark data surface (`--surface-canvas:
+ * #161513`), not produced by inverting the light values: every text/surface
+ * pair below was checked with the WCAG contrast formula (see
+ * `tests/test_frontend_dark_mode.py::TestComputedContrast`, which parses
+ * these literal hex values and computes the same ratios) rather than
+ * eyeballed. Measured ratios against `#161513`: ink 15.63:1, ink-tint
+ * 12.11:1 (both clear the 4.5:1 text floor). `text-steel` needs checking
+ * against TWO surfaces, not just canvas — `ReportTable.tsx`'s "Warnings"
+ * eyebrow label sits on `--surface-cream`, not the canvas — so it was
+ * stepped to `#968f80` (5.68:1 on canvas, 4.80:1 on cream `#2b2410`; the
+ * straight hue-family extrapolation, `#8f8879`, cleared canvas at 5.18:1
+ * but fell to 4.38:1 on cream, under the 4.5:1 floor). The accent hairline
+ * `border-hairline-strong` was moved from `#3a3830` (1.55:1, a non-text-
+ * contrast fail) to `#6b6862` (3.29:1, clearing the 3:1 UI-component floor
+ * for input/button borders). `feedback-danger` is a distinct hue-shifted
+ * step (`#ff6b5e`, 6.53:1), not the light `#c81e1e` dimmed by opacity — the
+ * same "genuinely different value, not the same hue at lower opacity" rule
+ * §7 states for the accent applies here too.
+ *
+ * Two selectors carry the identical set of values on purpose (ADR-0004's
+ * `palette.md`-style pattern, `references/palette.md` in the dataviz
+ * skill): the `@media` block follows the OS default, guarded by
+ * `:not([data-theme="light"])` so an explicit light override
+ * (`store/themeStore.ts`) can still win even while the OS prefers dark;
+ * the `:root[data-theme="dark"]` rule is what makes the *explicit* user
+ * override apply even when the OS is light. `:where()` keeps the media
+ * block's specificity at the bare `:root` level (0,1,0) so the attribute
+ * selector (0,2,0) always wins the case where both would otherwise match.
+ */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+
     --surface-cream: #2b2410;
     --surface-cream-soft: #241e0c;
     --surface-cream-deep: #362b0e;
@@ -85,17 +146,44 @@
     --text-ink-tint: #d8d2c4;
     --text-charcoal: #cfc9bc;
     --text-slate: #b3ac9d;
-    --text-steel: #8f8879;
+    --text-steel: #968f80;
     --text-stone: #75705f;
     --text-muted: #5c5849;
 
     --border-hairline: #2a2822;
     --border-hairline-soft: #201f1a;
-    --border-hairline-strong: #3a3830;
+    --border-hairline-strong: #6b6862;
 
     --feedback-danger: #ff6b5e;
     --feedback-danger-soft: #2a1512;
   }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --surface-cream: #2b2410;
+  --surface-cream-soft: #241e0c;
+  --surface-cream-deep: #362b0e;
+  --border-beige-deep: #4a3c17;
+
+  --surface-canvas: #161513;
+  --surface-page: #0e0d0c;
+
+  --text-ink: #f2ede2;
+  --text-ink-tint: #d8d2c4;
+  --text-charcoal: #cfc9bc;
+  --text-slate: #b3ac9d;
+  --text-steel: #968f80;
+  --text-stone: #75705f;
+  --text-muted: #5c5849;
+
+  --border-hairline: #2a2822;
+  --border-hairline-soft: #201f1a;
+  --border-hairline-strong: #6b6862;
+
+  --feedback-danger: #ff6b5e;
+  --feedback-danger-soft: #2a1512;
 }
 
 @theme {
