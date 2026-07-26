@@ -82,6 +82,26 @@ export function formatMetricLabel(key: string): string {
   return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
 }
 
+/**
+ * Thrown when the backend refuses a date range with zero overlap with the
+ * Coverage Window (issue 08) — a 422 whose `detail.coverage` names the real
+ * window, so the caller can tell the user something more useful than "could
+ * not load the report" (architecture.md §12 checklist: "a date outside
+ * coverage is refused, not silently substituted" must be legible, not a
+ * silent empty table). A partially-overlapping range is *not* this error —
+ * the backend clamps and returns 200 with a `warnings` entry instead, shown
+ * as the usual banner in `ReportTable`.
+ */
+export class ReportRefusedError extends Error {
+  coverage: { from_date: string; to_date: string } | null;
+
+  constructor(message: string, coverage: { from_date: string; to_date: string } | null) {
+    super(message);
+    this.name = "ReportRefusedError";
+    this.coverage = coverage;
+  }
+}
+
 export async function fetchReport(spec: ReportSpec): Promise<ReportTable> {
   const response = await apiFetch("/api/v1/report", {
     method: "POST",
@@ -89,6 +109,19 @@ export async function fetchReport(spec: ReportSpec): Promise<ReportTable> {
     body: JSON.stringify(spec),
   });
   if (!response.ok) {
+    if (response.status === 422) {
+      // The engine's other 422 (an unsupported metric) has a plain string
+      // `detail`; only the coverage refusal carries this shape, so a
+      // missing/malformed `coverage` falls through to the generic message.
+      const body = await response.json().catch(() => null);
+      const detail = body?.detail;
+      if (detail && typeof detail === "object" && detail.coverage) {
+        throw new ReportRefusedError(
+          detail.message ?? "That date range has no data.",
+          detail.coverage,
+        );
+      }
+    }
     throw new Error(`POST /api/v1/report failed: ${response.status}`);
   }
   return response.json();

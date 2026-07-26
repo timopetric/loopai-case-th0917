@@ -1,6 +1,6 @@
 # 08 — Coverage validation and Warnings
 
-Status: ready-for-agent
+Status: done
 
 ## Parent
 

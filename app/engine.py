@@ -64,7 +64,7 @@ Issue 07 adds three presentation controls that share this one engine pass:
 from datetime import date
 
 from app.models import ColumnMeta, Metric, ReportRow, ReportSpec, ReportTable, SortSpec
-from app.upstream import METRIC_CATALOGUE, Dataset, EntityBreakdown
+from app.upstream import METRIC_CATALOGUE, CoverageWindow, Dataset, EntityBreakdown
 
 _METRIC_INFO_BY_KEY = {info.key: info for info in METRIC_CATALOGUE}
 _COUNTER_KEYS = frozenset(info.key for info in METRIC_CATALOGUE if info.kind == "counter")
@@ -85,7 +85,99 @@ class UnsupportedMetricError(ValueError):
     (`replies_to_resolve`)."""
 
 
+class CoverageRefusedError(ValueError):
+    """Raised when a requested date range has zero overlap with the
+    Coverage Window (issue 08, CONTEXT.md "Coverage Window",
+    api-report-fresh.md §3.3).
+
+    The upstream itself fails open on an out-of-range query — asked for
+    June, it silently answers with July's numbers rather than nothing. This
+    error is what stands between a request like that and the upstream: it
+    must be raised, and obeyed, *before* any upstream call is made, so an
+    out-of-range date can never reach it. `coverage` carries the real
+    window so the caller (the report route, and later the Assistant) can
+    offer the user a range that actually has data — never substitute one
+    silently."""
+
+    def __init__(self, coverage: CoverageWindow) -> None:
+        self.coverage = coverage
+        super().__init__(
+            "requested date range has no overlap with the Coverage Window "
+            f"{coverage.from_date}..{coverage.to_date}"
+        )
+
+
+def clamp_to_coverage(
+    spec: ReportSpec, coverage: CoverageWindow
+) -> tuple[ReportSpec, list[str]]:
+    """Validate `spec`'s date range against the Coverage Window (issue 08).
+
+    Must run before `upstream.get_dataset()` is ever called for this
+    request — that is the only way to guarantee an out-of-range date never
+    reaches the upstream, which would otherwise fail open and hand back its
+    whole window as though it answered the question asked.
+
+    - **Zero overlap** (`spec`'s range and the window don't touch at all):
+      raises `CoverageRefusedError` carrying the real window. Never
+      substitutes.
+    - **Partial overlap** (either edge, or both — a range that strictly
+      contains the window clamps on both sides at once): returns a copy of
+      `spec` with `date_from`/`date_to` narrowed to the overlap, plus one
+      Warning naming the range actually applied.
+    - **Full containment** (`spec`'s range already fits inside the window):
+      returns `spec` unchanged and no warning — clamping to a no-op range
+      would be a warning about nothing.
+
+    Touching the window by exactly one day (e.g. `date_to` equal to the
+    window's first day) is real overlap, not zero overlap, and clamps to
+    that single day rather than refusing.
+    """
+    window_from = date.fromisoformat(coverage.from_date)
+    window_to = date.fromisoformat(coverage.to_date)
+
+    if spec.date_to < window_from or spec.date_from > window_to:
+        raise CoverageRefusedError(coverage)
+
+    clamped_from = max(spec.date_from, window_from)
+    clamped_to = min(spec.date_to, window_to)
+
+    if clamped_from == spec.date_from and clamped_to == spec.date_to:
+        return spec, []
+
+    warning = (
+        f"Requested range {spec.date_from.isoformat()}..{spec.date_to.isoformat()} "
+        "was outside the Coverage Window and has been clamped to the "
+        f"overlap {clamped_from.isoformat()}..{clamped_to.isoformat()}."
+    )
+    clamped_spec = spec.model_copy(update={"date_from": clamped_from, "date_to": clamped_to})
+    return clamped_spec, [warning]
+
+
 def execute(spec: ReportSpec, dataset: Dataset) -> ReportTable:
+    """`ReportSpec` + `Dataset` -> `ReportTable` (module docstring).
+
+    Coverage validation (issue 08) is enforced *here*, not by any caller —
+    `dataset.coverage` is already carried on every `Dataset`, so this
+    function has everything it needs to refuse or clamp on its own, with no
+    new parameter and no I/O. This is deliberate: `execute()` is the one
+    place every caller — the `/report` route today, the Assistant's
+    in-process `run_report` tool later (issue 16) — necessarily passes
+    through to get a `ReportTable` at all, so enforcing the rule here is
+    the only way to make it structural rather than a convention a future
+    caller could forget to repeat. A caller that reaches straight for
+    `execute()` and skips a route-level check still gets the guard; a
+    caller that wants the clamp-and-report-adjustment shape ahead of time
+    (issue 16's Repair narration) can still call `clamp_to_coverage`
+    directly — it stays exported for exactly that.
+
+    Without this, an out-of-range spec would not error and would not
+    silently borrow another window's numbers (the upstream's own failure
+    mode) — it would return a clean, confident all-zero table with no
+    warnings, since every bucket index would simply select nothing. A
+    dashboard or an Assistant narrating "0 tickets resolved" for a month
+    with no data at all is a worse lie than an obviously wrong number:
+    refusing outright is the only honest response.
+    """
     unsupported = [m.value for m in spec.metrics if m.value not in _SUPPORTED_KEYS]
     if unsupported:
         raise UnsupportedMetricError(
@@ -93,10 +185,14 @@ def execute(spec: ReportSpec, dataset: Dataset) -> ReportTable:
             f"unsupported metric(s) {unsupported!r} (kind == 'sum' is out of scope)."
         )
 
+    spec, coverage_warnings = clamp_to_coverage(spec, dataset.coverage)
+
     indices = _selected_bucket_indices(dataset.ticks, spec.date_from, spec.date_to)
 
     if spec.layout == "pivot":
-        return _execute_pivot(spec, dataset, indices)
+        table = _execute_pivot(spec, dataset, indices)
+        table.warnings = coverage_warnings + table.warnings
+        return table
 
     columns = [_column_meta(m) for m in _ordered_metrics(spec)]
 
@@ -110,7 +206,11 @@ def execute(spec: ReportSpec, dataset: Dataset) -> ReportTable:
 
     totals, total_counts, warnings = _totals(spec, dataset, indices)
     return ReportTable(
-        columns=columns, rows=rows, totals=totals, total_counts=total_counts, warnings=warnings
+        columns=columns,
+        rows=rows,
+        totals=totals,
+        total_counts=total_counts,
+        warnings=coverage_warnings + warnings,
     )
 
 

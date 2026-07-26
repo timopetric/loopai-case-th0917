@@ -7,7 +7,7 @@ import { getStoredApiKey } from "./lib/apiKey";
 import type { Meta } from "./lib/meta";
 import { fetchMeta } from "./lib/meta";
 import type { ReportSpec, ReportTable as ReportTableData, SortSpec } from "./lib/report";
-import { fetchReport, formatMetricLabel } from "./lib/report";
+import { ReportRefusedError, fetchReport, formatMetricLabel } from "./lib/report";
 
 /**
  * The client's literal ask (PRD user story 3): day × Actor, populated the
@@ -169,7 +169,25 @@ export function App() {
         setTable(result);
         setReportError(null);
       })
-      .catch(() => setReportError("Could not load the report."));
+      .catch((err: unknown) => {
+        // A refused (zero-overlap) range is never shown as a table — a
+        // stale table under the error would look like an answer to the
+        // question just asked (architecture.md §12: "a date outside
+        // coverage is refused, not silently substituted"). A clamped,
+        // partially-overlapping range is not this path at all: the backend
+        // returns 200 with the real table plus a `warnings` banner.
+        if (err instanceof ReportRefusedError) {
+          setTable(null);
+          setReportError(
+            err.coverage
+              ? `That date range has no data. The Coverage Window is ` +
+                `${err.coverage.from_date} – ${err.coverage.to_date}.`
+              : err.message,
+          );
+          return;
+        }
+        setReportError("Could not load the report.");
+      });
   }, [
     signedIn,
     metrics,

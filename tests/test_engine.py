@@ -23,7 +23,7 @@ import json
 
 import pytest
 
-from app.engine import UnsupportedMetricError, execute
+from app.engine import CoverageRefusedError, UnsupportedMetricError, clamp_to_coverage, execute
 from app.models import Metric, ReportSpec, SortSpec
 from app.upstream import _DEV_FIXTURE_PATH, CoverageWindow, _normalise_dataset
 
@@ -918,3 +918,215 @@ class TestUnsupportedMetrics:
 
         with pytest.raises(UnsupportedMetricError):
             execute(spec, dataset)
+
+
+class TestCoverageValidation:
+    """Issue 08. Two things are tested here, deliberately at two different
+    levels:
+
+    `clamp_to_coverage` itself (a pure function of `spec` + `CoverageWindow`)
+    is exercised directly by the tests below that call it — this is also
+    the shape issue 16's Assistant will want, to clamp and narrate the
+    adjustment as a Repair rather than only catching an exception.
+
+    But the property that actually matters — that a caller cannot get a
+    `ReportTable` at all for a spec it can't honestly answer — is only
+    proven by calling `execute()` itself, never `clamp_to_coverage` in
+    isolation: `TestExecuteEnforcesCoverage` below calls `execute()`
+    directly, the same as issue 16's in-process `run_report` tool will, and
+    confirms it refuses rather than returning the deceptively clean,
+    all-zero, warning-free table that a naive date-slice would produce for
+    an out-of-range spec (the upstream's own fail-open trap, one layer
+    down: this is what would have shipped without this class). `WINDOW`
+    here is the fixture's real window, 2026-07-10..2026-07-23 inclusive.
+    """
+
+    def test_a_range_fully_inside_the_window_is_returned_unchanged_with_no_warning(self) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-12",
+            date_to="2026-07-15",
+            granularity="day",
+            group_by="none",
+        )
+
+        clamped, warnings = clamp_to_coverage(spec, WINDOW)
+
+        assert clamped.date_from.isoformat() == "2026-07-12"
+        assert clamped.date_to.isoformat() == "2026-07-15"
+        assert warnings == []
+
+    def test_a_range_partially_overlapping_the_start_is_clamped_with_a_warning_naming_it(
+        self,
+    ) -> None:
+        """User story 21: asked for 5-12 July, data starts on the 10th —
+        clamp to the overlap and say so."""
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-05",
+            date_to="2026-07-12",
+            granularity="day",
+            group_by="none",
+        )
+
+        clamped, warnings = clamp_to_coverage(spec, WINDOW)
+
+        assert clamped.date_from.isoformat() == "2026-07-10"
+        assert clamped.date_to.isoformat() == "2026-07-12"
+        assert len(warnings) == 1
+        assert "2026-07-10" in warnings[0]
+        assert "2026-07-12" in warnings[0]
+
+    def test_a_range_partially_overlapping_the_end_is_clamped_with_a_warning_naming_it(
+        self,
+    ) -> None:
+        """User story 25: the final day in the window can be partial too —
+        a range hanging off the end must clamp exactly as the start does."""
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-20",
+            date_to="2026-07-31",
+            granularity="day",
+            group_by="none",
+        )
+
+        clamped, warnings = clamp_to_coverage(spec, WINDOW)
+
+        assert clamped.date_from.isoformat() == "2026-07-20"
+        assert clamped.date_to.isoformat() == "2026-07-23"
+        assert len(warnings) == 1
+        assert "2026-07-20" in warnings[0]
+        assert "2026-07-23" in warnings[0]
+
+    def test_a_range_strictly_containing_the_window_is_clamped_to_the_whole_window(self) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-01",
+            date_to="2026-08-01",
+            granularity="day",
+            group_by="none",
+        )
+
+        clamped, warnings = clamp_to_coverage(spec, WINDOW)
+
+        assert clamped.date_from.isoformat() == "2026-07-10"
+        assert clamped.date_to.isoformat() == "2026-07-23"
+        assert len(warnings) == 1
+
+    def test_touching_the_window_by_exactly_one_day_still_clamps_not_refuses(self) -> None:
+        """The boundary itself is real overlap, not zero overlap — a range
+        ending exactly on the window's first day must clamp, never refuse."""
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-01",
+            date_to="2026-07-10",
+            granularity="day",
+            group_by="none",
+        )
+
+        clamped, warnings = clamp_to_coverage(spec, WINDOW)
+
+        assert clamped.date_from.isoformat() == "2026-07-10"
+        assert clamped.date_to.isoformat() == "2026-07-10"
+        assert len(warnings) == 1
+
+    def test_a_range_with_zero_overlap_is_refused_carrying_the_real_window(self) -> None:
+        """User story 22: June 2026 has no data at all — refuse outright,
+        carrying the real Coverage Window so the caller can offer an
+        alternative. Never substitute July's numbers for June's."""
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-06-01",
+            date_to="2026-06-30",
+            granularity="day",
+            group_by="none",
+        )
+
+        with pytest.raises(CoverageRefusedError) as excinfo:
+            clamp_to_coverage(spec, WINDOW)
+
+        assert excinfo.value.coverage == WINDOW
+
+    def test_a_range_one_day_beyond_either_edge_is_zero_overlap_and_refused(self) -> None:
+        """One day past either edge (2026-07-24, one day after the window's
+        last day 2026-07-23) is zero overlap, not a one-day clamp."""
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-24",
+            date_to="2026-07-30",
+            granularity="day",
+            group_by="none",
+        )
+
+        with pytest.raises(CoverageRefusedError):
+            clamp_to_coverage(spec, WINDOW)
+
+
+class TestExecuteEnforcesCoverage:
+    """The regression test for the bug an independent review caught: calling
+    `engine.execute()` directly — exactly what issue 16's in-process
+    `run_report` tool will do, bypassing the `/report` route entirely — with
+    an out-of-range spec did NOT error and did NOT return July's numbers. It
+    returned a clean `rows: []`, `totals: {"resolved": 0.0}`,
+    `warnings: []` table: every bucket index legitimately selected nothing,
+    so the zero was arithmetically "correct" and completely misleading. An
+    Assistant would have narrated that as "0 tickets resolved in June" — a
+    confident false negative, not an obvious error.
+
+    Fixed by enforcing `clamp_to_coverage` *inside* `execute()`, using
+    `dataset.coverage` (already present on every `Dataset`, no new
+    parameter, no I/O) — so any caller, not just the route that remembers
+    to check first, gets the guard for free.
+    """
+
+    def test_execute_refuses_an_out_of_range_spec_instead_of_a_zero_filled_table(
+        self, dataset
+    ) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-06-01",
+            date_to="2026-06-30",
+            granularity="day",
+            group_by="none",
+        )
+
+        with pytest.raises(CoverageRefusedError) as excinfo:
+            execute(spec, dataset)
+
+        assert excinfo.value.coverage == dataset.coverage
+
+    def test_execute_clamps_a_partially_overlapping_spec_and_warns(self, dataset) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-05",
+            date_to="2026-07-12",
+            granularity="day",
+            group_by="none",
+        )
+
+        table = execute(spec, dataset)
+
+        assert [row.bucket for row in table.rows] == ["2026-07-10", "2026-07-11", "2026-07-12"]
+        assert len(table.warnings) == 1
+        assert "2026-07-10" in table.warnings[0]
+        assert "2026-07-12" in table.warnings[0]
+        # The clamp warning matches sum of the real (clamped) days, not a
+        # figure quietly computed over the originally requested range.
+        assert table.totals["resolved"] == sum(DAILY_RESOLVED[0:3])
+
+    def test_execute_on_a_pivot_layout_also_carries_the_clamp_warning(self, dataset) -> None:
+        """The coverage warning must survive both `execute()` branches — the
+        pivot path builds its `ReportTable` separately from the long-layout
+        path, so it is its own place this could have been dropped."""
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-05",
+            date_to="2026-07-12",
+            granularity="day",
+            group_by="none",
+            layout="pivot",
+        )
+
+        table = execute(spec, dataset)
+
+        assert any("2026-07-10" in w for w in table.warnings)
