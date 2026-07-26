@@ -12,6 +12,7 @@ export interface Meta {
   metrics: { key: string; kind: string; unit: string }[];
   presets: Preset[];
   dev_fake_upstream: boolean;
+  dev_fake_llm: boolean;
 }
 
 export async function fetchMeta(): Promise<Meta> {

@@ -11,6 +11,7 @@ remains public.
 from fastapi import APIRouter, Depends
 
 from app.api.v1.deps import require_api_key
+from app.api.v1.routers.agent import router as agent_router
 from app.api.v1.routers.assumptions import router as assumptions_router
 from app.api.v1.routers.export import router as export_router
 from app.api.v1.routers.meta import router as meta_router
@@ -26,3 +27,4 @@ api_router.include_router(report_router)
 api_router.include_router(export_router)
 api_router.include_router(assumptions_router)
 api_router.include_router(spec_router)
+api_router.include_router(agent_router)

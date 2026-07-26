@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { AssumptionsModal } from "./AssumptionsModal";
 import { Chart } from "./Chart";
+import { Chat } from "./Chat";
 import { ReportTable } from "./ReportTable";
 import { SignIn } from "./SignIn";
 import { UNAUTHORIZED_EVENT, apiFetch } from "./lib/apiClient";
@@ -435,6 +436,22 @@ export function App() {
           data.
         </div>
       )}
+      {meta?.dev_fake_llm && (
+        <div
+          role="status"
+          style={{
+            background: "#fff3cd",
+            color: "#664d03",
+            border: "1px solid #ffe69c",
+            borderRadius: 4,
+            padding: "0.5rem 1rem",
+            marginBottom: "1rem",
+            fontWeight: 600,
+          }}
+        >
+          DEV_FAKE_LLM is on — the Assistant runs a scripted conversation, not a real model.
+        </div>
+      )}
       <h1>loopai — reporting builder</h1>
       {meta && (
         <p>
@@ -666,6 +683,7 @@ export function App() {
           onMoveColumn={moveColumn}
         />
       )}
+      <Chat spec={buildReportSpec()} onApplySpec={applySpec} />
     </main>
   );
 }

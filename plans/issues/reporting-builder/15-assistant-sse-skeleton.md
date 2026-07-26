@@ -1,6 +1,6 @@
 # 15 — Assistant streaming skeleton
 
-Status: ready-for-agent
+Status: done
 
 ## Parent
 

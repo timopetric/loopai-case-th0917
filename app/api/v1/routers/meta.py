@@ -62,6 +62,7 @@ class MetaResponse(BaseModel):
     metrics: list[MetricResponse]
     presets: list[PresetResponse]
     dev_fake_upstream: bool
+    dev_fake_llm: bool
 
 
 @router.get("/meta")
@@ -85,4 +86,5 @@ async def get_meta(
             for p in build_presets(dataset.coverage)
         ],
         dev_fake_upstream=settings.dev_fake_upstream,
+        dev_fake_llm=settings.dev_fake_llm,
     )
