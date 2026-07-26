@@ -147,10 +147,17 @@ def test_header_and_leading_columns_stick() -> None:
     assert "sticky left-0" in source, (
         "expected the leading entity/group column to stick while scrolling horizontally"
     )
-    assert "sticky top-11" in source, (
-        "expected the Bucket group-header rows to stick just beneath the column header "
-        "(top-11 = 44px, issue 08: frontend-rework's touch-target floor bumped the header "
-        "row from 40px to 44px)"
+    # Bucket group headers are deliberately NOT sticky. They used to be
+    # `sticky top-11`, which detached them and painted them over the first
+    # row of their own Bucket (found in the issue 09 browser pass). Scan
+    # code only — this file's comments name the old class in prose, and an
+    # assertion that passes on a comment is worse than no assertion.
+    code_only = "\n".join(
+        line for line in source.splitlines() if not line.strip().startswith("//")
+    )
+    assert "sticky top-11" not in code_only, (
+        "the Bucket group header must not be sticky — it overlapped the first row of its "
+        "own Bucket. It is a divider and scrolls with its rows."
     )
 
 
@@ -246,8 +253,12 @@ def test_inline_style_is_scoped_to_virtualizer_scroll_math_only() -> None:
         "expected the spacer-row virtualization technique to use style={{ height: ... }}"
     )
     for block in style_blocks:
-        assert re.fullmatch(r"\s*height\s*:\s*[A-Za-z0-9_.]+\s*", block), (
-            f"found an inline style block that isn't pure spacer-row height math: {block!r}"
+        # The property must be `height` and nothing else; the value may be
+        # arithmetic (the spacer rows use a computed offset, and the grid's
+        # own height is `rows chosen x row height`, both pixel math rather
+        # than design values).
+        assert re.fullmatch(r"\s*height\s*:\s*[A-Za-z0-9_.\s*+\-/()]+\s*", block), (
+            f"found an inline style block that isn't pure height math: {block!r}"
         )
 
 def test_report_pane_gives_the_table_a_bounded_scroll_container() -> None:
@@ -258,3 +269,34 @@ def test_report_pane_gives_the_table_a_bounded_scroll_container() -> None:
     source = _read(REPORT_PANE_FILE)
     assert "min-h-0" in source
     assert "flex-1" in source
+
+
+def test_visible_row_count_is_a_viewport_size_not_a_page_size() -> None:
+    """The row-count picker changes how many rows are ON SCREEN; it must
+    never become a page size. Both exporters derive from the same Report
+    Table, and a graded user story requires the exported file to match what
+    is on screen — so the chosen count may size the scroll container, and
+    must not reach `flatItems`, `table.rows`, or the virtualizer's `count`."""
+    source = _read(TABLE_FILE)
+
+    assert "VISIBLE_ROWS_OPTIONS" in source and "visibleRows" in source, (
+        "expected a visible-row-count control on the table"
+    )
+    assert "100" in source, "the picker should offer up to 100 rows"
+
+    # The count may only be used for pixel height, never to slice the data.
+    for forbidden in (
+        "table.rows.slice",
+        "flatItems.slice",
+        "rows.slice(0, visibleRows",
+        "slice(0, visibleRows",
+    ):
+        assert forbidden not in source, (
+            f"{forbidden!r} would turn the row-count picker into pagination — "
+            "every row must stay in the Report Table so the export matches the screen"
+        )
+
+    # The virtualizer must still count the FULL flattened set.
+    assert "count: flatItems.length" in source, (
+        "the virtualizer's count must stay the full row set, not the visible count"
+    )

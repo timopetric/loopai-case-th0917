@@ -67,6 +67,14 @@ const DENSITY_OPTIONS = [
  * the rendered `<td>`, `ROW_HEIGHT_PX[density]` for `estimateSize`) so they
  * cannot drift apart into a rendered row that doesn't match the space the
  * virtualizer reserved for it. */
+/** How many rows the grid shows at once. This is a VIEWPORT size, not a
+ * page size: every row stays in the Report Table and in both exports, and
+ * the remaining rows are reached by scrolling exactly as before. Picking
+ * 100 makes the grid tall enough for 100 rows; it does not fetch, slice or
+ * paginate anything. */
+const VISIBLE_ROWS_OPTIONS = [10, 15, 25, 50, 100];
+const VISIBLE_ROWS_DEFAULT = 15;
+
 const ROW_HEIGHT_CLASS: Record<Density, string> = { comfortable: "h-11", compact: "h-8" };
 const ROW_HEIGHT_PX: Record<Density, number> = { comfortable: 44, compact: 32 };
 
@@ -154,6 +162,7 @@ export function ReportTable({
   onMoveColumn: (columnKey: string, direction: "left" | "right") => void;
 }) {
   const [density, setDensity] = useState<Density>("comfortable");
+  const [visibleRows, setVisibleRows] = useState<number>(VISIBLE_ROWS_DEFAULT);
   const groupLabel = groupColumnLabel(groupBy);
   const hasGroups = groupLabel !== null && table.rows.some((row) => row.group_label !== null);
   const isPivot = layout === "pivot";
@@ -222,7 +231,8 @@ export function ReportTable({
           // change rebuilds the report — an assertive region would cut across
           // whatever the user was reading each time.
           role="status"
-          className="mb-3 rounded-lg border border-beige-deep bg-cream px-4 py-3 text-body-sm text-ink-tint"
+          className="mb-3 rounded-lg border border-beige-deep bg-cream px-4 py-3 text-body-sm
+            text-ink-tint"
         >
           <p className="mb-1 text-micro-uppercase font-semibold text-steel">Warnings</p>
           <ul className="list-disc space-y-1 pl-5">
@@ -234,6 +244,22 @@ export function ReportTable({
       )}
 
       <div className="mb-2 flex flex-wrap items-center justify-end gap-2">
+        <label className="flex items-center gap-2">
+          <span className="text-micro font-medium uppercase tracking-wide text-muted">Rows</span>
+          <select
+            value={visibleRows}
+            onChange={(event) => setVisibleRows(Number(event.target.value))}
+            aria-label="Rows shown at once"
+            className="h-11 rounded-md border border-hairline-strong bg-canvas px-2 text-body-sm
+              text-ink-tint"
+          >
+            {VISIBLE_ROWS_OPTIONS.map((count) => (
+              <option key={count} value={count}>
+                {count}
+              </option>
+            ))}
+          </select>
+        </label>
         <span className="text-micro font-medium uppercase tracking-wide text-muted">Density</span>
         <div className="max-w-full">
           <SegmentedControl name="Row density" options={DENSITY_OPTIONS} value={density} onChange={setDensity} />
@@ -242,17 +268,21 @@ export function ReportTable({
 
       <div
         ref={scrollParentRef}
-        // The min-height floor belongs HERE, on the scrolling grid, not on
-        // an outer wrapper: the Warnings banner and the density row are
-        // siblings inside this component, so a floor further out is spent on
-        // them first — with two warnings that left exactly one visible row.
-        // The floor is viewport-relative rather than a fixed rem: inside the
-        // pane's own scroll container `flex-1` does not reclaim the spare
-        // room, so a fixed floor left the grid the same few rows on a tall
-        // window as on a short one. 40vh is ~5 rows at 620px and ~9 at
-        // 1000px. Past that the pane scrolls (ReportPane is
-        // `overflow-y-auto`) rather than compressing the report to nothing.
-        className="min-h-[40vh] flex-1 overflow-auto rounded-lg border border-hairline bg-canvas"
+        // The height is chosen by the user, in rows, rather than left to
+        // flex: inside the pane's own scroll container `flex-1` never
+        // reclaims the spare room, so the grid sat at whatever floor it was
+        // given no matter how tall the window was. Rows x row height plus
+        // the column header and the totals row is exact and predictable —
+        // ask for 25 rows and you get 25. Past the pane's height the pane
+        // scrolls (ReportPane is `overflow-y-auto`); the rows beyond the
+        // chosen count are reached by scrolling the grid, as before.
+        style={{ height: visibleRows * rowHeightPx + HEADER_ROW_PX * 2 }}
+        // `shrink-0` is load-bearing: a flex item shrinks below its own
+        // height by default, so the chosen row count collapsed back to a
+        // single row whenever the pane was tight. Holding the height makes
+        // the pane overflow instead, which is what gives the middle column
+        // its scrollbar.
+        className="shrink-0 overflow-auto rounded-lg border border-hairline bg-canvas"
       >
         {/* `border-separate` + zero spacing, not `border-collapse`: sticky
             positioning on `<th>`/`<td>` is unreliable under
@@ -373,10 +403,16 @@ export function ReportTable({
                   >
                     <td
                       colSpan={totalColumnCount}
-                      className="sticky top-11 z-10 h-11 border-b border-hairline-strong bg-cream
-                        px-3 align-middle text-body-sm-medium font-semibold text-ink-tint"
+                      // Not sticky. It used to be `sticky top-11`, which
+                      // detached it and painted it over the first row of its
+                      // own Bucket, and the `sticky left-3` span inside
+                      // squeezed the label into a narrow floating box. A
+                      // Bucket header is a divider; it reads fine scrolling
+                      // with its rows.
+                      className="h-11 border-b border-hairline-strong bg-cream px-3 align-middle
+                        text-body-sm-medium font-semibold text-ink-tint whitespace-nowrap"
                     >
-                      <span className="sticky left-3">{item.label}</span>
+                      {item.label}
                     </td>
                   </tr>
                 );
@@ -394,7 +430,7 @@ export function ReportTable({
                     <td
                       className={`sticky left-0 z-10 ${ROW_HEIGHT_CLASS[density]} ${zebraBg}
                         border-b border-hairline-soft px-3 align-middle text-body-sm text-ink-tint
-                        group-hover:bg-cream-soft`}
+                        whitespace-nowrap group-hover:bg-cream-soft`}
                     >
                       {hasGroups ? row.group_label : ""}
                     </td>
@@ -408,7 +444,7 @@ export function ReportTable({
                         title={count !== undefined ? `${count} ticket${count === 1 ? "" : "s"}` : undefined}
                         className={`${ROW_HEIGHT_CLASS[density]} ${zebraBg} border-b
                           border-hairline-soft px-3 text-right align-middle font-mono
-                          tabular-nums text-ink group-hover:bg-cream-soft`}
+                          tabular-nums whitespace-nowrap text-ink group-hover:bg-cream-soft`}
                       >
                         {value === null ? <WithheldValue /> : value}
                       </td>

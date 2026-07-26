@@ -69,3 +69,19 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* The workspace is exactly one viewport tall on desktop and every pane
+   scrolls internally, so the document must never scroll as well. Without
+   this it does: recharts leaves a hidden measurement <span> parked at
+   `top: -20000px` as a sibling of the app root, which expands the
+   scrollable overflow region and gave ~450px of phantom scroll that dragged
+   the whole workspace off screen. Clipping the app root cannot reach it —
+   the span is outside it. Unlayered, for the same reason as the focus rule
+   above: layered CSS loses to Tailwind's own preflight on html/body. Below
+   the breakpoint the panes stack and the page is meant to scroll. */
+@media (min-width: 1024px) {
+  html,
+  body {
+    overflow: hidden;
+  }
+}

@@ -16,6 +16,8 @@ import type {
 
 import { formatMetricLabel } from "./lib/report";
 import type { ChartData, ChartSeries } from "./lib/report";
+import { useState } from "react";
+
 import { useThemeStore } from "./store/themeStore";
 
 /**
@@ -230,6 +232,11 @@ export function Chart({
   // check, so this component reacts the instant the Header's explicit
   // toggle changes, not just when the OS setting does.
   const isDark = useThemeStore((state) => state.resolved === "dark");
+  // The chart and the Report Table compete for one column of height, and on
+  // a laptop the chart plus its legend is most of it. Collapsing gives that
+  // space straight back to the rows — the table is what the exports are
+  // taken from and what people actually read.
+  const [collapsed, setCollapsed] = useState(false);
 
   if (!chart) return null;
 
@@ -254,6 +261,15 @@ export function Chart({
     <section className="mb-4 rounded-lg border border-hairline bg-canvas p-4">
       <div className="mb-2 flex items-baseline justify-between gap-3">
         <h2 className="text-heading-5 font-semibold text-ink">Chart</h2>
+        <button
+          type="button"
+          onClick={() => setCollapsed((value) => !value)}
+          aria-expanded={!collapsed}
+          className="ml-auto h-11 rounded-md px-3 text-body-sm text-steel hover:bg-cream-soft
+            hover:text-ink"
+        >
+          {collapsed ? "Show chart" : "Hide chart"}
+        </button>
         <label className="flex items-center gap-2 text-body-sm text-steel">
           Metric:
           <select
@@ -269,7 +285,7 @@ export function Chart({
           </select>
         </label>
       </div>
-      {chart.series.length === 0 ? (
+      {collapsed ? null : chart.series.length === 0 ? (
         <p className="text-body-sm text-steel">No series to plot.</p>
       ) : (
         // 240 rather than 320: the chart and the Report Table share one
