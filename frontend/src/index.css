@@ -2,6 +2,15 @@
 @import "./styles/fonts.css";
 @import "./styles/tokens.css";
 
+/* Streamdown (issue 06: frontend-rework) renders its prose/table/code-block
+   markup with Tailwind utility classes baked into its own compiled JS, not
+   into any source file Tailwind's default content scan would ever see —
+   `@source` tells Tailwind v4 to scan those files for class names too, so
+   the utilities streamdown actually uses get generated instead of silently
+   missing from the built CSS. This is the package's own documented setup
+   step (README "Installation"), not a workaround. */
+@source "../node_modules/streamdown/dist/*.js";
+
 @layer base {
   body {
     @apply bg-canvas text-ink font-sans antialiased;

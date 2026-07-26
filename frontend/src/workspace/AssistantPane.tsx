@@ -1,4 +1,5 @@
 import { Chat } from "../Chat";
+import type { Meta } from "../lib/meta";
 
 /**
  * The right "Assistant" zone (issue 02: frontend-rework) — permanently
@@ -10,12 +11,17 @@ import { Chat } from "../Chat";
  *
  * `Chat` reads and writes the shared Report Spec store directly (see
  * `Chat.tsx`'s docstring) — this pane only owns the collapse affordance,
- * which is shell-level layout state, not Report Spec state.
+ * which is shell-level layout state, not Report Spec state. `meta` is
+ * passed straight through to `Chat`, which needs `meta.dev_fake_llm` to
+ * gate its development-only raw-reasoning disclosure (issue 06) — the same
+ * fetch-derived value `Header.tsx`'s DEV_FAKE_LLM banner already reads.
  */
 export function AssistantPane({
+  meta,
   collapsed,
   onToggleCollapse,
 }: {
+  meta: Meta | null;
   collapsed: boolean;
   onToggleCollapse: () => void;
 }) {
@@ -35,7 +41,7 @@ export function AssistantPane({
   }
 
   return (
-    <aside className="flex w-full shrink-0 flex-col overflow-y-auto border-hairline bg-surface p-4 lg:w-96 lg:border-l">
+    <aside className="flex min-h-0 w-full shrink-0 flex-col border-hairline bg-surface p-4 lg:w-96 lg:border-l">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-heading-5 font-semibold text-ink">Assistant</h2>
         <button
@@ -47,7 +53,7 @@ export function AssistantPane({
           »
         </button>
       </div>
-      <Chat />
+      <Chat meta={meta} />
     </aside>
   );
 }

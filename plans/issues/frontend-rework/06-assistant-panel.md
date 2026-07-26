@@ -1,6 +1,6 @@
 # 06 — Assistant panel with rendered markdown
 
-Status: ready-for-agent
+Status: done
 
 ## Parent
 

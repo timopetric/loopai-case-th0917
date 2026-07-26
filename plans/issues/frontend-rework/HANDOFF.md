@@ -79,13 +79,16 @@ Bucket) can momentarily lose the sticky Bucket label until the next Bucket's hea
 range. The table header and leading columns are unaffected. Documented rather than fixed; worth a
 look during slice 09 if it ever runs.
 
-## Slice 09 cannot run — confirmed, not assumed
+## Slice 09 — start a fresh session for it
 
-**Chrome DevTools MCP is not available.** I searched for it via `ToolSearch` at the start of this
-run and it returned nothing, exactly as the previous session reported. Slice 09's own first
-acceptance criterion is that it either confirms the tool is present or **stops and reports** — so
-stopping is the correct outcome, not a failure to work around. Do not substitute curl checks and
-declare the interface verified.
+**Chrome DevTools MCP was not available to this session,** exactly as the previous session
+reported. The owner then configured the server and reloaded plugins partway through the run; it
+still did not appear, because the tool roster is fixed when a session starts. Three probes —
+keyword searches and a direct lookup by tool name — all found nothing.
+
+**So it should work in a new session.** Start one, re-confirm the tool is actually present, and
+run slice 09 then. Do not substitute curl checks and declare the interface verified; slice 09's
+own first acceptance criterion is that it either confirms the tool or stops and reports.
 
 This means **no slice in this rework has been verified above level 1.** Every implementer has said
 so plainly in its own report. `make check` passes and the production Vite build compiles; nobody

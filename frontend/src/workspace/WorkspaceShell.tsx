@@ -214,6 +214,7 @@ export function WorkspaceShell() {
         />
         <ReportPane table={table} reportError={reportError} presetsReady={presetsReady} meta={meta} />
         <AssistantPane
+          meta={meta}
           collapsed={assistantCollapsed}
           onToggleCollapse={() => setAssistantCollapsed((prev) => !prev)}
         />

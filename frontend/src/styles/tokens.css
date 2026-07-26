@@ -255,3 +255,29 @@
  *   lg    →  5  (20px)
  *   xl    →  6  (24px)
  */
+
+/**
+ * Streamdown bridge (issue 06: frontend-rework).
+ *
+ * `streamdown`'s own components (tables, code block chrome, blockquotes)
+ * are styled with shadcn/ui's CSS custom property names, not this project's
+ * token names — its README says as much: without `--background`,
+ * `--border`, etc. defined, those parts "render with missing backgrounds,
+ * borders, or incorrect spacing." Rather than adopt a second, parallel
+ * token vocabulary, every shadcn variable name is aliased straight to the
+ * existing token it corresponds to, so streamdown automatically follows
+ * this app's light/dark ramp instead of needing its own dark-mode override.
+ */
+:root {
+  --background: var(--surface-canvas);
+  --foreground: var(--text-ink);
+  --card: var(--surface-canvas);
+  --card-foreground: var(--text-ink);
+  --muted: var(--surface-cream-soft);
+  --muted-foreground: var(--text-steel);
+  --border: var(--border-hairline);
+  --input: var(--border-hairline-strong);
+  --primary: var(--brand-primary);
+  --primary-foreground: var(--brand-on-primary);
+  --radius: 0.5rem;
+}

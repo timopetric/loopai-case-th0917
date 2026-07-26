@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
 import { streamAgentMessage } from "./lib/agentStream";
+import { Markdown } from "./lib/markdown";
+import type { Meta } from "./lib/meta";
 import { useReportSpecStore } from "./store/reportSpecStore";
 
 interface ChatMessage {
@@ -11,12 +13,15 @@ interface ChatMessage {
 
 /**
  * The Assistant chat panel (issue 15; docked as `AssistantPane` in issue
- * 02). Renders the presenter's small, fixed vocabulary — a thinking row
- * with an elapsed counter, chips as tags on the Assistant's message, and
- * streamed prose (architecture.md §6, §7). Never touches a tool name, a raw
- * argument or reasoning text outside the dev-only panel below — those never
- * arrive here in the first place, since `app/agent/presenter.py` is the
- * chokepoint that keeps them off the wire.
+ * 02; markdown + visual pass in issue 06). Renders the presenter's small,
+ * fixed vocabulary — a thinking row with an elapsed counter, chips as
+ * badges on the Assistant's message, and streamed prose rendered as
+ * markdown (architecture.md §6, §7). Never touches a tool name, a raw
+ * argument or reasoning text outside the dev-only disclosure below — those
+ * never arrive here in the first place, since `app/agent/presenter.py` is
+ * the chokepoint that keeps them off the wire; this component only
+ * *formats* what already arrives (`lib/markdown.tsx`'s docstring covers the
+ * markdown-specific half of that guarantee).
  *
  * Reads and writes the single Report Spec store (`store/reportSpecStore.ts`)
  * directly rather than taking a spec via props: `buildSpec()` is the exact
@@ -26,7 +31,7 @@ interface ChatMessage {
  * one field at a time as the Assistant works (user story 38, ADR-0002) —
  * through the SAME store `BuilderPane`'s controls edit.
  */
-export function Chat() {
+export function Chat({ meta }: { meta: Meta | null }) {
   const buildSpec = useReportSpecStore((state) => state.buildSpec);
   const applySpec = useReportSpecStore((state) => state.applySpec);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -35,12 +40,15 @@ export function Chat() {
   const [thinking, setThinking] = useState(false);
   const [elapsedMs, setElapsedMs] = useState(0);
   const [status, setStatus] = useState<string | null>(null);
-  /** Raw reasoning text, dev-only (architecture.md §6 "Dev-mode
-   * exception") — populated only if the backend ever sends a
-   * `thinking_text` event, which it only does when `settings.is_development`.
-   * A non-empty value is therefore itself the signal to show the panel; no
-   * separate environment flag needs to travel to the frontend. */
+  /** Raw reasoning text, development-only (architecture.md §6 "Dev-mode
+   * exception"). Gated on `meta.dev_fake_llm` — the same runtime signal
+   * `Header.tsx`'s DEV_FAKE_LLM banner already reads from `/api/v1/meta` —
+   * rather than any build-time value, per the `VITE_*` hard rule. The
+   * backend only ever streams the underlying `thinking_text` event when
+   * `settings.is_development`, so this is a belt-and-suspenders display
+   * gate on top of an event that already cannot arrive in production. */
   const [reasoning, setReasoning] = useState("");
+  const devMode = Boolean(meta?.dev_fake_llm);
 
   const timerRef = useRef<number | null>(null);
   const thinkingStartRef = useRef<number | null>(null);
@@ -143,78 +151,36 @@ export function Chat() {
   }
 
   return (
-    <section style={{ marginTop: "2rem", maxWidth: 520 }}>
-      <h2>Assistant</h2>
-      <div
-        role="log"
-        style={{
-          border: "1px solid #ccc",
-          borderRadius: 4,
-          padding: "0.75rem",
-          minHeight: 100,
-          marginBottom: "0.5rem",
-        }}
-      >
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div role="log" className="mb-2 min-h-0 flex-1 overflow-y-auto pr-1">
         {messages.length === 0 && (
-          <p style={{ color: "#888", margin: 0 }}>
+          <p className="text-body-sm text-steel">
             Ask for a report in plain English — e.g. "resolved and handle time by Actor".
           </p>
         )}
-        {messages.map((message, index) => (
-          <div key={index} style={{ marginBottom: "0.5rem" }}>
-            <strong>{message.role === "user" ? "You" : "Assistant"}:</strong> {message.text}
-            {message.chips.length > 0 && (
-              <div style={{ marginTop: "0.25rem" }}>
-                {message.chips.map((chip, chipIndex) => (
-                  <span
-                    key={chipIndex}
-                    style={{
-                      display: "inline-block",
-                      background: "#e7f1ff",
-                      color: "#084298",
-                      borderRadius: 12,
-                      padding: "0.1rem 0.6rem",
-                      marginRight: "0.3rem",
-                      marginTop: "0.2rem",
-                      fontSize: "0.8rem",
-                    }}
-                  >
-                    {chip}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
-        {thinking && (
-          <p role="status" style={{ fontStyle: "italic", color: "#666", margin: 0 }}>
-            Thinking… ({(elapsedMs / 1000).toFixed(1)}s)
-          </p>
-        )}
+        <div className="flex flex-col gap-3">
+          {messages.map((message, index) => (
+            <ChatBubble key={index} message={message} />
+          ))}
+        </div>
+        {thinking && <ThinkingRow elapsedMs={elapsedMs} />}
         {status && !thinking && (
-          <p role="status" style={{ color: "#666", margin: 0 }}>
+          <p role="status" className="mt-2 text-body-sm text-steel">
             {status}
           </p>
         )}
       </div>
-      {reasoning && (
-        <details style={{ marginBottom: "0.5rem" }}>
-          <summary>Raw reasoning (development only)</summary>
-          <pre
-            style={{
-              whiteSpace: "pre-wrap",
-              fontSize: "0.75rem",
-              background: "#f6f6f6",
-              padding: "0.5rem",
-              maxHeight: 200,
-              overflow: "auto",
-            }}
-          >
+      {devMode && reasoning && (
+        <details className="mb-2 rounded-md border border-hairline bg-cream-soft p-2">
+          <summary className="cursor-pointer text-body-sm-medium font-medium text-ink-tint">
+            Raw reasoning (development only)
+          </summary>
+          <pre className="mt-1 max-h-48 overflow-auto whitespace-pre-wrap font-mono text-micro text-steel">
             {reasoning}
           </pre>
         </details>
       )}
-      <div style={{ display: "flex", gap: "0.5rem" }}>
+      <div className="flex gap-2">
         <input
           type="text"
           value={input}
@@ -224,12 +190,84 @@ export function Chat() {
           }}
           placeholder='e.g. "resolved and handle time by Actor"'
           disabled={busy}
-          style={{ flex: 1 }}
+          className="h-9 flex-1 rounded-md border border-hairline-strong bg-canvas px-3 text-body-sm
+            text-ink outline-none transition-[border-color,box-shadow] duration-[var(--motion-base)]
+            ease-brand focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:bg-cream-soft"
         />
-        <button type="button" onClick={send} disabled={busy || !input.trim()}>
-          Send
+        <button
+          type="button"
+          onClick={send}
+          disabled={busy || !input.trim()}
+          className="rounded-md bg-primary px-3 py-1.5 text-body-sm-medium font-medium text-on-primary
+            hover:bg-primary-deep disabled:cursor-not-allowed disabled:bg-hairline-strong
+            disabled:text-muted"
+        >
+          {busy ? "Sending…" : "Send"}
         </button>
       </div>
-    </section>
+    </div>
+  );
+}
+
+/** One turn's bubble — user and Assistant are visually distinct surfaces
+ * (a plain right-aligned card for the user, a filled cream card on the
+ * left for the Assistant), each carrying its Repair chips as badges
+ * beneath the prose rather than inline text. */
+function ChatBubble({ message }: { message: ChatMessage }) {
+  const isUser = message.role === "user";
+  return (
+    <div className={"flex flex-col " + (isUser ? "items-end" : "items-start")}>
+      <span className="mb-1 text-micro-uppercase font-semibold uppercase tracking-wide text-stone">
+        {isUser ? "You" : "Assistant"}
+      </span>
+      <div
+        className={
+          "max-w-full rounded-lg px-3 py-2 text-body-sm " +
+          (isUser ? "border border-hairline-strong bg-canvas text-ink" : "bg-cream-soft text-ink")
+        }
+      >
+        {isUser ? (
+          <p className="whitespace-pre-wrap">{message.text}</p>
+        ) : (
+          <Markdown text={message.text} />
+        )}
+      </div>
+      {message.chips.length > 0 && (
+        <div className="mt-1 flex flex-wrap gap-1">
+          {message.chips.map((chip, chipIndex) => (
+            <RepairBadge key={chipIndex}>{chip}</RepairBadge>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** A Repair/status badge (ADR-0002) — a small read-only pill, distinct from
+ * the `Chip` primitive in `ui/Chip.tsx` (a selectable toggle button for the
+ * builder rail, not an annotation on a message). */
+function RepairBadge({ children }: { children: string }) {
+  return (
+    <span className="rounded-full border border-beige-deep bg-cream px-2 py-0.5 text-micro font-medium text-ink-tint">
+      {children}
+    </span>
+  );
+}
+
+/** The thinking indicator (architecture.md §6/§7): the model reasons for
+ * several seconds before its first tool call or token, and without a live
+ * "still working" row the panel reads as hung rather than busy. Reappears
+ * once per model call in a multi-step turn (`Chat`'s `onThinking` handler
+ * just toggles this row on/off; it does not try to distinguish which call
+ * it is). */
+function ThinkingRow({ elapsedMs }: { elapsedMs: number }) {
+  return (
+    <p role="status" className="mt-2 flex items-center gap-2 text-body-sm text-steel">
+      <span
+        className="inline-flex h-2 w-2 animate-pulse rounded-full bg-primary"
+        aria-hidden="true"
+      />
+      Thinking… ({(elapsedMs / 1000).toFixed(1)}s)
+    </p>
   );
 }
