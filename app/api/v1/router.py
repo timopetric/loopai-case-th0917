@@ -16,6 +16,7 @@ from app.api.v1.routers.export import router as export_router
 from app.api.v1.routers.meta import router as meta_router
 from app.api.v1.routers.report import router as report_router
 from app.api.v1.routers.session import router as session_router
+from app.api.v1.routers.spec import router as spec_router
 
 api_router = APIRouter(dependencies=[Depends(require_api_key)])
 
@@ -24,3 +25,4 @@ api_router.include_router(meta_router)
 api_router.include_router(report_router)
 api_router.include_router(export_router)
 api_router.include_router(assumptions_router)
+api_router.include_router(spec_router)

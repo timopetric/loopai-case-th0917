@@ -13,6 +13,7 @@ import type { Meta } from "./lib/meta";
 import { fetchMeta } from "./lib/meta";
 import type { Preset, ReportSpec, ReportTable as ReportTableData, SortSpec } from "./lib/report";
 import { ReportRefusedError, fetchReport, formatMetricLabel } from "./lib/report";
+import { encodeSpecToSearchParams, fetchSpecFromQuery } from "./lib/specUrl";
 
 /**
  * Placeholder values for the builder controls before `/api/v1/meta` (and the
@@ -83,12 +84,32 @@ export function App() {
    * Becomes `true` once the day-by-Actor preset served by `/api/v1/meta`
    * has been applied (see the effect below) — the report-fetching effect
    * is gated on this, not on `meta` alone, so the very first request the
-   * app makes always carries the real preset's real dates, never the
-   * placeholders above. `defaultPresetApplied` (a ref, not state) guards
-   * against re-applying the default preset on every `meta` refetch.
+   * app makes always carries the real preset's (or a restored link's) real
+   * dates, never the placeholders above.
    */
   const [presetsReady, setPresetsReady] = useState(false);
-  const defaultPresetApplied = useRef(false);
+
+  /**
+   * Set for exactly one report-fetch cycle: the one immediately after a
+   * spec was restored from the URL (issue 13). `GET /api/v1/spec`
+   * (`app/spec_url.py::decode_spec`) already validated the spec against
+   * `ReportSpec`'s own rules, but NOT against the Coverage Window, which is
+   * only known once THIS app's own `/api/v1/meta` call has answered — a
+   * link whose dates have drifted outside a *moved* window (issue 08)
+   * surfaces here as `ReportRefusedError` on this first fetch. That is
+   * exactly the "stale link" case issue 13 names: caught below and turned
+   * into the same fallback-to-default-with-a-Warning behaviour as a link
+   * that failed to decode at all, rather than left to read as an ordinary
+   * refused-range error banner a user could fix by editing the date
+   * inputs.
+   */
+  const restoringFromUrl = useRef(false);
+  /** Warning shown when a shared link could not be honoured verbatim —
+   * either it failed to decode, or its dates fell outside a moved Coverage
+   * Window — and the app fell back to the default report instead (issue
+   * 13 acceptance criteria). Distinct from `reportError`, which is about
+   * the CURRENT controls, not a link that was just opened. */
+  const [urlWarning, setUrlWarning] = useState<string | null>(null);
 
   /**
    * Table presentation (issue 07): sort ranks within each Bucket, never
@@ -140,17 +161,18 @@ export function App() {
   }
 
   /**
-   * Selecting a preset replaces the current Report Spec wholesale (issue 12,
-   * PRD user story 4) — every control below is set from `preset.spec`, the
-   * fully-built `ReportSpec` `/api/v1/meta` served (real Coverage Window
-   * dates already baked in server-side, `app/presets.py`'s `build_presets`).
-   * Nothing about the controls themselves changes: they are the same plain
-   * `useState` setters every individual control already uses, so a preset
-   * is a starting point, not a mode — every control remains individually
-   * editable immediately afterwards.
+   * Apply a full `ReportSpec` wholesale, setting every control from it in
+   * one go (issue 12, PRD user story 4) — nothing about the controls
+   * themselves changes, they are the same plain `useState` setters every
+   * individual control already uses, so this is a starting point, not a
+   * mode: every control remains individually editable immediately
+   * afterwards. Shared by preset buttons (`applyPreset` below) and
+   * restoring a spec from a shared link (issue 13) — every field that
+   * affects what is displayed (architecture.md §2's field list) has a
+   * setter call here, so a link missing a call here would silently fail to
+   * reproduce that field.
    */
-  function applyPreset(preset: Preset) {
-    const spec = preset.spec;
+  function applySpec(spec: ReportSpec) {
     setMetrics(spec.metrics);
     setDateFrom(spec.date_from);
     setDateTo(spec.date_to);
@@ -161,6 +183,10 @@ export function App() {
     setColumnsOrder(spec.columns_order ?? null);
     setLayout(spec.layout ?? "long");
     setChartMetric(spec.chart_metric ?? null);
+  }
+
+  function applyPreset(preset: Preset) {
+    applySpec(preset.spec);
   }
 
   /**
@@ -237,27 +263,53 @@ export function App() {
       .then((res) => setStatus(res.ok ? "ok" : "error"))
       .catch(() => setStatus("error"));
     fetchMeta()
-      .then((result) => {
-        setMeta(result);
-        // Day by Actor loads first, no controls touched (PRD user story
-        // 3) — apply the server's own first preset exactly once. Guarded
-        // by a ref (not state) so a later meta refetch never resets
-        // controls the user has since edited by hand.
-        if (!defaultPresetApplied.current) {
-          defaultPresetApplied.current = true;
-          if (result.presets.length > 0) {
-            applyPreset(result.presets[0]);
-          }
-          // Unblocks the report-fetching effect below even if `presets`
-          // ever came back empty — an empty preset list is not a reason
-          // to freeze the report on "loading" forever.
-          setPresetsReady(true);
-        }
-      })
+      .then(setMeta)
       .catch(() => setMeta(null));
     fetchAssumptions()
       .then(setAssumptions)
       .catch(() => setAssumptions(null));
+
+    // Restore the Report Spec from the URL (issue 13) — or the default
+    // report if there is none, or it fails to decode. Decoding itself
+    // happens server-side, in `GET /api/v1/spec`
+    // (`app/spec_url.py::decode_spec`, the only place that validation
+    // logic exists, going through `ReportSpec`'s own pydantic validators):
+    // a hand-edited or hostile query string is judged by exactly the rules
+    // every other caller of `ReportSpec` is judged by, never by a second,
+    // driftable copy of those rules living in the browser. This is one
+    // extra request inside a loading phase the app already has (the same
+    // one `fetchMeta` runs in) — no perceptible cost, no new spinner.
+    //
+    // Reads `window.location.search` FRESH on every `signedIn` transition,
+    // not a value frozen at first mount: once `presetsReady`, the URL-sync
+    // effect below keeps it mirroring the CURRENT spec at all times, so a
+    // re-render triggered by signing back in after a 401 (issue 02) reads
+    // back exactly the spec that was on screen when the 401 happened —
+    // that behaviour only becomes meaningful now that the URL genuinely
+    // carries the spec.
+    fetchSpecFromQuery(window.location.search)
+      .then(({ spec, warnings }) => {
+        applySpec(spec);
+        if (warnings.length > 0) {
+          setUrlWarning(warnings[0]);
+        } else {
+          setUrlWarning(null);
+          // Only a link that decoded cleanly needs the stale-Coverage-
+          // Window check on the next fetch — a warning here already means
+          // the default (always built from the live window) was applied.
+          restoringFromUrl.current = window.location.search.length > 0;
+        }
+        // Unblocks the report-fetching effect below — this is the ONLY
+        // path that sets it, so the very first request the app makes
+        // always carries either a restored link's real dates or the
+        // default preset's, never the placeholders above.
+        setPresetsReady(true);
+      })
+      .catch(() => {
+        // Could not even ask the server (offline, etc.) — fail safe: no
+        // report is requested at all, same as the pre-issue-13 "meta never
+        // answered" state, rather than guessing a spec.
+      });
   }, [signedIn]);
 
   useEffect(() => {
@@ -270,6 +322,13 @@ export function App() {
       setReportError("The start date must be on or before the end date.");
       return;
     }
+    const wasRestoringFromUrl = restoringFromUrl.current;
+    // One-shot: only the very first fetch after a URL restore gets the
+    // special stale-link handling below — every subsequent refusal (the
+    // user editing the date inputs by hand) is the ordinary `reportError`
+    // path.
+    restoringFromUrl.current = false;
+
     fetchReport(buildReportSpec())
       .then((result) => {
         setTable(result);
@@ -283,6 +342,19 @@ export function App() {
         // partially-overlapping range is not this path at all: the backend
         // returns 200 with the real table plus a `warnings` banner.
         if (err instanceof ReportRefusedError) {
+          if (wasRestoringFromUrl && meta && meta.presets.length > 0) {
+            // A stale link (issue 13): its dates decoded fine but no
+            // longer overlap the CURRENT Coverage Window (issue 08) — the
+            // exact "hand-edited or stale link" case named in the issue.
+            // Fall back to the default report, same as a link that failed
+            // to decode at all, rather than leave the user staring at a
+            // refusal for a date range they never chose.
+            applyPreset(meta.presets[0]);
+            setUrlWarning(
+              "That link's dates fall outside the current Coverage Window — showing the default report instead.",
+            );
+            return;
+          }
           setTable(null);
           setReportError(
             err.coverage
@@ -294,6 +366,36 @@ export function App() {
         }
         setReportError("Could not load the report.");
       });
+  }, [
+    signedIn,
+    presetsReady,
+    metrics,
+    dateFrom,
+    dateTo,
+    granularity,
+    groupBy,
+    durationDisplay,
+    sort,
+    columnsOrder,
+    layout,
+    chartMetric,
+  ]);
+
+  /**
+   * Keep the URL in sync with the current Report Spec (issue 13 acceptance
+   * criteria: "Changing any control updates the URL"). `replaceState`, not
+   * `pushState` — every keystroke/click updating the address bar is the
+   * point, but it must not spam browser history with an entry per
+   * character typed into a date input. Gated on `presetsReady` exactly
+   * like the fetch effect above, so the placeholder dates never get
+   * written into the URL before the real preset (or a restored link) has
+   * been applied.
+   */
+  useEffect(() => {
+    if (!signedIn || !presetsReady) return;
+    const params = encodeSpecToSearchParams(buildReportSpec());
+    const next = `${window.location.pathname}?${params.toString()}${window.location.hash}`;
+    window.history.replaceState(null, "", next);
   }, [
     signedIn,
     presetsReady,
@@ -359,6 +461,11 @@ export function App() {
         <AssumptionsModal notes={assumptions} onClose={() => setShowAssumptions(false)} />
       )}
       <p>Backend status: {status}</p>
+      {urlWarning && (
+        <p role="alert" style={{ color: "#664d03" }}>
+          {urlWarning}
+        </p>
+      )}
       <h2>Report builder</h2>
       <fieldset style={{ marginBottom: "1rem", display: "inline-block" }}>
         <legend>Presets</legend>
