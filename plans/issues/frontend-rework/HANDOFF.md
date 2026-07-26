@@ -1,107 +1,84 @@
-# Handoff — Frontend rework, mid-run
+# Handoff — Frontend rework, slices 01–09 complete
 
 Written 2026-07-26. Branch **`feat/reporting-builder`**, working tree clean, never commit to `main`.
 
-This continues the run described in the previous session's handoff. That document's *Traps*,
-*Decisions already made* and *Process notes* sections are all still current — **read them, they are
-not repeated here.**
+The previous session's handoff covered the backend build. Its *Traps* and *Decisions already made*
+sections still hold and are not repeated here.
 
 ---
 
 ## Where things stand
 
-Slices **01–05 are done, reviewed and committed, one commit each.** Slice **06 has not been
-started** — it was the next thing about to run when the session stopped.
+**All nine AFK slices are done, reviewed and committed, one commit each.** Only slice **10 (live
+walkthrough and design sign-off) remains — it is HITL** and was deliberately not attempted.
 
-| Slice | Commit | Status |
-|---|---|---|
-| 01 tokens and sign-in | `0859800` | done |
-| 02 workspace shell | `c0382cc` | done |
-| 03 builder rail | `f96404a` | done |
-| 04 report table | `73706d8` | done |
-| 05 chart | `74d08a5` | done |
-| 06 assistant panel | — | **next, not started** |
-| 07 dark mode | — | blocked on 06 |
-| 08 accessibility | — | blocked on 06 |
-| 09 visual verification | — | **cannot run, see below** |
-| 10 live walkthrough | — | HITL |
+| Slice | Commit |
+|---|---|
+| 01 tokens and sign-in | `0859800` |
+| 02 workspace shell | `c0382cc` |
+| 03 builder rail | `f96404a` |
+| 04 report table | `73706d8` |
+| 05 chart | `74d08a5` |
+| 06 assistant panel | `cf87b2c` |
+| 07 dark mode | `30eb897` |
+| 08 accessibility | `41f1e0c` |
+| 09 browser verification | `f4f43a7` |
 
-Each issue file under `plans/issues/frontend-rework/` carries its own `Status:` line, flipped to
-`done` as part of that slice's commit. The commit messages record what changed and why; the diffs
-are scoped one slice per commit, so `git show <sha>` is the fastest way to see any slice.
-
-`make check` is green at **303 passed, 0 skipped, 1 warning** — the warning is the pre-existing
+`make check` is green at **389 passed, 0 skipped, 1 warning** — the warning is the pre-existing
 httpx/starlette deprecation. A second warning is new and yours.
 
-## The process being followed
+**Verification reached level 2.** The built image was driven in a real browser in both themes at
+three viewports. [`09-verification-record.md`](09-verification-record.md) is the full record: what
+was confirmed, the five defects fixed, and the two findings left for a decision. Read it before
+slice 10 — it is the most useful document here.
 
-`/tdd-implement-scope` with `plans/issues/frontend-rework`. Per slice: a Sonnet implementer, then
-`make check` run by the orchestrator directly as the deterministic gate, then an independent Haiku
-review of the real diff, then a per-issue commit and a `Status: done` flip. Resume at slice 06.
+## The one finding that matters most
 
-That loop has held up. Two things worth keeping:
+Slice 09 found that **virtualisation was not working at all.** The shell root used `min-h-screen`,
+a *minimum* that never capped the flex chain, so the table's scroll parent reported a 67,232px
+client height and the virtualiser correctly concluded every row was visible — all 1,526 rows sat in
+the DOM. Every source-level test passed the whole time, because the code *is* virtualised and only
+the layout stopped it binding.
 
-- **Verify the load-bearing property yourself rather than reading the reviewer's prose.** Every
-  slice so far had one criterion worth checking by hand — the fonts were real woff2 binaries, the
-  `"agent"` wire value survived the copy change, `CHART_PALETTE` was byte-identical. All three
-  passed, but the check was cheap and the failure mode is silent.
-- **Both reviews so far passed on the first attempt.** Nothing has needed a second implement pass.
+The lesson generalises: source-level guards in this repo prove a component is *written* correctly.
+They cannot prove it *behaves* correctly once composed. Slices 01–08 were all verified at level 1
+only; slice 09 is the first time any of it was looked at.
 
-## What slice 06 needs to know
+## What slice 10 must decide
 
-The prompt was written and not sent. The parts that took thought:
+Two findings were deliberately left alone because fixing them means touching the engine, the
+exporters or the presenter — all out of scope for this rework by the PRD:
 
-- **`streamdown` is the decided renderer** — settled with the user, chosen *because* Tailwind was
-  adopted. Do not relitigate. If it proves technically unusable, fall back to `react-markdown` +
-  `remark-gfm` and **say so**; do not silently substitute.
-- **The presenter's containment is not a styling concern.** Nothing under `app/` may change, and
-  `tests/test_agent_presenter.py` carries a negative leak assertion that must pass unmodified. This
-  slice formats what already arrives; it must not widen what is sent.
-- **Model output is untrusted** — raw HTML stays disabled, link protocols allowlisted. Worth a
-  guard test that no `rehype-raw` / `dangerouslySetInnerHTML` / `allowDangerousHtml` appears.
-- **The development-only reasoning disclosure cannot be gated on a build-time frontend value** —
-  that is the `VITE_*` hard rule. The dev-fake banners already solve this problem; follow the same
-  mechanism.
+1. **Duration values render as raw floats** (`11.482139109909799`). Pre-existing, not a regression.
+   It cannot be fixed on screen alone: `app/exporters.py:110` prints the full float *on purpose* so
+   the file matches the screen, so rounding the display alone would break a graded user story. Fix
+   it in the engine and the screen together, as one change.
+2. **A Repair chip shows a wire enum** — "Added metric: handle_time" where the UI says "Handle time
+   (h)". Built at `app/agent/presenter.py:243`. Slice 09's own regression list forbids enum values
+   in the conversation. One line, in a file with negative leak assertions that should move with it.
 
-## One decision made mid-run that is not in any issue file
+Slice 10 also has to make the judgement call the PRD reserved for a human: whether cream-as-accent
+with a white data surface, brand colour confined to actions, and the chart palette held apart
+actually reads as intentional. ADR-0004 either stands or gets revised there.
 
-Slice 02 added `withMetricsCleanup` to the spec store: unchecking a metric now also clears a `sort`
-or `chart_metric` pointing at it. This was not asked for by the issue, and I checked it before
-accepting it — `app/models.py:109` rejects that combination, so the old code sent a request
-guaranteed to 422. It is a genuine bug fix, recorded in the `c0382cc` commit message rather than
-left silent.
+## Practical notes
 
-## Known limitation carried forward
-
-Slice 04's Bucket group headers are `sticky top-10` and are only mounted within the virtualiser's
-overscan. Scrolling fast deep inside one very large Bucket (the default report has 108 rows per
-Bucket) can momentarily lose the sticky Bucket label until the next Bucket's header scrolls into
-range. The table header and leading columns are unaffected. Documented rather than fixed; worth a
-look during slice 09 if it ever runs.
-
-## Slice 09 — start a fresh session for it
-
-**Chrome DevTools MCP was not available to this session,** exactly as the previous session
-reported. The owner then configured the server and reloaded plugins partway through the run; it
-still did not appear, because the tool roster is fixed when a session starts. Three probes —
-keyword searches and a direct lookup by tool name — all found nothing.
-
-**So it should work in a new session.** Start one, re-confirm the tool is actually present, and
-run slice 09 then. Do not substitute curl checks and declare the interface verified; slice 09's
-own first acceptance criterion is that it either confirms the tool or stops and reports.
-
-This means **no slice in this rework has been verified above level 1.** Every implementer has said
-so plainly in its own report. `make check` passes and the production Vite build compiles; nobody
-has looked at any of it in a browser. That is the single biggest outstanding risk in the rework,
-and slices 07 and 08 (dark mode, accessibility) are the two where it bites hardest — both are
-substantially visual, and both will land unverified unless the tool becomes available.
-
-If it does become available, run 09 before 10.
+- **Chrome DevTools MCP now works.** It appeared after `/reload-plugins` mid-session. Earlier
+  sessions reported it missing; it is genuinely available now.
+- **Run the verification container with a throwaway `APP_API_KEY`** rather than the real one from
+  `.env` — the reading of `.env` is blocked, and a self-set key keeps the shared secret out of the
+  transcript entirely:
+  `docker run -d --name loopai-verify -p 8000:8000 --env-file .env -e ENVIRONMENT=dev -e DEV_FAKE_UPSTREAM=1 -e DEV_FAKE_LLM=1 -e APP_API_KEY=verify-local-key -e PORT=8000 timopetric/caseth0917:latest`
+  Note `ENVIRONMENT` must be one of `dev|local|test|prod` — `development` is rejected at startup.
+- **`streamdown` is pinned exactly.** Raw HTML is disabled by an undocumented internal of its
+  bundle (omitting `rehype-raw` makes it rewrite html nodes to text), not a promised API, so a minor
+  bump could reopen it with every guard still green. Re-verify in `node_modules/streamdown/dist/`
+  before raising the pin. It also costs ~146KB gzip.
+- After the rework, reporting-builder issues **18 (README) and 19 (deploy)** are still open.
 
 ## Suggested skills
 
-- **`/tdd-implement-scope`** with `plans/issues/frontend-rework` — resume the loop at slice 06.
-- **`/frontend-design`** before slice 06, and again for 07 — visual judgement is the deliverable.
-- **`/dataviz`** was used in slice 05 and would apply again to the dark chart palette in 07, where
-  the eight hues need dark-surface counterparts *selected and validated*, never inverted.
-- **`/code-review`** on the working diff before slice 10.
+- **`/code-review`** on the working diff before slice 10 — nine slices have landed unreviewed as a
+  whole.
+- **`/run`** plus Chrome DevTools MCP for the live walkthrough.
+- **`/dataviz`** if slice 10 reopens the palette question.
