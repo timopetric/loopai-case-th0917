@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 
 # 12 — Full Chrome DevTools MCP verification pass (final gate)
 
