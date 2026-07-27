@@ -1,7 +1,7 @@
-"""The nine Assistant tools and the repair taxonomy (issue 16, architecture.md
+"""The ten Assistant tools and the repair taxonomy (issue 16, architecture.md
 §5, ADR-0002).
 
-Seven **write** tools, each scoped to a cohesive unit of the Report Spec
+Eight **write** tools, each scoped to a cohesive unit of the Report Spec
 rather than a raw field (`set_date_range` takes both bounds together — a
 two-tool version would allow an inverted range mid-sequence). Two **read**
 tools (`run_report`, `get_meta`) let the Assistant look before it speaks.
@@ -61,8 +61,8 @@ from app.engine import CoverageRefusedError, UnsupportedMetricError, clamp_to_co
 from app.models import Metric, ReportSpec
 from app.upstream import METRIC_CATALOGUE, Dataset
 
-# The exact nine tool names architecture.md §5 lists — `app/agent/presenter.py`'s
-# `_STATUS_TEXT` lookup (issue 15) already keys on this same set.
+# The nine tool names architecture.md §5 lists, plus `set_filter` — `app/agent/
+# presenter.py`'s `_STATUS_TEXT` lookup (issue 15) already keys on this same set.
 TOOL_NAMES: frozenset[str] = frozenset(
     {
         "set_date_range",
@@ -190,17 +190,99 @@ _ARGS_MODEL: dict[str, type[BaseModel]] = {
 # tool without an entry here raises `KeyError` immediately rather than
 # silently shipping an undocumented tool to the model).
 _TOOL_DESCRIPTIONS: dict[str, str] = {
-    "set_date_range": "Set the report's date range. Both bounds together, never separately.",
-    "set_metrics": "Replace the full list of metrics shown on the report.",
-    "set_grouping": "Set the grouping dimension: none, agent (an Actor), or mailbox.",
-    "set_sort": "Sort report rows within each bucket by one currently-selected metric.",
-    "set_columns": "Set the left-to-right display order of columns.",
-    "set_chart": "Set which metric the chart shows (added to metrics if not already selected).",
-    "set_layout": "Set report granularity (day/total) and layout (long/pivot).",
-    # Placeholder — slice 08 rewrites all ten descriptions together.
-    "set_filter": "Set (or clear, with an empty string) an Actor/Mailbox name filter.",
-    "run_report": "Execute the current report spec and return a compact table summary.",
-    "get_meta": "Look up actors, mailboxes, the metric catalogue, and the Coverage Window.",
+    "set_date_range": (
+        "Set the report's date range by supplying both bounds together in one call — this tool "
+        "never accepts just a start or just an end, because a half-applied range would leave the "
+        "spec briefly inverted mid-sequence. Use it whenever the user names or implies a period "
+        "(\"last week\", \"13 to 17 July\", \"this month\"). A range with zero overlap with the "
+        "Coverage Window is rejected outright as an error, so the assistant can offer the real "
+        "window instead of guessing; a range that only partially overlaps is silently clamped to "
+        "the Coverage Window and reported back as an adjustment, not an error — you do not need "
+        "to pre-clamp dates yourself before calling this."
+    ),
+    "set_metrics": (
+        "Replace the full list of metrics shown on the report — this is a full replacement, not "
+        "an add or remove, so always pass the complete set the user wants visible, including any "
+        "metrics that were already there and should stay. Use it whenever the user asks to see, "
+        "add, drop, or change which quantities appear. Only metric keys from the metric catalogue "
+        "are accepted; an invented name (e.g. \"customer satisfaction\") is rejected as an error "
+        "rather than silently ignored. If the new list drops a metric the chart or sort currently "
+        "depends on, the backend repairs the chart or sort automatically and reports what it "
+        "changed — mention that adjustment to the user, but don't try to replicate it yourself."
+    ),
+    "set_grouping": (
+        "Set the single grouping dimension the report breaks rows down by: \"none\" (one row "
+        "total), \"agent\" (one row per Actor, a support person), or \"mailbox\" (one row per "
+        "shared inbox). Use it when the user asks to see results per person, per inbox, or asks "
+        "to remove a breakdown entirely. There is no combined Actor-and-Mailbox view — grouping "
+        "is always exactly one of these three, never both at once. Switching away from an active "
+        "grouping to \"none\" clears any sort that was ranking the now-gone group rows, and makes "
+        "an active name filter inert (reported as an adjustment, not an error) since there is no "
+        "longer a per-Actor/Mailbox breakdown left for the filter to narrow."
+    ),
+    "set_sort": (
+        "Sort the report's rows within each bucket by one metric that is already in the report's "
+        "metric list, ascending or descending. Use it when the user asks to rank, order, or find "
+        "the highest/lowest performer or busiest period. The chosen column must already be "
+        "selected via `set_metrics` — if it isn't, this call is rejected as an error rather than "
+        "silently adding the metric (unlike `set_chart`, which does auto-add). With grouping set "
+        "to \"none\" there is only one row per bucket, so a sort has nothing to rank; set grouping "
+        "to \"agent\" or \"mailbox\" first if the user wants a ranked breakdown."
+    ),
+    "set_columns": (
+        "Set the left-to-right display order of the report's columns. Use it when the user asks "
+        "to reorder, reprioritize, or hide/show which columns come first, not to change which "
+        "metrics exist on the report (use `set_metrics` for that). Any name in the requested "
+        "order that isn't currently a selected metric is simply dropped from the order rather "
+        "than causing an error, and that drop is reported back as an adjustment — so a stale or "
+        "misremembered column name degrades gracefully instead of failing the whole call."
+    ),
+    "set_chart": (
+        "Set which single metric the report's chart visualizes. Use it when the user asks to "
+        "chart, plot, or graph a specific quantity, or to change what the existing chart shows. "
+        "Unlike `set_sort`, this tool auto-adds the chosen metric to the report's metric list if "
+        "it isn't already selected, and reports that addition back as an adjustment rather than "
+        "erroring — charting something is treated as implicitly wanting it on the report. Only a "
+        "real metric key from the catalogue is accepted; an invented metric name is always an "
+        "error, never auto-created."
+    ),
+    "set_layout": (
+        "Set both the report's time granularity (\"day\" for one row per calendar day, \"total\" "
+        "for one summed row per group across the whole range) and its layout shape (\"long\" for "
+        "one row per bucket/group, \"pivot\" for metrics spread across columns) in a single call. "
+        "Use it when the user asks to see a daily breakdown vs. an overall total, or asks for a "
+        "wide/pivoted table instead of a long one. Both values are required together because "
+        "granularity and layout jointly determine the table's shape — there is no partial update."
+    ),
+    "set_filter": (
+        "Set or clear a free-text name filter that narrows the report to Actors or Mailboxes "
+        "whose name contains the given text, matched as a case-insensitive substring — so "
+        "\"theo\" matches \"Theo Okafor\" regardless of case, and does not need to be an exact or "
+        "full name. Call this when the user asks to see results for, or narrow to, one or a few "
+        "named people or inboxes. Passing an empty string is a valid call that clears any "
+        "existing filter, not a no-op or an error. The filter has no effect on the report unless "
+        "grouping is set to \"agent\" or \"mailbox\" — with grouping set to \"none\" there is no "
+        "per-Actor/Mailbox breakdown to narrow, so the filter is silently kept but ignored, and "
+        "reported back as an adjustment rather than an error. If you are not confident a "
+        "loosely-typed or partial name the user gave will actually match anything, call `get_meta` "
+        "first to check the real Actor/Mailbox names before calling this."
+    ),
+    "run_report": (
+        "Execute the current report spec against the real data and return a compact table "
+        "summary: columns, a sample of rows, totals, and any warnings. Call this whenever the "
+        "user asks a question about actual numbers, or after making spec changes the user wants "
+        "to see the effect of — never answer a quantitative question from memory or from a prior "
+        "call's numbers, always re-run first if the spec has changed since the last run. Takes no "
+        "arguments; it always reflects whatever the spec currently is at the moment it's called."
+    ),
+    "get_meta": (
+        "Look up the full list of available actors and mailboxes (with their exact names), the "
+        "metric catalogue, and the Coverage Window — a read-only call that changes nothing. Use "
+        "it to resolve an ambiguous or loosely-typed name before calling `set_filter`, to check "
+        "whether a requested date falls inside the Coverage Window before calling "
+        "`set_date_range`, or whenever you need to confirm a spelling, id, or available option "
+        "rather than guessing. Takes no arguments and is always safe to call speculatively."
+    ),
 }
 
 

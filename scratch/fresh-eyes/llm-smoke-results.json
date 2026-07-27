@@ -4,483 +4,398 @@
     "model_echoed": "qwen/qwen3.6-plus",
     "content": "OK."
   },
-  "T2_basic_tool_selection": {
-    "error": null,
-    "message": {
-      "role": "assistant",
-      "content": null,
-      "tool_calls": [
-        {
-          "id": "call_8cc49aea043d4f04b0d8cfd4",
-          "type": "function",
-          "function": {
-            "name": "set_date_range",
-            "arguments": "{\"date_from\": \"2026-07-13\", \"date_to\": \"2026-07-17\"}"
-          }
-        },
-        {
-          "id": "call_5bb6defd32154a5fb937e250",
-          "type": "function",
-          "function": {
-            "name": "set_metrics",
-            "arguments": "{\"metrics\": \n[\"resolved\"]\n\n}"
-          }
-        }
-      ]
-    }
-  },
-  "T3_parallel_tool_calls": [
-    {
+  "xml": {
+    "T2_basic_tool_selection": {
       "error": null,
       "message": {
         "role": "assistant",
         "content": null,
         "tool_calls": [
           {
-            "id": "call_3c296156578b4abc9e8d91df",
-            "type": "function",
-            "function": {
-              "name": "set_grouping",
-              "arguments": "{\"group_by\": \"agent\"}"
-            }
-          },
-          {
-            "id": "call_1a83cbd0e8c04b99ad459275",
-            "type": "function",
-            "function": {
-              "name": "set_metrics",
-              "arguments": "{\"metrics\": \n[\"handle_time\"]\n\n}"
-            }
-          },
-          {
-            "id": "call_97ae7475891f4a33aebaf6e7",
-            "type": "function",
-            "function": {
-              "name": "set_sort",
-              "arguments": "{\"column\": \"handle_time\", \"direction\": \"desc\"}"
-            }
-          }
-        ]
-      },
-      "num_tool_calls": 3
-    },
-    {
-      "error": null,
-      "message": {
-        "role": "assistant",
-        "content": null,
-        "tool_calls": [
-          {
-            "id": "call_eec1c8b7309544ed88612d08",
-            "type": "function",
-            "function": {
-              "name": "set_grouping",
-              "arguments": "{\"group_by\": \"agent\"}"
-            }
-          },
-          {
-            "id": "call_07f2dc3c7d2742dc8cd3d661",
-            "type": "function",
-            "function": {
-              "name": "set_metrics",
-              "arguments": "{\"metrics\": \n[\"handle_time\"]\n\n}"
-            }
-          },
-          {
-            "id": "call_c9e701b43e7d40f1a89d83a6",
-            "type": "function",
-            "function": {
-              "name": "set_sort",
-              "arguments": "{\"column\": \"handle_time\", \"direction\": \"desc\"}"
-            }
-          }
-        ]
-      },
-      "num_tool_calls": 3
-    }
-  ],
-  "T4_tool_choice_none": {
-    "none": {
-      "error": null,
-      "message": {
-        "role": "assistant",
-        "content": "```json\n[\n  {\n    \"name\": \"edit_report_spec\",\n    \"arguments\": {\n      \"date_range\": {\n        \"start\": \"2026-07-17\",\n        \"end\": \"2026-07-23\"\n      },\n      \"group_by\": [\n        \"mailbox\"\n      ],\n      \"filters\": [\n        {\n          \"field\": \"status\",\n          \"operator\": \"eq\",\n          \"value\": \"resolved\"\n        }\n      ],\n      \"metrics\": [\n        \"resolved_tickets\"\n      ]\n    }\n  },\n  {\n    \"name\": \"run_report\",\n    \"arguments\": {}\n  }\n]\n```"
-      }
-    },
-    "auto": {
-      "error": null,
-      "message": {
-        "role": "assistant",
-        "content": null,
-        "tool_calls": [
-          {
-            "id": "call_079a241ee03e4e12947254c7",
+            "id": "call_366089e0818044d18a229915",
             "type": "function",
             "function": {
               "name": "set_date_range",
-              "arguments": "{\"date_from\": \"2026-07-17\", \"date_to\": \"2026-07-23\"}"
+              "arguments": "{\"date_from\": \"2026-07-13\", \"date_to\": \"2026-07-17\"}"
             }
-          },
+          }
+        ]
+      }
+    },
+    "T3_parallel_tool_calls": [
+      {
+        "error": null,
+        "message": {
+          "role": "assistant",
+          "content": null,
+          "tool_calls": [
+            {
+              "id": "call_4c7fc42a2704440fa6103742",
+              "type": "function",
+              "function": {
+                "name": "set_grouping",
+                "arguments": "{\"by\": \"agent\"}"
+              }
+            },
+            {
+              "id": "call_c9d9129a74f04bebbef09401",
+              "type": "function",
+              "function": {
+                "name": "set_metrics",
+                "arguments": "{\"metrics\": \n[\"resolved\", \"handle_time\"]\n\n}"
+              }
+            },
+            {
+              "id": "call_45367d6f3c0c4ef7bc88b236",
+              "type": "function",
+              "function": {
+                "name": "set_sort",
+                "arguments": "{\"column\": \"handle_time\", \"direction\": \"desc\"}"
+              }
+            }
+          ]
+        },
+        "num_tool_calls": 3
+      },
+      {
+        "error": null,
+        "message": {
+          "role": "assistant",
+          "content": null,
+          "tool_calls": [
+            {
+              "id": "call_de5ae7443ab7467d90efdc3b",
+              "type": "function",
+              "function": {
+                "name": "set_grouping",
+                "arguments": "{\"by\": \"agent\"}"
+              }
+            },
+            {
+              "id": "call_6d38cc9ee1a341bfb7a967ec",
+              "type": "function",
+              "function": {
+                "name": "set_metrics",
+                "arguments": "{\"metrics\": \n[\"resolved\", \"handle_time\"]\n\n}"
+              }
+            },
+            {
+              "id": "call_ce0da8f7eb024fa5922874a1",
+              "type": "function",
+              "function": {
+                "name": "set_sort",
+                "arguments": "{\"column\": \"handle_time\", \"direction\": \"desc\"}"
+              }
+            }
+          ]
+        },
+        "num_tool_calls": 3
+      }
+    ],
+    "T4_tool_choice_none": {
+      "none": {
+        "error": null,
+        "message": {
+          "role": "assistant",
+          "content": "```json\n[\n  {\"name\": \"set_date_range\", \"arguments\": {\"date_from\": \"2026-07-17\", \"date_to\": \"2026-07-23\"}},\n  {\"name\": \"set_group_by\", \"arguments\": {\"group_by\": \"mailbox\"}},\n  {\"name\": \"run_report\", \"arguments\": {}}\n]\n```"
+        }
+      },
+      "auto": {
+        "error": null,
+        "message": {
+          "role": "assistant",
+          "content": null,
+          "tool_calls": [
+            {
+              "id": "call_da808719dc9948999c4f52b5",
+              "type": "function",
+              "function": {
+                "name": "set_grouping",
+                "arguments": "{\"by\": \"mailbox\"}"
+              }
+            },
+            {
+              "id": "call_5196277230c649d79d890a7e",
+              "type": "function",
+              "function": {
+                "name": "set_date_range",
+                "arguments": "{\"date_from\": \"2026-07-17\", \"date_to\": \"2026-07-23\"}"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "T5_enum_discipline": {
+      "error": null,
+      "message": {
+        "role": "assistant",
+        "content": "Customer satisfaction scores are not available in this reporting tool. The available metrics are:\n\n- actioned_emails\n- resolved\n- new_tickets\n- replies\n- new_emails\n- sla_breaches\n- resolve_time (hours)\n- response_time (hours)\n- time_to_first_reply (hours)\n- resolve_time_business_hours (hours)\n- response_time_business_hours (hours)\n- time_to_first_reply_business_hours (hours)\n- handle_time (hours)\n- replies_to_resolve\n\nWould you like to see a report broken down by Actor using one of these metrics instead?"
+      }
+    },
+    "T6_error_feedback_retry": {
+      "error": null,
+      "message": {
+        "role": "assistant",
+        "content": "Customer satisfaction (csat) isn't available in this system. The available metrics are: actioned_emails, resolved, new_tickets, replies, new_emails, sla_breaches, replies_to_resolve, resolve_time, response_time, time_to_first_reply, resolve_time_business_hours, response_time_business_hours, time_to_first_reply_business_hours, and handle_time.\n\nWould you like to see one of these metrics broken down by Actor instead?"
+      }
+    },
+    "T7_out_of_coverage_date": {
+      "error": null,
+      "message": {
+        "role": "assistant",
+        "content": "I can't show June 2026 \u2014 the available data only covers **10 July 2026 to 23 July 2026** (inclusive). Would you like me to set the report to that full window instead, or a specific subset of it?"
+      }
+    },
+    "T8_streaming_tool_calls": {
+      "num_chunks": 51,
+      "reassembled_tool_calls": {
+        "0": {
+          "id": "call_99429a37b4cd4847bfd407b8",
+          "name": "set_date_range",
+          "arguments": "{\"date_from\": \"2026-07-13\", \"date_to\": \"2026-07-17\"}"
+        }
+      }
+    },
+    "T9_set_filter": {
+      "error": null,
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "tool_calls": [
           {
-            "id": "call_50b3a4ad3a6e4e26bf7fa65c",
+            "id": "call_227f012e07b14c6db5feb4d7",
             "type": "function",
             "function": {
-              "name": "set_metrics",
-              "arguments": "{\"metrics\": \n[\"resolved\"]\n\n}"
-            }
-          },
-          {
-            "id": "call_dddcaa6abad54ece8ed2036c",
-            "type": "function",
-            "function": {
-              "name": "set_grouping",
-              "arguments": "{\"group_by\": \"mailbox\"}"
-            }
-          },
-          {
-            "id": "call_28b213d89c9044d5b2bc6d90",
-            "type": "function",
-            "function": {
-              "name": "run_report",
+              "name": "get_meta",
               "arguments": "{}"
             }
           }
         ]
       }
-    }
-  },
-  "T5_enum_discipline": {
-    "error": null,
-    "message": {
-      "role": "assistant",
-      "content": "Customer satisfaction scores are not available as a metric in this reporting system. The available metrics are: `actioned_emails`, `resolved`, `new_tickets`, `open`, `replies`, `new_emails`, `replies_to_resolve`, `resolve_time`, `response_time`, `time_to_first_reply`, `resolve_time_business_hours`, `response_time_business_hours`, `time_to_first_reply_business_hours`, `handle_time`, and `sla_breaches`.\n\nWould you like me to generate a report for one of these available metrics grouped by agent instead?"
-    }
-  },
-  "T6_error_feedback_retry": {
-    "error": null,
-    "message": {
-      "role": "assistant",
-      "content": "I'm sorry, but CSAT (Customer Satisfaction) is not available as a metric in this reporting system. The available metrics are:\n\n- actioned_emails\n- resolved\n- new_tickets\n- open\n- replies\n- new_emails\n- replies_to_resolve\n- resolve_time\n- response_time\n- time_to_first_reply\n- resolve_time_business_hours\n- response_time_business_hours\n- time_to_first_reply_business_hours\n- handle_time\n- sla_breaches\n\nWould you like to see a different metric grouped by agent instead?"
-    }
-  },
-  "T7_out_of_coverage_date": {
-    "error": null,
-    "message": {
-      "role": "assistant",
-      "content": null,
-      "tool_calls": [
-        {
-          "id": "call_13898f9b9665435d860610d8",
-          "type": "function",
-          "function": {
-            "name": "get_meta",
-            "arguments": "{}"
-          }
-        }
-      ]
-    }
-  },
-  "T8_streaming_tool_calls": {
-    "num_chunks": 49,
-    "chunks_raw_sample": [
-      {
-        "id": "gen-1784993718-NE1Trep6kERJW8Oq1vHp",
-        "choices": [
+    },
+    "T10_set_filter_clear": {
+      "error": null,
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "tool_calls": [
           {
-            "delta": {
-              "content": "",
-              "function_call": null,
-              "refusal": null,
-              "role": "assistant",
-              "tool_calls": null,
-              "reasoning": "The",
-              "reasoning_details": [
-                {
-                  "type": "reasoning.text",
-                  "text": "The",
-                  "format": "unknown",
-                  "index": 0
-                }
-              ]
-            },
-            "finish_reason": null,
-            "index": 0,
-            "logprobs": null,
-            "native_finish_reason": null
+            "id": "call_6217ccee2d4c4ec1a664cc9f",
+            "type": "function",
+            "function": {
+              "name": "set_filter",
+              "arguments": "{\"query\": \"\"}"
+            }
           }
-        ],
-        "created": 1784993718,
-        "model": "qwen/qwen3.6-plus",
-        "object": "chat.completion.chunk",
-        "moderation": null,
-        "service_tier": null,
-        "system_fingerprint": null,
-        "usage": null,
-        "provider": "Alibaba"
-      },
-      {
-        "id": "gen-1784993718-NE1Trep6kERJW8Oq1vHp",
-        "choices": [
-          {
-            "delta": {
-              "content": "",
-              "function_call": null,
-              "refusal": null,
-              "role": "assistant",
-              "tool_calls": null,
-              "reasoning": " user wants to set",
-              "reasoning_details": [
-                {
-                  "type": "reasoning.text",
-                  "text": " user wants to set",
-                  "format": "unknown",
-                  "index": 0
-                }
-              ]
-            },
-            "finish_reason": null,
-            "index": 0,
-            "logprobs": null,
-            "native_finish_reason": null
-          }
-        ],
-        "created": 1784993718,
-        "model": "qwen/qwen3.6-plus",
-        "object": "chat.completion.chunk",
-        "moderation": null,
-        "service_tier": null,
-        "system_fingerprint": null,
-        "usage": null,
-        "provider": "Alibaba"
-      },
-      {
-        "id": "gen-1784993718-NE1Trep6kERJW8Oq1vHp",
-        "choices": [
-          {
-            "delta": {
-              "content": "",
-              "function_call": null,
-              "refusal": null,
-              "role": "assistant",
-              "tool_calls": null,
-              "reasoning": " the date range to",
-              "reasoning_details": [
-                {
-                  "type": "reasoning.text",
-                  "text": " the date range to",
-                  "format": "unknown",
-                  "index": 0
-                }
-              ]
-            },
-            "finish_reason": null,
-            "index": 0,
-            "logprobs": null,
-            "native_finish_reason": null
-          }
-        ],
-        "created": 1784993718,
-        "model": "qwen/qwen3.6-plus",
-        "object": "chat.completion.chunk",
-        "moderation": null,
-        "service_tier": null,
-        "system_fingerprint": null,
-        "usage": null,
-        "provider": "Alibaba"
-      },
-      {
-        "id": "gen-1784993718-NE1Trep6kERJW8Oq1vHp",
-        "choices": [
-          {
-            "delta": {
-              "content": "",
-              "function_call": null,
-              "refusal": null,
-              "role": "assistant",
-              "tool_calls": null,
-              "reasoning": " July 1",
-              "reasoning_details": [
-                {
-                  "type": "reasoning.text",
-                  "text": " July 1",
-                  "format": "unknown",
-                  "index": 0
-                }
-              ]
-            },
-            "finish_reason": null,
-            "index": 0,
-            "logprobs": null,
-            "native_finish_reason": null
-          }
-        ],
-        "created": 1784993718,
-        "model": "qwen/qwen3.6-plus",
-        "object": "chat.completion.chunk",
-        "moderation": null,
-        "service_tier": null,
-        "system_fingerprint": null,
-        "usage": null,
-        "provider": "Alibaba"
-      },
-      {
-        "id": "gen-1784993718-NE1Trep6kERJW8Oq1vHp",
-        "choices": [
-          {
-            "delta": {
-              "content": "",
-              "function_call": null,
-              "refusal": null,
-              "role": "assistant",
-              "tool_calls": null,
-              "reasoning": "3 to July ",
-              "reasoning_details": [
-                {
-                  "type": "reasoning.text",
-                  "text": "3 to July ",
-                  "format": "unknown",
-                  "index": 0
-                }
-              ]
-            },
-            "finish_reason": null,
-            "index": 0,
-            "logprobs": null,
-            "native_finish_reason": null
-          }
-        ],
-        "created": 1784993718,
-        "model": "qwen/qwen3.6-plus",
-        "object": "chat.completion.chunk",
-        "moderation": null,
-        "service_tier": null,
-        "system_fingerprint": null,
-        "usage": null,
-        "provider": "Alibaba"
-      },
-      {
-        "id": "gen-1784993718-NE1Trep6kERJW8Oq1vHp",
-        "choices": [
-          {
-            "delta": {
-              "content": "",
-              "function_call": null,
-              "refusal": null,
-              "role": "assistant",
-              "tool_calls": null,
-              "reasoning": "17, ",
-              "reasoning_details": [
-                {
-                  "type": "reasoning.text",
-                  "text": "17, ",
-                  "format": "unknown",
-                  "index": 0
-                }
-              ]
-            },
-            "finish_reason": null,
-            "index": 0,
-            "logprobs": null,
-            "native_finish_reason": null
-          }
-        ],
-        "created": 1784993718,
-        "model": "qwen/qwen3.6-plus",
-        "object": "chat.completion.chunk",
-        "moderation": null,
-        "service_tier": null,
-        "system_fingerprint": null,
-        "usage": null,
-        "provider": "Alibaba"
-      },
-      {
-        "id": "gen-1784993718-NE1Trep6kERJW8Oq1vHp",
-        "choices": [
-          {
-            "delta": {
-              "content": "",
-              "function_call": null,
-              "refusal": null,
-              "role": "assistant",
-              "tool_calls": null,
-              "reasoning": "2026",
-              "reasoning_details": [
-                {
-                  "type": "reasoning.text",
-                  "text": "2026",
-                  "format": "unknown",
-                  "index": 0
-                }
-              ]
-            },
-            "finish_reason": null,
-            "index": 0,
-            "logprobs": null,
-            "native_finish_reason": null
-          }
-        ],
-        "created": 1784993718,
-        "model": "qwen/qwen3.6-plus",
-        "object": "chat.completion.chunk",
-        "moderation": null,
-        "service_tier": null,
-        "system_fingerprint": null,
-        "usage": null,
-        "provider": "Alibaba"
-      },
-      {
-        "id": "gen-1784993718-NE1Trep6kERJW8Oq1vHp",
-        "choices": [
-          {
-            "delta": {
-              "content": "",
-              "function_call": null,
-              "refusal": null,
-              "role": "assistant",
-              "tool_calls": null,
-              "reasoning": ".\nI need",
-              "reasoning_details": [
-                {
-                  "type": "reasoning.text",
-                  "text": ".\nI need",
-                  "format": "unknown",
-                  "index": 0
-                }
-              ]
-            },
-            "finish_reason": null,
-            "index": 0,
-            "logprobs": null,
-            "native_finish_reason": null
-          }
-        ],
-        "created": 1784993718,
-        "model": "qwen/qwen3.6-plus",
-        "object": "chat.completion.chunk",
-        "moderation": null,
-        "service_tier": null,
-        "system_fingerprint": null,
-        "usage": null,
-        "provider": "Alibaba"
+        ]
       }
-    ],
-    "reassembled_tool_calls": {
-      "0": {
-        "id": "call_c13332204cea4687951f4e26",
-        "name": "set_date_range",
-        "arguments": "{\"date_from\": \"2026-07-13\", \"date_to\": \"2026-07-17\"}"
+    }
+  },
+  "markdown": {
+    "T2_basic_tool_selection": {
+      "error": null,
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_74e65dde55014ad0b4d5447e",
+            "type": "function",
+            "function": {
+              "name": "set_date_range",
+              "arguments": "{\"date_from\": \"2026-07-13\", \"date_to\": \"2026-07-17\"}"
+            }
+          }
+        ]
       }
     },
-    "id_and_name_in_first_relevant_chunk": false
+    "T3_parallel_tool_calls": [
+      {
+        "error": null,
+        "message": {
+          "role": "assistant",
+          "content": null,
+          "tool_calls": [
+            {
+              "id": "call_e02f977db8eb4fb6a121fd52",
+              "type": "function",
+              "function": {
+                "name": "set_grouping",
+                "arguments": "{\"by\": \"agent\"}"
+              }
+            },
+            {
+              "id": "call_54fa3ce860bd4996b69e6a8d",
+              "type": "function",
+              "function": {
+                "name": "set_metrics",
+                "arguments": "{\"metrics\": \n[\"resolved\", \"handle_time\"]\n\n}"
+              }
+            },
+            {
+              "id": "call_aa3b0690d5404124bdbddc3a",
+              "type": "function",
+              "function": {
+                "name": "set_sort",
+                "arguments": "{\"column\": \"handle_time\", \"direction\": \"desc\"}"
+              }
+            }
+          ]
+        },
+        "num_tool_calls": 3
+      },
+      {
+        "error": null,
+        "message": {
+          "role": "assistant",
+          "content": null,
+          "tool_calls": [
+            {
+              "id": "call_8ae99bf293074730a6808c3b",
+              "type": "function",
+              "function": {
+                "name": "set_grouping",
+                "arguments": "{\"by\": \"agent\"}"
+              }
+            },
+            {
+              "id": "call_4aef9a10187d4d178005ebf9",
+              "type": "function",
+              "function": {
+                "name": "set_metrics",
+                "arguments": "{\"metrics\": \n[\"resolved\", \"handle_time\"]\n\n}"
+              }
+            },
+            {
+              "id": "call_95ede936e2fa44f89caab027",
+              "type": "function",
+              "function": {
+                "name": "set_sort",
+                "arguments": "{\"column\": \"handle_time\", \"direction\": \"desc\"}"
+              }
+            }
+          ]
+        },
+        "num_tool_calls": 3
+      }
+    ],
+    "T4_tool_choice_none": {
+      "none": {
+        "error": null,
+        "message": {
+          "role": "assistant",
+          "content": "```json\n[\n  {\"name\": \"set_date_range\", \"arguments\": {\"date_from\": \"2026-07-17\", \"date_to\": \"2026-07-23\"}},\n  {\"name\": \"set_group_by\", \"arguments\": {\"group_by\": \"mailbox\"}},\n  {\"name\": \"run_report\", \"arguments\": {}}\n]\n```"
+        }
+      },
+      "auto": {
+        "error": null,
+        "message": {
+          "role": "assistant",
+          "content": null,
+          "tool_calls": [
+            {
+              "id": "call_05056ec0779d406bacb76d5d",
+              "type": "function",
+              "function": {
+                "name": "set_date_range",
+                "arguments": "{\"date_from\": \"2026-07-17\", \"date_to\": \"2026-07-23\"}"
+              }
+            },
+            {
+              "id": "call_f0d7ac24060540729134b984",
+              "type": "function",
+              "function": {
+                "name": "set_grouping",
+                "arguments": "{\"by\": \"mailbox\"}"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "T5_enum_discipline": {
+      "error": null,
+      "message": {
+        "role": "assistant",
+        "content": "Customer satisfaction scores aren't available in this reporting tool \u2014 that metric isn't part of the catalogue. The metrics I can show you instead are:\n\n- **Counters**: actioned_emails, resolved, new_tickets, replies, new_emails, sla_breaches\n- **Durations** (all in hours): resolve_time, response_time, time_to_first_reply, resolve_time_business_hours, response_time_business_hours, time_to_first_reply_business_hours, handle_time\n- **Sum**: replies_to_resolve\n\nIf you'd like to see any of these broken down by Actor (support person), just let me know which one(s) you're interested in and I'll set that up for you."
+      }
+    },
+    "T6_error_feedback_retry": {
+      "error": null,
+      "message": {
+        "role": "assistant",
+        "content": "Customer satisfaction (csat) isn't available as a metric in this system. The available metrics are: actioned_emails, resolved, new_tickets, replies, new_emails, sla_breaches, replies_to_resolve, resolve_time, response_time, time_to_first_reply, resolve_time_business_hours, response_time_business_hours, time_to_first_reply_business_hours, and handle_time.\n\nWould you like to see one of these metrics broken down by Actor instead?"
+      }
+    },
+    "T7_out_of_coverage_date": {
+      "error": null,
+      "message": {
+        "role": "assistant",
+        "content": "Data is only available from **July 10 to July 23, 2026** \u2014 June 2026 falls outside the Coverage Window and has no overlap. Would you like me to show you the full available window (July 10\u201323) instead?"
+      }
+    },
+    "T8_streaming_tool_calls": {
+      "num_chunks": 51,
+      "reassembled_tool_calls": {
+        "0": {
+          "id": "call_2cf9bbbe2f2e471081a8cf62",
+          "name": "set_date_range",
+          "arguments": "{\"date_from\": \"2026-07-13\", \"date_to\": \"2026-07-17\"}"
+        }
+      }
+    },
+    "T9_set_filter": {
+      "error": null,
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_c639ea977a584fbbb2747630",
+            "type": "function",
+            "function": {
+              "name": "get_meta",
+              "arguments": "{}"
+            }
+          }
+        ]
+      }
+    },
+    "T10_set_filter_clear": {
+      "error": null,
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_cd8eefc532184c22b8ebefa2",
+            "type": "function",
+            "function": {
+              "name": "set_filter",
+              "arguments": "{\"query\": \"\"}"
+            }
+          }
+        ]
+      }
+    }
   },
   "_meta": {
     "model_requested": "qwen/qwen3.6-plus",
     "working_model_used": "qwen/qwen3.6-plus",
-    "total_api_calls": 10,
+    "total_api_calls": 23,
     "total_tokens": {
-      "prompt": 7617,
-      "completion": 4842,
-      "total": 12459
+      "prompt": 76607,
+      "completion": 7087,
+      "total": 83694
+    },
+    "variants_compared": [
+      "xml",
+      "markdown"
+    ],
+    "prompt_char_lengths": {
+      "xml": 3980,
+      "markdown": 3920
     }
   }
 }

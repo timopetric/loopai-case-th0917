@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 
 # 08 — System prompt rewrite and tool-schema description overhaul
 
