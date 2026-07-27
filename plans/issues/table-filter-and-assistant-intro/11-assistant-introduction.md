@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 
 # 11 — Hard-coded Assistant introduction
 

@@ -87,6 +87,25 @@ function newAssistantMessage(): ChatMessage {
 }
 
 /**
+ * The empty-state greeting (issue 11) — hard-coded, no model call, no
+ * tokens, rendered through the same `Markdown` pipeline as a real reply so
+ * its bullets/formatting go through the one sanitized renderer rather than
+ * a second, parallel plain-JSX path. Its job is discovery: the product
+ * owner found the pivot-layout capability only by accident, so this leads
+ * with it and follows with concrete, literal "try:" sentences a user could
+ * actually type — not abstract feature descriptions. Vocabulary stays in
+ * Actor/Mailbox terms (CONTEXT.md); no tool name or wire enum value.
+ */
+const GREETING = `I turn plain English into a report — pick metrics, group by Actor or Mailbox, reshape the layout, or narrow it down to one person.
+
+- try: put the dates across the top and the metrics down the side
+- try: filter to just Theo's numbers
+- try: chart average handle time by Mailbox instead of a table
+- try: show me last week grouped by Actor
+
+What report would you like to build?`;
+
+/**
  * The Assistant chat panel (issue 15; docked as `AssistantPane` in issue
  * 02; markdown + visual pass in issue 06; per-message reasoning trace in
  * issue 10). Renders the presenter's small, fixed vocabulary — a thinking
@@ -307,9 +326,9 @@ export function Chat() {
         className="mb-2 min-h-0 flex-1 overflow-y-auto pr-1"
       >
         {messages.length === 0 && (
-          <p className="text-body-sm text-steel">
-            Ask for a report in plain English — e.g. "resolved and handle time by Actor".
-          </p>
+          <div className="text-body-sm text-steel">
+            <Markdown text={GREETING} />
+          </div>
         )}
         <div className="flex flex-col gap-3">
           {messages.map((message, index) => (

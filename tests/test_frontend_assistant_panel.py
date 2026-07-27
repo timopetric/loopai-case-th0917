@@ -538,3 +538,125 @@ class TestErrorsRenderAsConversationMessages:
     def test_errors_are_appended_to_the_message_list_not_a_bare_alert(self) -> None:
         source = _read(CHAT_FILE)
         assert "window.alert" not in source and "alert(" not in source
+
+
+class TestAssistantIntroduction:
+    """Issue 11: the empty-state placeholder becomes a hard-coded greeting
+    whose job is discovery — a new user should learn the Assistant's
+    surprising capabilities (pivot layout headline; the exact filter
+    wording) without having typed anything yet."""
+
+    def test_old_placeholder_line_is_gone(self) -> None:
+        source = _read(CHAT_FILE)
+        assert "Ask for a report in plain English" not in source, (
+            "expected the old one-line placeholder to be replaced by the "
+            "new greeting"
+        )
+
+    def test_greeting_renders_through_the_markdown_component_not_raw_jsx_text(self) -> None:
+        """The empty-state block must route through <Markdown text={...} />,
+        the same sanitized pipeline every assistant reply uses — not a bare
+        <p>{...}</p> JSX text node, which was the old placeholder's shape."""
+        source = _read_code_only(CHAT_FILE)
+        empty_state_match = re.search(
+            r"messages\.length === 0[^{]*&&\s*\((.*?)\)\}", source, re.DOTALL
+        )
+        assert empty_state_match, "expected a `messages.length === 0 && (...)` render guard"
+        empty_state = empty_state_match.group(1)
+        assert "<Markdown" in empty_state, (
+            "expected the empty-state greeting to render via <Markdown ...>, "
+            "not a raw JSX paragraph"
+        )
+
+    def test_greeting_text_is_a_hard_coded_constant_not_a_model_call(self) -> None:
+        """No model call, no tokens, instant on load — the greeting must be
+        a plain string constant, not something fetched or streamed."""
+        source = _read(CHAT_FILE)
+        assert re.search(r"const GREETING\s*=", source), (
+            "expected a hard-coded GREETING string constant"
+        )
+
+    def test_greeting_includes_the_exact_filter_wording(self) -> None:
+        source = _read(CHAT_FILE)
+        assert "try: filter to just Theo's numbers" in source, (
+            "expected the owner's exact chosen wording for the filter example"
+        )
+
+    def test_greeting_has_at_least_three_try_examples(self) -> None:
+        source = _read(CHAT_FILE)
+        greeting_match = re.search(r"const GREETING\s*=\s*`(.*?)`;", source, re.DOTALL)
+        assert greeting_match, "expected a backtick-delimited GREETING constant"
+        greeting = greeting_match.group(1)
+        try_lines = re.findall(r"try:", greeting)
+        assert len(try_lines) >= 3, (
+            f"expected at least 3 concrete 'try:' examples in the greeting, found {len(try_lines)}"
+        )
+
+    def test_greeting_leads_with_the_pivot_layout_capability_described_in_plain_words(
+        self,
+    ) -> None:
+        """The pivot layout stays the headline example — it is the capability
+        the product owner was personally surprised by — but it is named the
+        way a user who has never seen this app would say it, not by the word
+        the codebase uses for the layout. A greeting whose job is discovery
+        cannot lead with the vocabulary the reader is here to discover."""
+        source = _read(CHAT_FILE)
+        greeting_match = re.search(r"const GREETING\s*=\s*`(.*?)`;", source, re.DOTALL)
+        assert greeting_match
+        greeting = greeting_match.group(1)
+        try_examples = re.findall(r"try:.*", greeting)
+        assert try_examples, "expected at least one 'try:' example"
+        headline = try_examples[0].lower()
+        assert "across the top" in headline and "down the side" in headline, (
+            "expected the first 'try:' example to describe the pivot layout by its "
+            f"shape rather than by name; got {headline!r}"
+        )
+        assert "pivot" not in headline, (
+            "the headline example should not lean on the word 'pivot' — it is the "
+            "app's own term for the layout, and this line is read by someone who "
+            "does not know it yet"
+        )
+
+    def test_greeting_closes_with_a_question(self) -> None:
+        source = _read(CHAT_FILE)
+        greeting_match = re.search(r"const GREETING\s*=\s*`(.*?)`;", source, re.DOTALL)
+        assert greeting_match
+        greeting = greeting_match.group(1).strip()
+        assert greeting.endswith("?"), "expected the greeting to close with a friendly question"
+
+    def test_greeting_contains_no_tool_name_or_wire_enum_value(self) -> None:
+        """Vocabulary constraint (CONTEXT.md, CLAUDE.md): never a tool name
+        or a wire enum value in user-visible copy — write what a person
+        would say, not what the API calls it."""
+        source = _read(CHAT_FILE)
+        greeting_match = re.search(r"const GREETING\s*=\s*`(.*?)`;", source, re.DOTALL)
+        assert greeting_match
+        greeting = greeting_match.group(1)
+        forbidden = [
+            "set_metrics",
+            "set_date_range",
+            "set_grouping",
+            "set_sort",
+            "set_columns",
+            "set_chart",
+            "set_layout",
+            "set_filter",
+            "run_report",
+            "get_meta",
+            '"pivot"',
+            '"agent"',
+            '"mailbox"',
+            "handle_time",
+        ]
+        offenders = [token for token in forbidden if token in greeting]
+        assert not offenders, (
+            f"found forbidden tool name/wire enum value(s) in greeting: {offenders}"
+        )
+
+    def test_greeting_never_uses_unqualified_agent(self) -> None:
+        source = _read(CHAT_FILE)
+        greeting_match = re.search(r"const GREETING\s*=\s*`(.*?)`;", source, re.DOTALL)
+        assert greeting_match
+        greeting = greeting_match.group(1)
+        words = re.findall(r"[a-z']+", greeting.lower())
+        assert "agent" not in words, "unqualified 'agent' found in the greeting copy"
