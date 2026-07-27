@@ -246,14 +246,21 @@ first reasoning delta and `thinking: end` when the first `tool_calls` or `conten
 it fires once per model call, so a multi-step turn shows the indicator repeatedly — which is
 honest, since the Assistant really is thinking again each time.
 
-**By default the event carries no reasoning text — only state.** Raw chain-of-thought routinely
-names internal tools (`set_metrics`, `get_meta`), enum values and prompt fragments, and streaming
-it verbatim would break the standing rule that internal tool names, arguments and prompts never
-reach the browser. The indicator delivers the responsiveness; the content is what leaks.
+**The `thinking` event itself carries no reasoning text — only state.** It exists so the UI has
+something to show the instant reasoning starts, independent of whatever the content stream ends up
+containing.
 
-**Dev-mode exception:** when `settings.is_development`, the presenter may also stream
-`event: thinking_text` with the raw reasoning into a collapsible panel. It is a debugging
-affordance and must be gated on the environment flag, never shipped to production.
+**Reasoning text streams to every user, in every environment (ADR-0005).** Alongside `thinking`,
+the presenter also streams `event: thinking_text` with the model's raw reasoning, unconditionally —
+not gated on `settings.is_development` or any other flag. The frontend renders it as markdown in a
+collapsible panel, open by default while a turn is in flight. Raw chain-of-thought routinely names
+internal tools (`set_metrics`, `get_meta`) and enum values, so this is a deliberate, one-way
+reversal of the earlier "internal tool names, arguments and prompts never reach the browser" rule
+as applied to reasoning text specifically — that rule is unchanged for `token`/`chips`/`spec`/
+`error`, which still never carry a tool name, a raw argument, or a prompt fragment. See ADR-0005
+for the rationale, the alternatives considered (keeping the gate; sanitizing the text first), and
+the accepted tradeoff (tool internals visible in the reasoning panel, distinct from the Assistant's
+actual answer).
 
 Flow for "switch the columns": user sends message → `status` ("Updating the report…") → backend executes `update_spec`, validates, diffs old vs new spec → `chips` (["Reordered columns"]) + `spec` → frontend puts the new spec into its store → builder controls visibly move and the preview refetches `/report` (or re-renders from included table) → `token`s stream the assistant's one-line confirmation → `done`.
 

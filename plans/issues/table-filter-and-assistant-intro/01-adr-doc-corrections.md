@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 
 # 01 — ADR-0005 housekeeping: doc corrections
 

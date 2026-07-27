@@ -65,7 +65,9 @@ level 3 before declaring work done.**
   production, after a green deploy.
 - **Never parse assistant prose as tool calls.** Denied real tools, the model emits fabricated
   tool-call JSON as text; acting on it is an execution risk.
-- **Never send tool names, arguments, prompts or raw model reasoning to the browser.**
+- **Never send tool names, arguments or prompts to the browser.** Raw model reasoning is the one
+  exception, deliberately reversed in ADR-0005: it streams to every user, in every environment, in
+  its own labelled panel. The rule is unchanged for the Assistant's actual reply.
 - **Never log** the shared API key, the OpenRouter key, or full prompts.
 - `DEV_FAKE_UPSTREAM` / `DEV_FAKE_LLM` are development-only; the app must refuse to start if
   they are set anywhere else (ADR-0003).

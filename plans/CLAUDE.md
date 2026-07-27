@@ -32,6 +32,7 @@ Paths written in backticks inside these documents (e.g. `scratch/fresh-eyes/`) a
 | [`0002`](decisions/adr/0002-field-scoped-assistant-tools-that-repair.md) | Field-scoped Assistant tools over one atomic patch, chosen for progressive rendering; cross-field drift is repaired and reported, never rejected. |
 | [`0003`](decisions/adr/0003-dev-only-fakes-for-the-verification-loop.md) | Development-only `DEV_FAKE_UPSTREAM` / `DEV_FAKE_LLM` flags make the browser verification loop free and deterministic; refused outside development, banner shown when active. |
 | [`0004`](decisions/adr/0004-design-adaptation-token-layer.md) | Adapt the Mistral design reference (cream demoted to an accent surface, `Instrument Serif` replaces the licensed display face, hero/gradient/photography dropped, a dark ramp derived) into a Tailwind v4 token layer; brand colour stays out of the chart series palette. |
+| [`0005`](decisions/adr/0005-stream-raw-reasoning-to-all-users.md) | Drop the dev-only gate on `ThinkingTextEvent`: raw reasoning streams to every user, in every environment, in its own labelled panel — unfiltered, with the tool-name/enum-value leak accepted as a tradeoff. |
 
 ---
 

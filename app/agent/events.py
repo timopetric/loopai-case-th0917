@@ -9,15 +9,21 @@ shapes. Nothing in this module is ever serialized straight to the browser.
 **Presenter events** (`PresenterEvent`) are the small, stable, user-facing
 vocabulary `app/agent/presenter.py` translates raw events into — the exact
 set architecture.md §6 lists: thinking, status, chips, spec, token, done,
-error, plus the dev-only `thinking_text`. Each carries an `event_name` (the
-SSE `event:` line) and a `to_data()` (the SSE `data:` JSON body) — see
+error, plus `thinking_text` (ADR-0005: streamed to every user, in every
+environment — not dev-only). Each carries an `event_name` (the SSE `event:`
+line) and a `to_data()` (the SSE `data:` JSON body) — see
 `app/api/v1/routers/agent.py` for where those get framed as SSE.
 
-The module boundary IS the security boundary named in AGENTS.md and issue 15:
-`RawEvent`s carry tool names/arguments/reasoning; `PresenterEvent`s never do
-by construction — none of the dataclasses below has a field capable of
-holding a tool name, a raw argument, or reasoning prose. `presenter.py` is
-what performs the translation; this module only defines the two shapes.
+The module boundary IS the security boundary named in AGENTS.md and issue 15,
+for every `PresenterEvent` except `ThinkingTextEvent`: `RawEvent`s carry tool
+names/arguments/reasoning; `ThinkingEvent`, `StatusEvent`, `ChipsEvent`,
+`SpecEvent`, `TokenEvent`, `DoneEvent` and `ErrorEvent` never do by
+construction — none of those dataclasses has a field capable of holding a
+tool name, a raw argument, or reasoning prose. `ThinkingTextEvent` is the one
+deliberate exception (ADR-0005): it exists precisely to carry raw reasoning
+prose to the browser, unfiltered, in a panel visually separate from the
+Assistant's actual answer. `presenter.py` is what performs the translation;
+this module only defines the two shapes.
 """
 
 from __future__ import annotations
@@ -83,8 +89,8 @@ class ReasoningDelta:
     """One chunk of the model's chain-of-thought (architecture.md §5 guard 2:
     87 of 103 chunks in the measured smoke test were exactly this, before the
     first actionable delta). `text` routinely names internal tools and enum
-    values — it must never be forwarded to `PresenterEvent` except into the
-    dev-only `ThinkingTextEvent`."""
+    values — it must never be forwarded to `PresenterEvent` except into
+    `ThinkingTextEvent` (ADR-0005: streamed to every user, not dev-only)."""
 
     text: str
 
@@ -249,11 +255,13 @@ class ErrorEvent:
 
 @dataclass(frozen=True)
 class ThinkingTextEvent:
-    """Dev-only: raw reasoning text for a collapsible debug panel
-    (architecture.md §6 "Dev-mode exception"). `presenter.present()` only
-    ever emits this when called with `include_reasoning_text=True`, which
-    the router only ever sets from `settings.is_development` — never
-    reachable from a request the caller controls."""
+    """Raw reasoning text for a collapsible panel, streamed to every user in
+    every environment (ADR-0005; architecture.md §6) — not gated on
+    `settings.is_development`. `presenter.present()` emits this whenever
+    called with `include_reasoning_text=True`. It routinely names internal
+    tools and enum values (`ReasoningDelta`'s docstring), which is an
+    accepted, deliberate tradeoff for this event specifically; the
+    never-leak-internals rule is unchanged for every other `PresenterEvent`."""
 
     text: str
 
