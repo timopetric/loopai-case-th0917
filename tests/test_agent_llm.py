@@ -189,7 +189,7 @@ class TestFinalStepOmitsToolsEntirely:
 
         # Earlier steps DO get a tools array.
         assert first_call["tools"] is not None
-        assert len(first_call["tools"]) == 9
+        assert len(first_call["tools"]) == 10
 
         # The final call omits `tools` entirely — not merely `tool_choice`.
         assert final_call["tools"] is None

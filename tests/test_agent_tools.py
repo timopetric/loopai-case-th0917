@@ -52,8 +52,8 @@ def call(name: str, **args) -> ToolCall:
 
 
 class TestNineToolsExistAndApply:
-    def test_exactly_nine_tool_names(self):
-        assert len(TOOL_NAMES) == 9
+    def test_exactly_ten_tool_names(self):
+        assert len(TOOL_NAMES) == 10
 
     def test_set_date_range_applies_both_bounds_together(self, dataset):
         spec = base_spec()
@@ -100,6 +100,18 @@ class TestNineToolsExistAndApply:
         assert outcome.ok
         assert outcome.spec_after.granularity == "total"
         assert outcome.spec_after.layout == "long"
+
+    def test_set_filter_sets_the_entity_filter(self, dataset):
+        spec = base_spec(group_by="agent")
+        outcome = apply_one(spec, dataset, call("set_filter", query="theo"))
+        assert outcome.ok
+        assert outcome.spec_after.entity_filter == "theo"
+
+    def test_set_filter_with_empty_string_clears_an_existing_filter(self, dataset):
+        spec = base_spec(group_by="agent", entity_filter="theo")
+        outcome = apply_one(spec, dataset, call("set_filter", query=""))
+        assert outcome.ok
+        assert outcome.spec_after.entity_filter is None
 
     def test_run_report_executes_the_current_spec(self, dataset):
         spec = base_spec(date_from="2026-07-10", date_to="2026-07-23", granularity="total")
@@ -391,6 +403,119 @@ class TestNeitherRepairNorErrorActionedEmailsByActor:
         outcome = apply_one(spec, dataset, call("run_report"))
         assert outcome.ok
         assert any("actioned_emails is not additive" in w for w in outcome.result["warnings"])
+
+
+class TestRepairSetFilterIgnoredWhenUngrouped:
+    """Row: `set_filter` while `group_by == "none"` | Repair — apply the
+    filter and report it as ignored, never error, since there is no Actor/
+    Mailbox breakdown to narrow (engine.py's `_entity_filter_warnings`)."""
+
+    def test_filtering_while_ungrouped_applies_and_reports_ignored(self, dataset):
+        spec = base_spec(group_by="none")
+        outcome = apply_one(spec, dataset, call("set_filter", query="theo"))
+        assert outcome.ok
+        assert outcome.spec_after.entity_filter == "theo"
+        assert outcome.adjusted == [Repair(code=RepairCode.ENTITY_FILTER_IGNORED)]
+
+    def test_filtering_while_grouped_reports_no_repair(self, dataset):
+        spec = base_spec(group_by="agent")
+        outcome = apply_one(spec, dataset, call("set_filter", query="theo"))
+        assert outcome.ok
+        assert outcome.adjusted == []
+
+    def test_clearing_the_filter_while_ungrouped_reports_no_repair(self, dataset):
+        spec = base_spec(group_by="none")
+        outcome = apply_one(spec, dataset, call("set_filter", query=""))
+        assert outcome.ok
+        assert outcome.spec_after.entity_filter is None
+        assert outcome.adjusted == []
+
+    def test_grouping_away_from_none_with_an_existing_filter_reports_no_repair(self, dataset):
+        # Reverse direction of the orphaning below: a filter set while
+        # ungrouped, then grouping turned on, is now live — no Repair.
+        spec = base_spec(group_by="none", entity_filter="theo")
+        outcome = apply_one(spec, dataset, call("set_grouping", by="agent"))
+        assert outcome.ok
+        assert outcome.adjusted == []
+
+    def test_set_grouping_to_none_with_an_existing_filter_reports_ignored(self, dataset):
+        """`_set_grouping`'s own analogue of the orphaned-sort repair
+        (module docstring): turning grouping off makes an existing filter
+        inert, exactly the same verdict `set_filter` reports when applied
+        while already ungrouped."""
+        spec = base_spec(group_by="agent", entity_filter="theo")
+        outcome = apply_one(spec, dataset, call("set_grouping", by="none"))
+        assert outcome.ok
+        assert outcome.adjusted == [Repair(code=RepairCode.ENTITY_FILTER_IGNORED)]
+
+
+class TestBatchReconciliationEntityFilterIgnoredVersusGrouping:
+    """`ENTITY_FILTER_IGNORED` is caused by the combination of `entity_filter`
+    and `group_by`, not by `entity_filter` alone — a later call in the same
+    batch that changes *either* field must be able to supersede the verdict
+    (ADR-0002's batch reconciliation, module docstring)."""
+
+    def test_filter_then_group_in_one_batch_drops_the_stale_ignored_repair(self, dataset):
+        spec = base_spec(group_by="none")
+        outcomes = apply_batch(
+            spec,
+            dataset,
+            [call("set_filter", query="theo"), call("set_grouping", by="agent")],
+        )
+        assert all(o.ok for o in outcomes)
+        assert not any(
+            Repair(code=RepairCode.ENTITY_FILTER_IGNORED) in o.adjusted for o in outcomes
+        )
+        final = outcomes[-1].spec_after
+        assert final.group_by == "agent"
+        assert final.entity_filter == "theo"
+
+    def test_filter_then_ungroup_in_one_batch_reports_ignored_exactly_once(self, dataset):
+        spec = base_spec(group_by="agent")
+        outcomes = apply_batch(
+            spec,
+            dataset,
+            [call("set_filter", query="theo"), call("set_grouping", by="none")],
+        )
+        assert all(o.ok for o in outcomes)
+        occurrences = sum(
+            o.adjusted.count(Repair(code=RepairCode.ENTITY_FILTER_IGNORED)) for o in outcomes
+        )
+        assert occurrences == 1
+
+
+class TestSetFilterCaseInsensitivePartialMatchThroughRunReport:
+    """The tool does no name-resolution of its own (module docstring / issue
+    07) — it relies entirely on the engine's existing loose substring match,
+    exercised here end to end via `run_report`."""
+
+    def test_a_lowercase_partial_query_matches_end_to_end(self, dataset):
+        spec = base_spec(group_by="agent")
+        actor_name = dataset.actors[0].name
+        partial = actor_name[: max(3, len(actor_name) // 2)].lower()
+        set_outcome = apply_one(spec, dataset, call("set_filter", query=partial))
+        assert set_outcome.ok
+        run_outcome = apply_one(set_outcome.spec_after, dataset, call("run_report"))
+        assert run_outcome.ok
+        assert run_outcome.result["row_count"] >= 1
+
+
+class TestRunReportAlwaysReportsEntityFilter:
+    """`run_report`'s result dict is always self-describing (issue 07 /
+    `get_meta`'s same pattern) — the model never has to remember an earlier
+    `set_filter` call in the same turn."""
+
+    def test_run_report_reports_null_entity_filter_when_unset(self, dataset):
+        spec = base_spec()
+        outcome = apply_one(spec, dataset, call("run_report"))
+        assert outcome.ok
+        assert outcome.result["entity_filter"] is None
+
+    def test_run_report_reports_the_active_entity_filter_when_set(self, dataset):
+        spec = base_spec(group_by="agent", entity_filter="theo")
+        outcome = apply_one(spec, dataset, call("run_report"))
+        assert outcome.ok
+        assert outcome.result["entity_filter"] == "theo"
 
 
 # ── run_report inherits the coverage guard from engine.execute ─────────

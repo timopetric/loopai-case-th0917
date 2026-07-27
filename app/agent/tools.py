@@ -72,6 +72,7 @@ TOOL_NAMES: frozenset[str] = frozenset(
         "set_columns",
         "set_chart",
         "set_layout",
+        "set_filter",
         "run_report",
         "get_meta",
     }
@@ -148,6 +149,18 @@ class SetLayoutArgs(BaseModel):
     layout: Literal["long", "pivot"]
 
 
+class SetFilterArgs(BaseModel):
+    """A single required `str`, no `Optional` wrapper: an empty string is a
+    valid call, not a missing one, and clears the filter via the identical
+    `.strip() or None` normalization `ReportSpec.entity_filter`'s own
+    validator already applies (module docstring; no second, tool-only
+    representation of "clear")."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    query: str
+
+
 class RunReportArgs(BaseModel):
     """No fields — extra args from a confused model are ignored, not fatal."""
 
@@ -166,6 +179,7 @@ _ARGS_MODEL: dict[str, type[BaseModel]] = {
     "set_columns": SetColumnsArgs,
     "set_chart": SetChartArgs,
     "set_layout": SetLayoutArgs,
+    "set_filter": SetFilterArgs,
     "run_report": RunReportArgs,
     "get_meta": GetMetaArgs,
 }
@@ -183,6 +197,8 @@ _TOOL_DESCRIPTIONS: dict[str, str] = {
     "set_columns": "Set the left-to-right display order of columns.",
     "set_chart": "Set which metric the chart shows (added to metrics if not already selected).",
     "set_layout": "Set report granularity (day/total) and layout (long/pivot).",
+    # Placeholder — slice 08 rewrites all ten descriptions together.
+    "set_filter": "Set (or clear, with an empty string) an Actor/Mailbox name filter.",
     "run_report": "Execute the current report spec and return a compact table summary.",
     "get_meta": "Look up actors, mailboxes, the metric catalogue, and the Coverage Window.",
 }
@@ -367,6 +383,15 @@ def _set_grouping(spec: ReportSpec, dataset: Dataset, args: dict) -> ToolOutcome
         patch["sort"] = None
         adjusted.append(Repair(code=RepairCode.SORT_CLEARED))
 
+    # Same orphaning shape, this time for `entity_filter`: turning grouping
+    # off makes an existing filter inert (no Actor/Mailbox breakdown left to
+    # narrow — engine.py's `_entity_filter_warnings`), the identical verdict
+    # `_set_filter` reports when the filter is applied while already
+    # ungrouped. Needed so batch reconciliation always has an up-to-date
+    # verdict regardless of which of the two tools ran last in the batch.
+    if parsed.by == "none" and spec.entity_filter is not None:
+        adjusted.append(Repair(code=RepairCode.ENTITY_FILTER_IGNORED))
+
     try:
         spec_after = _merge(spec, patch)
     except ValidationError:
@@ -450,6 +475,29 @@ def _set_layout(spec: ReportSpec, dataset: Dataset, args: dict) -> ToolOutcome:
     return _ok("set_layout", args, spec, spec_after)
 
 
+def _set_filter(spec: ReportSpec, dataset: Dataset, args: dict) -> ToolOutcome:
+    try:
+        parsed = SetFilterArgs.model_validate(args)
+    except ValidationError:
+        return _err("set_filter", args, spec, "validation")
+
+    try:
+        spec_after = _merge(spec, {"entity_filter": parsed.query})
+    except ValidationError:
+        return _err("set_filter", args, spec, "validation")
+
+    # Same precedent as `_set_date_range`: apply the change, then turn a
+    # known-ignored combination into a reported Repair rather than an error
+    # (module docstring, ADR-0002). `group_by == "none"` has no Actor/Mailbox
+    # breakdown for a filter to narrow (engine.py's `_entity_filter_warnings`).
+    adjusted = (
+        [Repair(code=RepairCode.ENTITY_FILTER_IGNORED)]
+        if spec_after.entity_filter is not None and spec_after.group_by == "none"
+        else []
+    )
+    return _ok("set_filter", args, spec, spec_after, adjusted=adjusted)
+
+
 # ── Read tools ───────────────────────────────────────────────────────────
 
 
@@ -482,6 +530,11 @@ def _run_report(spec: ReportSpec, dataset: Dataset, args: dict) -> ToolOutcome:
         ],
         "totals": table.totals,
         "warnings": table.warnings,
+        # Always present, real value or `null` — self-describing on every
+        # call rather than relying on the model's memory of an earlier
+        # `set_filter` in the same turn (module docstring, `get_meta`'s same
+        # "always return full context" pattern).
+        "entity_filter": spec.entity_filter,
     }
     return _ok("run_report", args, spec, spec, result=result)
 
@@ -514,6 +567,7 @@ _DISPATCH = {
     "set_columns": _set_columns,
     "set_chart": _set_chart,
     "set_layout": _set_layout,
+    "set_filter": _set_filter,
     "run_report": _run_report,
     "get_meta": _get_meta,
 }
@@ -540,6 +594,7 @@ _TOOL_TARGET_FIELDS: dict[str, frozenset[str]] = {
     "set_columns": frozenset({"columns_order"}),
     "set_chart": frozenset({"chart_metric"}),
     "set_layout": frozenset({"granularity", "layout"}),
+    "set_filter": frozenset({"entity_filter"}),
     "run_report": frozenset(),
     "get_meta": frozenset(),
 }
@@ -551,6 +606,12 @@ _REPAIR_TARGET_FIELDS: dict[RepairCode, frozenset[str]] = {
     RepairCode.COLUMN_DROPPED: frozenset({"columns_order"}),
     RepairCode.METRIC_AUTO_ADDED: frozenset({"metrics"}),
     RepairCode.DATE_RANGE_CLAMPED: frozenset({"date_from", "date_to"}),
+    # Caused by the *combination* of entity_filter and group_by, not by
+    # entity_filter alone — a later call in the batch changing either field
+    # must be able to supersede the verdict, or "filter to Theo" followed by
+    # "group by Actor" narrates a stale complaint about the report it just
+    # correctly built.
+    RepairCode.ENTITY_FILTER_IGNORED: frozenset({"entity_filter", "group_by"}),
 }
 
 

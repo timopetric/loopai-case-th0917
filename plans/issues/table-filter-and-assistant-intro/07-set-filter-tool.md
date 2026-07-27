@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 
 # 07 — The `set_filter` Assistant tool
 

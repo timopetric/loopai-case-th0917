@@ -85,6 +85,7 @@ _STATUS_TEXT: dict[str, str] = {
     "set_columns": "Reordering the columns…",
     "set_chart": "Updating the chart…",
     "set_layout": "Updating the layout…",
+    "set_filter": "Updating the filter…",
     "run_report": "Running the report…",
     "get_meta": "Looking up the data…",
 }
