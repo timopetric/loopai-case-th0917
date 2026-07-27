@@ -1,9 +1,13 @@
 """Logging — loguru, kept plain (architecture.md §4).
 
-One stderr sink at a level taken from configuration. The standard library's
+One stdout sink at a level taken from configuration. The standard library's
 and uvicorn's own loggers are intercepted so every log line — ours and
 uvicorn's — shares one format. No file sinks, no rotation, no request-id
-middleware: the platform captures stderr and that is enough here.
+middleware: the platform captures stdout and that is enough here.
+
+stdout, not stderr: log aggregators (Railway included) tag anything written
+to stderr as an error regardless of the level in the message, which turned
+every INFO line and 200 response into a false-positive red error.
 
 Never log the shared API key, the OpenRouter key, or full prompts.
 """
@@ -34,9 +38,9 @@ class InterceptHandler(logging.Handler):
 
 
 def configure_logging(level: str = "INFO") -> None:
-    """Install the single loguru stderr sink and intercept stdlib/uvicorn loggers."""
+    """Install the single loguru stdout sink and intercept stdlib/uvicorn loggers."""
     logger.remove()
-    logger.add(sys.stderr, level=level.upper(), backtrace=False, diagnose=False)
+    logger.add(sys.stdout, level=level.upper(), backtrace=False, diagnose=False)
 
     logging.basicConfig(handlers=[InterceptHandler()], level=0, force=True)
 
