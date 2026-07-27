@@ -31,7 +31,7 @@ from app.models import Metric, ReportSpec
 
 _PROSE = (
     "Done",
-    " — grouped by agent",
+    " — grouped by Actor",
     " with resolved and handle time",
     " for the selected period.",
 )
@@ -48,7 +48,10 @@ def run_fake_turn(message: str, spec: ReportSpec) -> Iterator[RawEvent]:
     yet). A final prose Tool Step closes the turn.
     """
     # Tool Step 1: reasoning preamble, then set_grouping.
-    yield ReasoningDelta("The user wants a per-Actor breakdown.")
+    # Trailing space: the presenter concatenates deltas verbatim, which is
+    # right for a real model's token fragments but means two whole sentences
+    # authored as separate deltas here would render as "breakdown.I'll".
+    yield ReasoningDelta("The user wants a per-Actor breakdown. ")
     yield ReasoningDelta("I'll switch the grouping to Actor first.")
 
     step1_before = spec

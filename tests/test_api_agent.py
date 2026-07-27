@@ -17,6 +17,7 @@ offline, free, and deterministic (ADR-0003). Asserts:
 """
 
 import json
+import re
 
 import pytest
 from fastapi.testclient import TestClient
@@ -186,6 +187,42 @@ class TestFakeModelDrivesTheReportEndToEnd:
         tokens = "".join(data["text"] for name, data in events if name == "token")
         done = next(data for name, data in events if name == "done")
         assert tokens == done["summary"]
+
+    def test_no_prose_the_reader_sees_calls_an_Actor_an_agent(
+        self, events: list[tuple[str, dict]]
+    ) -> None:
+        """CONTEXT.md reserves "agent" for the Assistant and bans it as a word
+        for a support person. That applies to every string the reader actually
+        reads, not just some of them: the scripted reply prose reached a
+        browser saying "grouped by agent" because an earlier pass reworded only
+        this fixture's reasoning strings and left its `_PROSE` tuple alone.
+
+        `thinking_text` is included here deliberately, even though ADR-0005
+        accepts that a *real* model's chain-of-thought will name internals —
+        this fixture's reasoning is text we author, and it is the first thing
+        every demo and dev walkthrough puts on screen.
+
+        The wire value `"agent"` inside `spec` events is untouched by this and
+        must stay: it is data, not prose, and is asserted intact in
+        `test_spec_events_carry_the_full_validated_spec_and_move_the_controls`.
+        """
+        prose_fields = {
+            "token": "text",
+            "status": "text",
+            "chips": "chips",
+            "done": "summary",
+            "error": "text",
+            "thinking_text": "text",
+        }
+        for name, data in events:
+            field = prose_fields.get(name)
+            if field is None or field not in data:
+                continue
+            value = data[field]
+            text = " ".join(value) if isinstance(value, list) else str(value)
+            assert not re.search(r"\bagent\b", text, re.IGNORECASE), (
+                f'{name} event calls someone an "agent": {text!r}'
+            )
 
 
 class TestNoInternalsInTheStream:
