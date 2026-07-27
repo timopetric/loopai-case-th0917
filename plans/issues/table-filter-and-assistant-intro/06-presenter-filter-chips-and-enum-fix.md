@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 
 # 06 — Presenter: filter chips/repair text, plus the bundled enum-leak fix
 

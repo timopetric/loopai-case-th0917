@@ -28,7 +28,7 @@ from app.agent.events import (
     TurnError,
 )
 from app.agent.presenter import present
-from app.models import Metric, ReportSpec
+from app.models import Metric, ReportSpec, SortSpec
 
 BASE_SPEC = ReportSpec(
     metrics=[Metric.RESOLVED],
@@ -228,6 +228,174 @@ class TestToolCallTranslation:
     def test_repair_metric_is_a_closed_enum_too(self):
         with pytest.raises(ValidationError):
             Repair(code=RepairCode.METRIC_AUTO_ADDED, metric="SENTINEL_NOT_A_REAL_METRIC")
+
+    def test_entity_filter_set_emits_filter_chip(self):
+        spec2 = BASE_SPEC.model_copy(update={"entity_filter": "smith"})
+        events = list(
+            present(
+                [
+                    ToolCallFinished(
+                        name="set_filter",
+                        args={"query": "smith"},
+                        ok=True,
+                        adjusted=[],
+                        spec_before=BASE_SPEC,
+                        spec_after=spec2,
+                    )
+                ]
+            )
+        )
+        chips_event = events[0]
+        assert isinstance(chips_event, ChipsEvent)
+        assert "Filter: smith" in chips_event.chips
+
+    def test_entity_filter_cleared_emits_filter_cleared_chip(self):
+        spec_with_filter = BASE_SPEC.model_copy(update={"entity_filter": "smith"})
+        spec_cleared = BASE_SPEC.model_copy(update={"entity_filter": None})
+        events = list(
+            present(
+                [
+                    ToolCallFinished(
+                        name="set_filter",
+                        args={"query": None},
+                        ok=True,
+                        adjusted=[],
+                        spec_before=spec_with_filter,
+                        spec_after=spec_cleared,
+                    )
+                ]
+            )
+        )
+        chips_event = events[0]
+        assert isinstance(chips_event, ChipsEvent)
+        assert "Filter cleared" in chips_event.chips
+
+    def test_entity_filter_ignored_repair_surfaces_as_a_chip(self):
+        spec2 = BASE_SPEC.model_copy(update={"entity_filter": "smith"})
+        events = list(
+            present(
+                [
+                    ToolCallFinished(
+                        name="set_filter",
+                        args={"query": "smith"},
+                        ok=True,
+                        adjusted=[Repair(code=RepairCode.ENTITY_FILTER_IGNORED)],
+                        spec_before=BASE_SPEC,
+                        spec_after=spec2,
+                    )
+                ]
+            )
+        )
+        chips_event = events[0]
+        assert isinstance(chips_event, ChipsEvent)
+        assert (
+            "Adjusted: entity filter has no effect without grouping by Actor or Mailbox"
+            in chips_event.chips
+        )
+
+    def test_added_metric_chip_uses_label_not_wire_value(self):
+        spec2 = BASE_SPEC.model_copy(update={"metrics": [Metric.RESOLVED, Metric.HANDLE_TIME]})
+        events = list(
+            present(
+                [
+                    ToolCallFinished(
+                        name="set_metrics",
+                        args={"metrics": ["resolved", "handle_time"]},
+                        ok=True,
+                        adjusted=[],
+                        spec_before=BASE_SPEC,
+                        spec_after=spec2,
+                    )
+                ]
+            )
+        )
+        chips_event = events[0]
+        assert isinstance(chips_event, ChipsEvent)
+        assert "Added metric: Handle time" in chips_event.chips
+        assert "Added metric: handle_time" not in chips_event.chips
+        for chip in chips_event.chips:
+            assert "handle_time" not in chip
+
+    def test_chart_metric_chip_uses_label_not_wire_value(self):
+        spec2 = BASE_SPEC.model_copy(update={"chart_metric": Metric.HANDLE_TIME})
+        events = list(
+            present(
+                [
+                    ToolCallFinished(
+                        name="set_chart",
+                        args={"metric": "handle_time"},
+                        ok=True,
+                        adjusted=[],
+                        spec_before=BASE_SPEC,
+                        spec_after=spec2,
+                    )
+                ]
+            )
+        )
+        chips_event = events[0]
+        assert isinstance(chips_event, ChipsEvent)
+        assert "Chart: Handle time" in chips_event.chips
+        for chip in chips_event.chips:
+            assert "handle_time" not in chip
+
+    def test_sort_chip_uses_metric_label_and_spelled_out_direction(self):
+        spec_with_metric = BASE_SPEC.model_copy(
+            update={"metrics": [Metric.RESOLVED, Metric.HANDLE_TIME]}
+        )
+        spec2 = spec_with_metric.model_copy(
+            update={"sort": SortSpec(column="handle_time", direction="desc")}
+        )
+        events = list(
+            present(
+                [
+                    ToolCallFinished(
+                        name="set_sort",
+                        args={"column": "handle_time", "direction": "desc"},
+                        ok=True,
+                        adjusted=[],
+                        spec_before=spec_with_metric,
+                        spec_after=spec2,
+                    )
+                ]
+            )
+        )
+        chips_event = events[0]
+        assert isinstance(chips_event, ChipsEvent)
+        assert "Sort: Handle time (descending)" in chips_event.chips
+        for chip in chips_event.chips:
+            assert "handle_time" not in chip
+            assert "desc" not in chip.replace("descending", "")
+
+    def test_no_metric_key_leaks_when_metrics_chart_and_sort_all_change_together(self):
+        """Closes the coordinator's follow-up finding: fixing only the
+        metric-added/removed chips left `Chart:` and `Sort:` printing the
+        same wire enum shape a few lines below. A single turn that touches
+        all three at once is the regression that would have caught it."""
+        spec2 = BASE_SPEC.model_copy(
+            update={
+                "metrics": [Metric.RESOLVED, Metric.HANDLE_TIME],
+                "chart_metric": Metric.HANDLE_TIME,
+                "sort": SortSpec(column="handle_time", direction="asc"),
+            }
+        )
+        events = list(
+            present(
+                [
+                    ToolCallFinished(
+                        name="set_metrics",
+                        args={"metrics": ["resolved", "handle_time"]},
+                        ok=True,
+                        adjusted=[],
+                        spec_before=BASE_SPEC,
+                        spec_after=spec2,
+                    )
+                ]
+            )
+        )
+        chips_event = events[0]
+        assert isinstance(chips_event, ChipsEvent)
+        for chip in chips_event.chips:
+            assert "handle_time" not in chip, f"raw metric key leaked into chip: {chip!r}"
 
 
 class TestProseAndCompletion:

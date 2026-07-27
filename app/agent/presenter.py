@@ -119,6 +119,9 @@ _REPAIR_TEXT: dict[RepairCode, str] = {
     RepairCode.SORT_CLEARED: "sort cleared",
     RepairCode.COLUMN_DROPPED: "a removed column was dropped from the column order",
     RepairCode.DATE_RANGE_CLAMPED: "date range clamped to the Coverage Window",
+    RepairCode.ENTITY_FILTER_IGNORED: (
+        "entity filter has no effect without grouping by Actor or Mailbox"
+    ),
 }
 _DEFAULT_REPAIR_TEXT = "the report was adjusted"
 
@@ -228,11 +231,14 @@ async def present_async(
 
 def _diff_chips(before: ReportSpec, after: ReportSpec, adjusted: list[Repair]) -> list[str]:
     """Human-readable chips from a validated spec diff (architecture.md §6:
-    "from validated spec diff") — never from raw tool arguments. Metric
-    names and dates are real `ReportSpec` values the user already sees in
-    the builder. `group_by`'s wire values (`"agent"`/`"mailbox"`) are NOT
-    shown verbatim — CONTEXT.md bans unqualified "agent" in UI copy, so
-    `_GROUP_BY_LABEL` translates to "Actor"/"Mailbox" first."""
+    "from validated spec diff") — never from raw tool arguments. Dates are
+    real `ReportSpec` values the user already sees in the builder. Metric
+    *keys* (`"handle_time"`), like `group_by`'s wire values
+    (`"agent"`/`"mailbox"`), are NOT shown verbatim — every chip that names a
+    metric (added/removed, chart, sort) goes through `_metric_label` first,
+    the same way `_GROUP_BY_LABEL` translates `group_by` to "Actor"/"Mailbox"
+    (CONTEXT.md bans unqualified "agent" in UI copy, and a raw metric key is
+    the same class of leak)."""
     chips: list[str] = []
 
     if before.metrics != after.metrics:
@@ -240,10 +246,10 @@ def _diff_chips(before: ReportSpec, after: ReportSpec, adjusted: list[Repair]) -
         after_values = {m.value for m in after.metrics}
         for m in after.metrics:
             if m.value not in before_values:
-                chips.append(f"Added metric: {m.value}")
+                chips.append(f"Added metric: {_metric_label(m)}")
         for m in before.metrics:
             if m.value not in after_values:
-                chips.append(f"Removed metric: {m.value}")
+                chips.append(f"Removed metric: {_metric_label(m)}")
 
     if before.date_from != after.date_from or before.date_to != after.date_to:
         chips.append(f"Date range: {after.date_from} – {after.date_to}")
@@ -262,9 +268,12 @@ def _diff_chips(before: ReportSpec, after: ReportSpec, adjusted: list[Repair]) -
         chips.append(f"Duration display: {label}")
 
     if before.sort != after.sort:
-        chips.append(
-            f"Sort: {after.sort.column} ({after.sort.direction})" if after.sort else "Sort cleared"
-        )
+        if after.sort is None:
+            chips.append("Sort cleared")
+        else:
+            direction = "descending" if after.sort.direction == "desc" else "ascending"
+            column_label = _metric_label(Metric(after.sort.column))
+            chips.append(f"Sort: {column_label} ({direction})")
 
     if before.columns_order != after.columns_order:
         chips.append("Reordered columns")
@@ -274,7 +283,14 @@ def _diff_chips(before: ReportSpec, after: ReportSpec, adjusted: list[Repair]) -
 
     if before.chart_metric != after.chart_metric:
         chips.append(
-            f"Chart: {after.chart_metric.value}" if after.chart_metric else "Chart: default"
+            f"Chart: {_metric_label(after.chart_metric)}"
+            if after.chart_metric
+            else "Chart: default"
+        )
+
+    if before.entity_filter != after.entity_filter:
+        chips.append(
+            f"Filter: {after.entity_filter}" if after.entity_filter else "Filter cleared"
         )
 
     for repair in adjusted:
