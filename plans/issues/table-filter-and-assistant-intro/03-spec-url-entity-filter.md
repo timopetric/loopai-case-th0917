@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 
 # 03 — `entity_filter` round-trips through the shareable URL
 

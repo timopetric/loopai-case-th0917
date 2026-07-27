@@ -32,6 +32,7 @@ def _full_spec() -> ReportSpec:
         columns_order=["new_tickets", "resolved"],
         layout="pivot",
         chart_metric=Metric.NEW_TICKETS,
+        entity_filter="kaur",
     )
 
 
@@ -52,6 +53,7 @@ def test_a_minimal_spec_with_only_required_fields_round_trips_to_the_same_defaul
     assert decoded.sort is None
     assert decoded.columns_order is None
     assert decoded.chart_metric is None
+    assert decoded.entity_filter is None
 
 
 # One alternate, non-default value per `ReportSpec` field, used to prove that
@@ -96,6 +98,34 @@ def test_every_report_spec_field_round_trips_when_changed(field: str) -> None:
     assert getattr(decoded, field) == getattr(
         mutated, field
     ), f"ReportSpec.{field} did not survive a URL query-parameter round trip"
+
+
+def test_an_unset_entity_filter_is_omitted_rather_than_encoded_as_an_empty_param() -> None:
+    """A shared link for an unfiltered report must carry no filter param at
+    all — an `entity_filter=` empty param would round-trip back to `None`
+    through the model's validator anyway, but it puts a meaningless pair in
+    every URL a reader is asked to copy. Same treatment `chart_metric` gets."""
+    spec = ReportSpec(metrics=[Metric.RESOLVED], date_from="2026-07-10", date_to="2026-07-23")
+
+    params = encode_spec(spec)
+
+    assert "entity_filter" not in params
+
+
+def test_a_filter_survives_the_round_trip_verbatim() -> None:
+    """Whitespace and case are the reader's own typing; the URL must hand back
+    exactly what the model normalised, not re-normalise it a second time."""
+    spec = ReportSpec(
+        metrics=[Metric.RESOLVED],
+        date_from="2026-07-10",
+        date_to="2026-07-23",
+        group_by="agent",
+        entity_filter="  Theo Mancini  ",
+    )
+
+    decoded = decode_spec(encode_spec(spec))
+
+    assert decoded.entity_filter == "Theo Mancini"
 
 
 def test_decode_rejects_a_missing_required_field() -> None:
