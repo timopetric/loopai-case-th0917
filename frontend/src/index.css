@@ -53,6 +53,28 @@
  *    ever fires inside the media query, it can never suppress motion for a
  *    user who has not asked for it.
  */
+/* Resizable Assistant tables — `[data-streamdown="table-wrapper"]` is an
+   outer flex column (would hold streamdown's copy/download/fullscreen
+   controls row, which this app disables via `controls={false}` in
+   `lib/markdown.tsx`); the table's own scrolling already happens on ITS
+   direct child div, the one with streamdown's own `overflow-x-auto
+   overflow-y-auto` classes. `resize`/`overflow` must go on that inner div,
+   not the outer wrapper — putting them on the wrapper instead fights with
+   the inner div's own scroll region (two independent `overflow: auto` boxes
+   stacked on the same axis) without actually controlling the table's visual
+   size. `> div` is safe only because `controls={false}` guarantees exactly
+   one child div here; if controls were ever re-enabled this selector would
+   need to change to keep targeting the scroll div specifically. No
+   `min-width`/`min-height` floor: those would re-pin the resized dimension
+   straight back to its default every render, silently defeating the drag
+   handle they're supposed to support. `max-width: 100%` still caps growth
+   at the chat bubble's width so it can't bleed out of the bubble. */
+[data-streamdown="table-wrapper"] > div {
+  resize: both;
+  overflow: auto;
+  max-width: 100%;
+}
+
 :focus-visible {
   outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;

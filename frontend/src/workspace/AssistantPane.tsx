@@ -1,5 +1,6 @@
 import { Chat } from "../Chat";
 import type { Meta } from "../lib/meta";
+import { useResizableWidth } from "../lib/resizableWidth";
 
 /**
  * The right "Assistant" zone (issue 02: frontend-rework) — permanently
@@ -25,6 +26,13 @@ export function AssistantPane({
   collapsed: boolean;
   onToggleCollapse: () => void;
 }) {
+  const { width, resizing, onHandlePointerDown, isAboveBreakpoint } = useResizableWidth({
+    storageKey: "assistant-pane-width",
+    defaultWidth: 384, // matches the prior fixed `lg:w-96`
+    minWidth: 280,
+    maxWidth: 720,
+  });
+
   if (collapsed) {
     return (
       <aside className="flex w-11 shrink-0 flex-col items-center border-l border-hairline bg-surface py-3">
@@ -41,7 +49,24 @@ export function AssistantPane({
   }
 
   return (
-    <aside className="flex min-h-0 w-full shrink-0 flex-col border-hairline bg-surface p-4 lg:w-96 lg:border-l">
+    <aside
+      className="relative flex min-h-0 w-full shrink-0 flex-col border-hairline bg-surface p-4 lg:border-l"
+      style={isAboveBreakpoint ? { width } : undefined}
+    >
+      {/* Drag handle — resizes the panel from its left edge (issue: Assistant
+          Panel is resizable). Only meaningful at the `lg:` breakpoint, where
+          the pane sits in the fixed-width right column; below that it stacks
+          full-width and there is nothing to resize. Width persists to
+          `localStorage` via `useResizableWidth`. */}
+      <div
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="Resize the Assistant panel"
+        onPointerDown={onHandlePointerDown}
+        className={`absolute left-0 top-0 hidden h-full w-1.5 -translate-x-1/2 cursor-col-resize touch-none lg:block ${
+          resizing ? "bg-focus-ring/50" : "hover:bg-focus-ring/30"
+        }`}
+      />
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-heading-5 font-semibold text-ink">Assistant</h2>
         <button
