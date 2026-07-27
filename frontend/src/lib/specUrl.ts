@@ -51,6 +51,9 @@ export function encodeSpecToSearchParams(spec: ReportSpec): URLSearchParams {
   if (spec.chart_metric) {
     params.set("chart_metric", spec.chart_metric);
   }
+  if (spec.entity_filter) {
+    params.set("entity_filter", spec.entity_filter);
+  }
   return params;
 }
 

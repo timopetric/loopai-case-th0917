@@ -1,10 +1,96 @@
+import { useEffect, useRef, useState } from "react";
+
 import type { Meta } from "../lib/meta";
+import type { ReportSpec } from "../lib/report";
 import { formatMetricLabel } from "../lib/report";
 import { useReportSpecStore } from "../store/reportSpecStore";
 import { Chip } from "../ui/Chip";
 import { SectionHeader } from "../ui/SectionHeader";
 import { SegmentedControl } from "../ui/SegmentedControl";
 import { TextInput } from "../ui/TextInput";
+
+/** Milliseconds of typing quiet before the Filter section writes to the
+ * store — long enough that a network round trip and a chart re-render don't
+ * fire on every keystroke, short enough to still feel live (issue 05:
+ * table-filter-and-assistant-intro). */
+const ENTITY_FILTER_DEBOUNCE_MS = 350;
+
+/**
+ * The "Filter by Actor/Mailbox name" rail control (issue 05:
+ * table-filter-and-assistant-intro). Always mounted — `BuilderPane` disables
+ * it rather than unmounting it when `groupBy === "none"`, so toggling
+ * Grouping never reflows the rest of the rail.
+ *
+ * Local `value` state drives what's on screen; only the debounced write at
+ * the bottom of `handleChange` reaches the store, so typing stays responsive
+ * even though downstream (the report fetch, the URL sync) is un-debounced
+ * and would otherwise fire on every keystroke. `lastCommitted` distinguishes
+ * "the store changed because WE just wrote it" from "the store changed out
+ * from under us" (the Assistant applying a spec, a shared URL loading one,
+ * grouping switching back after the value survived being disabled) — only
+ * the latter should overwrite what the user is mid-typing.
+ */
+function EntityFilterInput({
+  groupBy,
+  entityFilter,
+  setEntityFilter,
+}: {
+  groupBy: ReportSpec["group_by"];
+  entityFilter: string | null;
+  setEntityFilter: (value: string | null) => void;
+}) {
+  const [value, setValue] = useState(entityFilter ?? "");
+  const lastCommitted = useRef(entityFilter ?? "");
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if ((entityFilter ?? "") !== lastCommitted.current) {
+      // A genuine external change (the Assistant applying a spec, a shared
+      // URL loading one, grouping switching back to a value that survived
+      // being disabled) wins outright over anything the user is mid-typing.
+      // Without cancelling here, a still-pending debounce timer from a
+      // keystroke made before this update would fire afterwards and stomp
+      // the external value back over it — the box would show the external
+      // value while a moment later the store, the URL and the fetched
+      // report silently reverted to the stale typed one.
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      setValue(entityFilter ?? "");
+      lastCommitted.current = entityFilter ?? "";
+    }
+  }, [entityFilter]);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  function handleChange(next: string) {
+    setValue(next);
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      const committed = next.trim() === "" ? null : next;
+      lastCommitted.current = committed ?? "";
+      setEntityFilter(committed);
+    }, ENTITY_FILTER_DEBOUNCE_MS);
+  }
+
+  const disabled = groupBy === "none";
+  const label = groupBy === "mailbox" ? "Filter by Mailbox name" : "Filter by Actor name";
+
+  return (
+    <TextInput
+      label={label}
+      value={value}
+      disabled={disabled}
+      placeholder={disabled ? "Group by Actor or Mailbox to filter" : "Type a name…"}
+      onChange={(event) => handleChange(event.target.value)}
+    />
+  );
+}
 
 /**
  * The left "builder" zone (issue 02 shell; issue 03 restyle: frontend-rework)
@@ -77,6 +163,8 @@ export function BuilderPane({
     setLayout,
     chartMetric,
     setChartMetric,
+    entityFilter,
+    setEntityFilter,
   } = useReportSpecStore();
 
   if (collapsed) {
@@ -152,6 +240,15 @@ export function BuilderPane({
             { value: "agent", label: "Actor" },
             { value: "mailbox", label: "Mailbox" },
           ]}
+        />
+      </section>
+
+      <section className="mb-5">
+        <SectionHeader title="Filter" />
+        <EntityFilterInput
+          groupBy={groupBy}
+          entityFilter={entityFilter}
+          setEntityFilter={setEntityFilter}
         />
       </section>
 

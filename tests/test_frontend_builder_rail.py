@@ -127,6 +127,113 @@ def test_no_unqualified_agent_in_the_rail_copy() -> None:
     )
 
 
+def test_filter_control_is_always_rendered_not_conditional_on_grouping() -> None:
+    """Issue 05: the Filter section must never appear/disappear as `groupBy`
+    changes (that reflows the whole rail on every grouping toggle) — checked
+    as there being no conditional (`groupBy !== "none" &&` / ternary guarding
+    a mount) wrapping the filter control. It is disabled instead, which is
+    covered by the next test."""
+    source = _read(BUILDER_FILE)
+    assert "entityFilter" in source, "expected the Filter control to read `entityFilter`"
+    assert "setEntityFilter" in source, "expected the Filter control to write via `setEntityFilter`"
+
+    # None of the existing "conditionally mount based on groupBy" patterns
+    # should wrap the filter control — the pivot chart-metric picker shows
+    # what that pattern looks like (`layout === "pivot" && (...)`); the
+    # filter control must not have a `groupBy`-gated equivalent.
+    assert 'groupBy === "none" && (' not in source
+    assert 'groupBy !== "none" && (' not in source
+
+
+def test_filter_control_disables_rather_than_hides_when_ungrouped() -> None:
+    """When `groupBy === "none"` the filter input is `disabled` with an
+    explanatory placeholder, not removed — this is what keeps the control
+    always rendered (previous test) while still being unusable for a
+    grouping that has no Actor/Mailbox breakdown to filter."""
+    source = _read(BUILDER_FILE)
+    assert re.search(r'groupBy\s*===\s*"none"', source), (
+        "expected the filter control's disabled condition to key off groupBy === \"none\""
+    )
+    assert "disabled" in source
+    assert "Group by Actor or Mailbox to filter" in source
+
+
+def test_filter_label_follows_the_current_grouping() -> None:
+    """Label reads 'Filter by Actor name' or 'Filter by Mailbox name',
+    dynamically following `groupBy` — not a static label. Two hardcoded
+    strings sitting side by side (e.g. in a comment, or both rendered at
+    once) would satisfy a plain substring check without either depending on
+    `groupBy` at all, so this pins the actual conditional: the Mailbox label
+    must be selected by a `groupBy === "mailbox"` comparison."""
+    source = _read(BUILDER_FILE)
+    assert "Filter by Actor name" in source
+    assert "Filter by Mailbox name" in source
+    assert re.search(
+        r'groupBy\s*===\s*"mailbox"\s*\?\s*"Filter by Mailbox name"', source
+    ), (
+        "expected the Mailbox label to be chosen by a groupBy === \"mailbox\" "
+        "ternary, not a static/hardcoded label"
+    )
+
+
+def test_filter_control_debounces_before_writing_to_the_store() -> None:
+    """A bare `onChange` writing straight through would fire a network
+    request and a chart re-render on every keystroke (issue 05) — checked as
+    a `setTimeout`-based debounce sitting between the input's `onChange` and
+    the `setEntityFilter` store write, rather than `setEntityFilter` being
+    called directly from an `onChange` handler."""
+    source = _read(BUILDER_FILE)
+    assert "setTimeout" in source, "expected a debounce timer gating the store write"
+    assert re.search(r"onChange=\{[^}]*setEntityFilter", source) is None, (
+        "the filter input's onChange must not call setEntityFilter directly (no debounce)"
+    )
+
+
+def test_external_filter_update_cancels_a_pending_debounce() -> None:
+    """A pending debounce timer must not outlive an external store change.
+    Without this, the race is: the user types (a timer is pending, nothing
+    committed yet); the Assistant/a shared URL writes `entityFilter`
+    externally; the sync effect updates the visible value but leaves the old
+    timer running; the timer then fires and overwrites both the box and the
+    store with the stale typed value — the control ends up showing something
+    the store/URL/fetched report disagree with. The fix is for the
+    external-sync effect (the one keyed on the `entityFilter` prop, matched
+    against `lastCommitted`) to clear the pending timeout as part of handling
+    a genuine external change. Checked as a `clearTimeout(timeoutRef` call
+    appearing before the effect's `setValue`/`lastCommitted` sync — i.e.
+    inside the sync branch, not only in the unmount-cleanup effect."""
+    source = _read(BUILDER_FILE)
+    effect_start = source.index("useEffect(() => {\n    if ((entityFilter")
+    effect_end = source.index("}, [entityFilter]);", effect_start)
+    sync_effect = source[effect_start:effect_end]
+    assert "clearTimeout(timeoutRef" in sync_effect, (
+        "the external-sync effect must cancel any pending debounce timer, or a "
+        "keystroke made just before an external update can still overwrite it "
+        "after the fact"
+    )
+
+
+def test_filter_control_never_renders_a_chip() -> None:
+    """Chips are exclusively an Assistant-conversation concept (issue 05) —
+    the Filter section must be built from `TextInput` alone, not `Chip`."""
+    source = _read(BUILDER_FILE)
+    filter_section_start = source.index('title="Filter"')
+    next_section_start = source.index("<section", source.index("</section>", filter_section_start))
+    filter_section = source[filter_section_start:next_section_start]
+    assert "Chip" not in filter_section, "the Filter control must never emit a chip"
+
+
+def test_entity_filter_store_field_and_setter_exist() -> None:
+    """The store gains `entityFilter`/`setEntityFilter`, wired into
+    `buildSpec`/`applySpec` exactly like every other field (issue 05)."""
+    store_source = _read(REPO_ROOT / "frontend" / "src" / "store" / "reportSpecStore.ts")
+    assert "entityFilter" in store_source
+    assert "setEntityFilter" in store_source
+    assert "entity_filter" in store_source, (
+        "expected buildSpec/applySpec to map entityFilter <-> the wire field entity_filter"
+    )
+
+
 def test_collapsed_rail_shows_a_live_configuration_summary() -> None:
     """'The rail collapses to a narrow strip that still shows the active
     configuration in summary' — checked as the collapsed branch reading the

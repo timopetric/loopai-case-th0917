@@ -34,6 +34,12 @@ export interface ReportSpec {
   /** The metric `layout: "pivot"` renders. `null`/omitted defaults to
    * `metrics[0]` server-side; must be a member of `metrics`. */
   chart_metric?: string | null;
+  /** Case-insensitive substring match against the Actor/Mailbox name behind
+   * whichever `group_by` is active (table-filter-and-assistant-intro issue
+   * 02/03). `null`/omitted/empty = no filter. Meaningless when `group_by ===
+   * "none"` — the engine reports that combination as a Repair rather than
+   * silently ignoring it (`app/engine.py::_entity_filter_warnings`). */
+  entity_filter?: string | null;
 }
 
 /**

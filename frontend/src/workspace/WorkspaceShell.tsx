@@ -49,6 +49,7 @@ export function WorkspaceShell() {
   const columnsOrder = useReportSpecStore((state) => state.columnsOrder);
   const layout = useReportSpecStore((state) => state.layout);
   const chartMetric = useReportSpecStore((state) => state.chartMetric);
+  const entityFilter = useReportSpecStore((state) => state.entityFilter);
 
   const [meta, setMeta] = useState<Meta | null>(null);
   const [table, setTable] = useState<ReportTableData | null>(null);
@@ -182,6 +183,7 @@ export function WorkspaceShell() {
     columnsOrder,
     layout,
     chartMetric,
+    entityFilter,
   ]);
 
   useEffect(() => {
@@ -202,6 +204,7 @@ export function WorkspaceShell() {
     columnsOrder,
     layout,
     chartMetric,
+    entityFilter,
   ]);
 
   return (

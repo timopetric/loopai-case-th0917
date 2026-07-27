@@ -50,6 +50,12 @@ export interface ReportSpecState {
   columnsOrder: string[] | null;
   layout: NonNullable<ReportSpec["layout"]>;
   chartMetric: string | null;
+  /** Kept even while the builder-rail control is disabled (`groupBy ===
+   * "none"`) — toggling grouping away and back must restore exactly what
+   * was typed, not clear it. This is deliberate: it is what makes the
+   * `group_by == "none"` + filter-set Repair a reachable path rather than
+   * dead code the UI prevents (table-filter-and-assistant-intro issue 05). */
+  entityFilter: string | null;
 }
 
 export interface ReportSpecActions {
@@ -67,6 +73,7 @@ export interface ReportSpecActions {
   moveColumn: (columnKey: string, direction: "left" | "right", currentOrder: string[]) => void;
   setLayout: (value: NonNullable<ReportSpec["layout"]>) => void;
   setChartMetric: (value: string | null) => void;
+  setEntityFilter: (value: string | null) => void;
   /** Apply a full `ReportSpec` wholesale (presets, a shared-link restore, or
    * an Assistant `spec` event) — every control is still individually
    * editable immediately afterwards; this is a starting point, not a mode. */
@@ -110,6 +117,7 @@ export const useReportSpecStore = create<ReportSpecStore>((set, get) => ({
   columnsOrder: null,
   layout: "long",
   chartMetric: null,
+  entityFilter: null,
 
   toggleMetric: (key) =>
     set((state) => {
@@ -153,6 +161,9 @@ export const useReportSpecStore = create<ReportSpecStore>((set, get) => ({
 
   setLayout: (value) => set({ layout: value }),
   setChartMetric: (value) => set({ chartMetric: value }),
+  // Deliberately does not read/clear `groupBy` — `entityFilter` survives the
+  // control being disabled (see the field's own doc comment above).
+  setEntityFilter: (value) => set({ entityFilter: value }),
 
   applySpec: (spec) =>
     set({
@@ -166,6 +177,7 @@ export const useReportSpecStore = create<ReportSpecStore>((set, get) => ({
       columnsOrder: spec.columns_order ?? null,
       layout: spec.layout ?? "long",
       chartMetric: spec.chart_metric ?? null,
+      entityFilter: spec.entity_filter ?? null,
     }),
 
   buildSpec: () => {
@@ -181,6 +193,7 @@ export const useReportSpecStore = create<ReportSpecStore>((set, get) => ({
       columns_order: state.columnsOrder,
       layout: state.layout,
       chart_metric: state.chartMetric,
+      entity_filter: state.entityFilter,
     };
   },
 }));
