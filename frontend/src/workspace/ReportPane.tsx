@@ -49,6 +49,7 @@ export function ReportPane({
     moveColumn,
     chartMetric,
     setChartMetric,
+    durationDisplay,
   } = useReportSpecStore();
 
   return (
@@ -117,6 +118,7 @@ export function ReportPane({
             table={table}
             groupBy={groupBy}
             layout={layout}
+            durationDisplay={durationDisplay}
             sort={sort}
             onSort={toggleSort}
             onMoveColumn={(columnKey, direction) =>

@@ -318,3 +318,26 @@ def test_durations_render_as_hours_and_minutes_on_screen_only() -> None:
             "the exporters must keep durations numeric — formatting them as "
             "hours/minutes would make the workbook column text and unsummable"
         )
+
+
+def test_the_footer_row_is_not_called_a_total_when_it_holds_averages() -> None:
+    """Under `duration_display == "avg"` a Duration Metric's footer cell is
+    the count-weighted mean `Σvalue / Σcount` (`app/engine.py::_display_value`),
+    while Counters in the same row are genuine sums. Labelling the row "Total"
+    is then false for half its cells, and visibly so: a per-ticket average
+    comes out *lower* than a single day's row above it, which no total can.
+    The precise word is kept for `"total"`, where every column really is
+    summed."""
+    source = _read(TABLE_FILE)
+    assert 'durationDisplay === "total" ? "Total"' in source, (
+        'expected the footer label to say "Total" only when durations are '
+        "summed, and a neutral word otherwise"
+    )
+    assert "{footerLabel}" in source, (
+        "expected the footer cell to render the computed label rather than a "
+        "hardcoded word"
+    )
+    assert not re.search(r">\s*Total\s*<", source), (
+        "found a hardcoded 'Total' in the table's markup — the footer word "
+        "must follow duration_display"
+    )

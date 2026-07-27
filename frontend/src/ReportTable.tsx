@@ -168,6 +168,7 @@ export function ReportTable({
   table,
   groupBy,
   layout,
+  durationDisplay,
   sort,
   onSort,
   onMoveColumn,
@@ -175,11 +176,21 @@ export function ReportTable({
   table: ReportTableData;
   groupBy: "none" | "agent" | "mailbox";
   layout: "long" | "pivot";
+  durationDisplay: "avg" | "total";
   sort: SortSpec | null;
   onSort: (columnKey: string) => void;
   onMoveColumn: (columnKey: string, direction: "left" | "right") => void;
 }) {
   const [density, setDensity] = useState<Density>("comfortable");
+  /** The footer row is a sum only for Counters. Under `duration_display ===
+   * "avg"` a Duration Metric's footer cell is the count-weighted mean
+   * `Σvalue / Σcount` (`app/engine.py::_display_value`), so the row mixes
+   * sums and averages and "Total" is a false label for half of it — a
+   * per-ticket average can, and visibly does, come out lower than a single
+   * row above it. "Overall" is true of both operations; under
+   * `"total"` every column really is summed, so the precise word is earned
+   * there and used. */
+  const footerLabel = durationDisplay === "total" ? "Total" : "Overall";
   const groupLabel = groupColumnLabel(groupBy);
   const hasGroups = groupLabel !== null && table.rows.some((row) => row.group_label !== null);
   const isPivot = layout === "pivot";
@@ -473,7 +484,7 @@ export function ReportTable({
                   className="sticky bottom-0 left-0 z-30 h-11 border-t-2 border-hairline-strong
                     bg-canvas px-3 align-middle text-body-sm-medium font-semibold text-ink-tint"
                 >
-                  Total
+                  {footerLabel}
                 </td>
               )}
               {table.columns.map((column) => {
