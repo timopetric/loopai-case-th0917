@@ -1,147 +1,135 @@
-# Handoff — row filtering, and an Assistant that introduces itself
+# Handoff — row filtering, always-on reasoning trace, Assistant intro: PRD + 12 issues published
 
-Written 2026-07-26. Branch **`feat/reporting-builder`**, working tree clean. Never commit to `main`.
+Written 2026-07-27. Branch **`feat/reporting-builder`**, working tree has only new, untracked
+planning files — nothing has been implemented yet. Never commit to `main`.
 
-Two pieces of work, both agreed with the owner and neither started. Nothing here has been designed
-into an issue file yet — that is the next session's first job if it wants one.
-
----
-
-## Where the project stands
-
-The frontend rework is **finished through slice 09**, one commit per slice, and was driven in a real
-browser against the built image. `make check` is green at **391 passed, 0 skipped, 1 warning** (the
-pre-existing httpx/starlette deprecation — a second warning is new and yours).
-
-Read these two, in order, before touching anything:
-
-- [`../frontend-rework/HANDOFF.md`](../frontend-rework/HANDOFF.md) — the state of the rework, the
-  per-slice commits, and the traps that survived it
-- [`../frontend-rework/09-verification-record.md`](../frontend-rework/09-verification-record.md) —
-  what the browser pass confirmed and fixed. **The most useful document in the repo right now.**
-
-Recent commits worth knowing about, beyond those two documents:
-
-| Commit | What |
-|---|---|
-| `bbd1a9e` | Durations round to 2dp in the engine and render as `31h 55m` on screen; exports stay numeric |
-| `956bc8c` | Row-count control (later pinned) |
-| `f3f3c74` | The table-collapses-to-one-row fixes |
-
-**Still open, unchanged:** the reporting-builder's own issues **18 (README)** and **19 (deploy)**,
-and frontend-rework slice **10** (live walkthrough and design sign-off, HITL).
+This directory's own `HANDOFF.md` (the one you're reading) has been rewritten — the original
+handoff that kicked off the `/grill-with-docs` session is superseded by [`PRD.md`](PRD.md) and the
+twelve numbered issues below, which now carry every decision that document only sketched.
 
 ---
 
-## Work item 1 — filter rows by Actor / Mailbox name
+## Where things stand
 
-The owner wants to type something like `theo mancini` and see only that Actor's rows.
+A full `/grill-with-docs` session (~40+ interviewed questions, several backed by direct codebase
+reads and one round of live web/Context7 research) turned the original handoff's two open work
+items into a fully-specified PRD and a dependency-ordered issue breakdown. **Nothing has been
+implemented yet** — this session was pure design. The next session's job is implementation.
 
-**The one thing that decides the whole design: this belongs in the engine, not the browser.** Both
-exporters POST the Report Spec to the backend and get a fresh file — they never read the DOM. Filter
-client-side and the screen shows 14 rows while the CSV still returns all 1,512, silently breaking
-the same graded user story that pagination would have. Doing it as a spec field makes every consumer
-inherit it for free.
+- [`PRD.md`](PRD.md) — the full spec: problem statement, 25 user stories, every implementation
+  decision (with the reasoning behind each), testing decisions, explicit out-of-scope list.
+  **Read this first**, then read issues 01-12 in order — they are the PRD broken into
+  independently-gradable, dependency-linked vertical slices, each with its own acceptance
+  criteria.
+- [`plans/decisions/adr/0005-stream-raw-reasoning-to-all-users.md`](../../decisions/adr/0005-stream-raw-reasoning-to-all-users.md)
+  — new ADR, already written, documenting the deliberate reversal of the "reasoning text is
+  dev-only" rule. Read this before touching anything in `app/agent/events.py`,
+  `app/agent/presenter.py`, or `app/api/v1/routers/agent.py` — it explains *why* a previously
+  hard architectural rule is being reversed, not just that it is.
 
-The shape of it, from a survey already done:
+## The three features, in one paragraph each
 
-| File | Work |
-|---|---|
-| `app/models.py` | one optional field on `ReportSpec` |
-| `app/engine.py` | ~10 lines. `_entity_rows` already takes a plain `entities: list[EntityBreakdown]`; filter that list before the loop and rows, totals and the chart's top-eight all follow |
-| `app/exporters.py` | free, but add a row to the workbook's definition sheet so the file records that it was filtered |
-| `app/spec_url.py` | encode/decode + validation, so a filtered report survives a shared link |
-| `frontend/` | a text input in the builder rail, wired to the existing Zustand store |
+1. **Row filter by Actor/Mailbox name** (issues 02-08, 11-12): a new `ReportSpec.entity_filter`
+   field, case-insensitive substring match, landing in the engine so preview/exports/Assistant all
+   agree by construction. Three previously-undecided edge cases are now settled (filtered totals,
+   empty-match Warning, `group_by == "none"` Repair) — see `PRD.md`'s Implementation Decisions for
+   the exact wording of each. Exposed both as a builder-rail text input and a new `set_filter`
+   Assistant tool.
+2. **Always-visible, markdown-rendered Assistant reasoning trace** (issues 01, 09-10): raw
+   chain-of-thought streams to every user, in every environment — a deliberate policy reversal
+   (ADR-0005), not a bug fix. Three visual states (waiting → thinking, expanded → collapsed),
+   segmented by Tool Step, persisted per chat message, manual-collapse respected mid-turn.
+   **Accepted, explicit risk**: reasoning text will sometimes name internal tools/enum values —
+   this does not relax the same rule for the Assistant's actual reply, only for this one new,
+   separately-labeled panel.
+3. **Hard-coded Assistant introduction** (issue 11): a static greeting with concrete "try:"
+   examples, including the owner's exact chosen line for the new filter: *"try: filter to just
+   Theo's numbers."*
 
-It must be local rather than pushed upstream: the upstream `filters` parameter **does nothing at
-all** (`api-report-fresh.md`, gotcha 8). That is fine — ADR-0001 already fetches and memoises the
-whole Coverage Window.
+Plus one bundled fix (issue 06): a previously-flagged, unrelated enum leak in `_diff_chips`
+("Added metric: handle_time" → "Added metric: Handle time") gets fixed while that file is already
+open for the filter chips.
 
-**Three decisions the owner has not made yet:**
+## Issue order and dependency shape
 
-1. **What the Total row means when filtered** — recommend the filtered rows, so the footer agrees
-   with what is above it.
-2. **What happens when nothing matches** — an empty table reads as a bug. Recommend a **Warning**
-   through the banner that already exists.
-3. **What happens when `group_by` is `"none"`** — there are no entities, so the filter is
-   meaningless. ADR-0002's established pattern applies: cross-field drift is **repaired and
-   reported**, never rejected.
+```
+01 (doc corrections)         02 (entity_filter + engine)          09 (reasoning: backend gate)
+    independent               /    |    \                              |
+                              03    04    06                        10 (reasoning: frontend UI)
+                               \    |    /  \                            |
+                                \   |   /    07 (set_filter tool)         |
+                                 \  |  /       |                         |
+                                  05 (rail)   08 (prompt rewrite)        |
+                                     \_____________  ________________ /
+                                                  11 (intro)
+                                                     |
+                                          12 (final verification — Chrome DevTools MCP)
+```
 
-**Two things to weigh.** The main PRD explicitly defers an *Actor/Mailbox multi-select picker*; a
-substring filter is the cheap cousin of that deferred feature and may well replace it — decide which.
-And giving the **Assistant** a `set_filter` tool roughly doubles the work (tool schema, repair
-taxonomy, presenter chip, prompt), so land the control first and add the tool as a separate slice.
+01 and 09 are independent starting points. 02 is the other root, feeding 03/04/06 in parallel,
+then 07 (needs 02+06), then 08 (needs 07). 05 needs 02+03. 11 converges the filter track (05) and
+the reasoning track (10). **12 is the explicit final gate — do not run the full browser
+walkthrough until 02-11 are all done and `make check` is green.** This was a specific instruction
+from the product owner during design: Chrome DevTools MCP verification is one of the *last*
+steps, not interleaved mid-implementation, so it catches whatever the narrower per-slice checks
+missed rather than being redone piecemeal.
 
----
+## Two live research findings baked into issue 08 — don't re-litigate them
 
-## Work item 2 — a hard-coded Assistant introduction
+During design, a subagent ran live web + Context7 research on tool-calling prompt best practices,
+and it **reversed two decisions already made earlier in the same session**:
 
-Today the conversation opens with one line of placeholder text
-(`frontend/src/Chat.tsx:189`): *"Ask for a report in plain English — e.g. …"*. The owner tried
-switching to the pivot layout by asking, it worked, and nothing in the interface had suggested it
-was possible.
+- **Few-shot tool-call examples were planned, then dropped.** Qwen3's own docs warn that
+  ReAct-style stopword/action-marker few-shot templates can leak into the model's own `<think>`
+  block and corrupt parsing — the same class of risk architecture.md's Guard 1 already exists to
+  contain. Issue 08 explicitly says: no hand-authored tool-call transcripts.
+- **XML-tag prompt sectioning is going ahead anyway, despite mixed evidence.** The strongest
+  evidence for XML tags is Claude-specific; one source explicitly recommends markdown for
+  Qwen-family models. The owner chose to proceed with XML regardless, on the condition that the
+  live smoke test (`scratch/fresh-eyes/llm-smoke-tool-calling.py`) empirically settles it
+  afterward — **issue 08's acceptance criteria include re-running that smoke test and reverting to
+  markdown if it shows a regression.** Don't skip this step; it's the only thing that actually
+  answers the open question rather than assuming either side of the research.
 
-So: replace that empty state with a **short, hard-coded** greeting that says what the Assistant can
-do and invites the user to ask. The owner's words: *"short and sweet"*, *"not too long"*, a concise
-summary plus a friendly closing question.
+The real payoff of that research is issue 08's core deliverable: all ten tool-schema
+`description` strings (nine existing + `set_filter`) get substantially rewritten to be
+self-contained (3-4+ sentences, stating *when* to use each tool and its edge-case behavior) —
+this is where the weight the dropped few-shot examples would have carried now goes instead, per
+converging Anthropic/OpenAI/LangChain guidance gathered live.
 
-**Hard-coded, deliberately** — no model call, no tokens, instant on load.
+## A design decision worth restating, because it's easy to get backwards
 
-The capabilities worth advertising are exactly the nine tools in `app/agent/tools.py`
-(`set_date_range`, `set_metrics`, `set_grouping`, `set_sort`, `set_columns`, `set_chart`,
-`set_layout`, …). Pick the three or four that will most surprise a new user — the pivot layout is
-the proven example.
+The Assistant's final prose may **optionally** use a small markdown table (issue 08, item 5) —
+this is explicitly **not** a replacement for chips, and chips are **not** being redesigned as a
+table. Chips stay the deterministic, guaranteed-accurate summary of what changed (built from a
+validated spec diff, never model prose). The optional table is a separate, much smaller thing:
+permission for the model's own free-text reply to occasionally take tabular shape (e.g. "3
+columns changed, 12 rows now shown") when that's clearer than a sentence — no embedded worked
+example in the prompt, just a style-note instruction, per the owner's explicit framing during
+design ("it's not needed every time... it should just be some overview of stuff").
 
-**Constraints that bind this, and they are easy to trip:**
+## Suggested skills for the next session
 
-- **Never show tool names or enum values in the conversation.** Write "switch to a pivot layout",
-  never `set_layout` or `"pivot"`. This is a hard rule in `AGENTS.md`, and there is an outstanding
-  finding of exactly this kind (below).
-- **Glossary vocabulary** — **Actor**, **Mailbox**, **Assistant**, **Bucket**, **Coverage Window**.
-  Unqualified "agent" is banned in UI copy.
-- It renders through the same markdown path as a real reply (`frontend/src/lib/markdown.tsx`), so
-  keep it to text a streaming renderer handles trivially — a short line and a few bullets.
+- **`/tdd-implement-scope`** — this directory's issues are already written for exactly this: fully
+  specified, dependency-ordered, AFK-preferred, `ready-for-agent` labeled. Feed it issues 01-12 in
+  order.
+- **`/code-review`** on the working diff once a meaningful chunk of issues 01-11 land, before
+  reaching issue 12 — cheaper to catch problems before the final browser pass than during it.
+- **`/run` + Chrome DevTools MCP** for issue 12 specifically, once everything else is done —
+  don't reach for this earlier; the whole point of ordering it last was to avoid re-running it
+  piecemeal after every slice.
 
----
+## Practical notes carried over from the previous handoff, still true
 
-## The outstanding finding, still unfixed
-
-**A Repair chip shows a wire enum**: the conversation renders "Added metric: handle_time" where the
-rail says "Handle time (h)". Built at **`app/agent/presenter.py:243`** —
-`f"Added metric: {m.value}"`. Slice 09's own regression list forbids enum values in the
-conversation, so this is a real hit.
-
-It was left alone because the frontend rework was scoped out of `app/`, and the presenter carries the
-negative leak assertions. **That scope no longer binds** — work item 1 changes the backend anyway. It
-is one line plus a label lookup; do it while you are in there, and move the presenter's tests with
-it.
-
----
-
-## Practical notes
-
-- **Verification container.** Port 8000 is often held by the owner's own `make backend`. Use another
-  port and a throwaway key, which also keeps the real secret out of the transcript (reading `.env` is
-  blocked, correctly):
+- **Verification container** (from the prior `HANDOFF.md`, still accurate): port 8000 is often
+  held by the owner's own `make backend`. Use another port and a throwaway key:
   ```
   docker run -d --name loopai-verify -p 8010:8000 --env-file .env \
     -e ENVIRONMENT=dev -e DEV_FAKE_UPSTREAM=1 -e DEV_FAKE_LLM=1 \
     -e APP_API_KEY=verify-local-key -e PORT=8000 timopetric/caseth0917:latest
   ```
-  `ENVIRONMENT` must be one of `dev|local|test|prod` — `development` is rejected at startup. Sign in
-  by setting `sessionStorage.loopai.apiKey`.
-- **Chrome DevTools MCP works.** It appeared after `/reload-plugins`. Use it; the browser pass found
-  five defects that every source-level test was blind to.
-- **`min-h-0` on flex wrappers is load-bearing in three places.** Remove one and the table's scroll
-  parent grows to ~67,000px, the virtualiser concludes every row is visible, and all 1,512 land in
-  the DOM — with the whole suite still green. No source-level test can catch it. Measure in a browser
-  after any layout change.
-- **Beware assertions that pass on prose.** A test pinning the sticky Bucket header kept passing
-  after the behaviour was removed, because a nearby comment contained the literal class name. Guards
-  in this repo grep source; strip comments before scanning.
-
-## Suggested skills
-
-- **`/tdd-implement-scope`** once these are written up as issues in this directory.
-- **`/code-review`** on the working diff — nine rework slices have landed without a whole-diff review.
-- **`/run`** plus Chrome DevTools MCP to verify the filter behaves against the built image.
+- **`min-h-0` on flex wrappers is load-bearing in three places** (frontend-rework's own finding,
+  still true, not touched by this work) — don't remove one without checking in a browser.
+- The product owner's stated preference this session, worth carrying forward: they want plain
+  ABC-style multiple-choice questions with a stated recommendation and reasoning (not open-ended
+  prose questions) when a design decision needs their input mid-implementation.
