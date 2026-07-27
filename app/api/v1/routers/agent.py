@@ -87,7 +87,7 @@ async def post_agent_stream(
 ) -> EventSourceResponse:
     async def event_stream() -> AsyncIterator[dict]:
         raw = _raw_events(body, settings, upstream_client)
-        async for ui_event in present_async(raw, include_reasoning_text=settings.is_development):
+        async for ui_event in present_async(raw, include_reasoning_text=True):
             yield {"event": ui_event.event_name, "data": json.dumps(ui_event.to_data())}
 
     return EventSourceResponse(event_stream())

@@ -48,8 +48,8 @@ def run_fake_turn(message: str, spec: ReportSpec) -> Iterator[RawEvent]:
     yet). A final prose Tool Step closes the turn.
     """
     # Tool Step 1: reasoning preamble, then set_grouping.
-    yield ReasoningDelta("The user wants a per-agent breakdown.")
-    yield ReasoningDelta("I'll switch the grouping to agent first.")
+    yield ReasoningDelta("The user wants a per-Actor breakdown.")
+    yield ReasoningDelta("I'll switch the grouping to Actor first.")
 
     step1_before = spec
     step1_after = ReportSpec.model_validate({**spec.model_dump(mode="json"), "group_by": "agent"})
@@ -64,7 +64,7 @@ def run_fake_turn(message: str, spec: ReportSpec) -> Iterator[RawEvent]:
     )
 
     # Tool Step 2: reasoning preamble, then set_metrics.
-    yield ReasoningDelta("Now I'll make sure resolved and handle_time are on the report.")
+    yield ReasoningDelta("Now I'll make sure Resolved and Handle time are on the report.")
 
     wanted = [Metric.RESOLVED, Metric.HANDLE_TIME]
     merged_metrics = list(step1_after.metrics) + [m for m in wanted if m not in step1_after.metrics]

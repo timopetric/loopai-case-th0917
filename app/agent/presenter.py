@@ -16,7 +16,7 @@ Translation rules (architecture.md §6):
   multi-step turn shows the indicator repeatedly.
 - `ReasoningDelta.text` is **never** forwarded except into `ThinkingTextEvent`,
   and only when the caller passes `include_reasoning_text=True` (the router
-  gates that on `settings.is_development` — this function never reads
+  passes it unconditionally since ADR-0005 — this function never reads
   settings itself).
 - `ToolCallStarted.name` selects a fixed, pre-written status phrase via a
   lookup table with a generic fallback — the name itself is never
@@ -204,9 +204,11 @@ def present(
 ) -> Iterator[PresenterEvent]:
     """Translate a stream of `RawEvent`s into `PresenterEvent`s.
 
-    `include_reasoning_text` must only ever be set from
-    `settings.is_development` by the caller (`routers/agent.py`) — this
+    `include_reasoning_text` is passed unconditionally by the caller
+    (`routers/agent.py`) since ADR-0005 reversed the dev-only gate — this
     function does not know or care why, it just gates `ThinkingTextEvent`.
+    It keeps its `False` default so a caller that has no business showing
+    reasoning still has to ask for it explicitly.
     `now` is an injection seam for tests that need a deterministic `ms`.
     """
     state = _PresenterState(include_reasoning_text=include_reasoning_text, now=now)

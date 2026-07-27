@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 
 # 09 — ADR-0005 backend wiring: stream raw reasoning to all users
 

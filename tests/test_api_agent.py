@@ -189,7 +189,14 @@ class TestFakeModelDrivesTheReportEndToEnd:
 
 
 class TestNoInternalsInTheStream:
-    def test_no_tool_name_argument_or_prompt_fragment_appears_anywhere_in_the_stream(self):
+    def test_no_tool_name_argument_or_prompt_fragment_appears_in_the_non_reasoning_events(self):
+        # ADR-0005: tool names/enum values may now legitimately appear inside
+        # `thinking_text` events — that channel is exempted here, on purpose.
+        # Every OTHER event type (`token`, `chips`, `status`, `spec`, `error`,
+        # plus the content-free `thinking` state markers) must still never
+        # carry a tool name, a raw argument, or a prompt fragment; narrowing
+        # this to exclude only `thinking_text` (rather than dropping the
+        # assertion, or exempting the whole stream) is the point of this test.
         settings = _settings(dev_fake_llm=True)
         client = _client(settings)
         response = client.post(
@@ -198,12 +205,26 @@ class TestNoInternalsInTheStream:
             headers=_auth_headers(settings),
         )
 
-        body = response.text
+        events = _parse_sse(response.text)
+        non_reasoning_events = [
+            (name, data) for name, data in events if name != "thinking_text"
+        ]
+        assert non_reasoning_events, "expected non-reasoning events in the stream"
+        body = "\n".join(f"{name}:{data!r}" for name, data in non_reasoning_events)
         for internal in ("set_grouping", "set_metrics", '"by": "agent"', "ReasoningDelta"):
-            assert internal not in body, f"{internal!r} leaked into the SSE stream"
+            assert internal not in body, f"{internal!r} leaked into a non-reasoning SSE event"
 
-    def test_reasoning_text_only_streams_in_development(self):
+    def test_reasoning_text_streams_even_outside_development(self):
+        # ADR-0005: the `settings.is_development` gate on `ThinkingTextEvent`
+        # is gone — reasoning streams to every user, in every environment.
+        # `dev_fake_llm=True` still requires `environment="local"` (ADR-0003's
+        # own validator), so we flip `environment` to something non-local
+        # directly on the `Settings` instance after construction to get a
+        # genuinely non-development configuration, rather than relying on
+        # `_settings`'s default and merely failing to notice the gate is gone.
         settings = _settings(dev_fake_llm=True)
+        object.__setattr__(settings, "environment", "prod")
+        assert settings.is_development is False
         client = _client(settings)
         response = client.post(
             "/api/v1/agent/stream",
@@ -213,7 +234,7 @@ class TestNoInternalsInTheStream:
 
         events = _parse_sse(response.text)
         thinking_text_events = [name for name, _ in events if name == "thinking_text"]
-        assert len(thinking_text_events) > 0  # settings.is_development is True for "local"
+        assert len(thinking_text_events) > 0
 
 
 class TestFakeModelUnavailableWithoutTheFlag:
