@@ -412,6 +412,69 @@ def test_report_info_sheet_states_no_warnings_when_none_were_raised() -> None:
     assert "None" in text
 
 
+def test_report_info_sheet_entity_filter_row_carries_the_real_value_when_set() -> None:
+    table = ReportTable(
+        columns=[ColumnMeta(key="resolved", label="Resolved", kind="counter", unit="count")],
+        rows=[
+            ReportRow(
+                bucket="2026-07-10", group_key=None, group_label=None, values={"resolved": 5}
+            )
+        ],
+        totals={"resolved": 5},
+        warnings=[],
+    )
+
+    wb = _workbook(_spec(group_by="agent", entity_filter="Alice"), table)
+    info_sheet = wb["Report info"]
+    rows = [[cell.value for cell in row] for row in info_sheet.iter_rows()]
+
+    grouped_by_index = next(i for i, row in enumerate(rows) if row[0] == "Grouped by")
+    assert rows[grouped_by_index + 1] == ["Entity filter", "Alice"]
+
+
+def test_report_info_sheet_entity_filter_row_reads_none_when_unset() -> None:
+    table = ReportTable(
+        columns=[ColumnMeta(key="resolved", label="Resolved", kind="counter", unit="count")],
+        rows=[
+            ReportRow(
+                bucket="2026-07-10", group_key=None, group_label=None, values={"resolved": 5}
+            )
+        ],
+        totals={"resolved": 5},
+        warnings=[],
+    )
+
+    wb = _workbook(_spec(), table)
+    info_sheet = wb["Report info"]
+    rows = [[cell.value for cell in row] for row in info_sheet.iter_rows()]
+
+    grouped_by_index = next(i for i, row in enumerate(rows) if row[0] == "Grouped by")
+    assert rows[grouped_by_index + 1] == ["Entity filter", "None"]
+
+
+def test_csv_ignores_entity_filter_entirely() -> None:
+    """A CSV export must not leak `entity_filter` anywhere in the file — no
+    preamble line, no extra column, no header change. The only permitted
+    difference from an unfiltered export is which rows are present, and this
+    test holds the `ReportTable` fixed to isolate that: same table, only the
+    spec's `entity_filter` differs, so the CSV text must be byte-identical."""
+    table = ReportTable(
+        columns=[ColumnMeta(key="resolved", label="Resolved", kind="counter", unit="count")],
+        rows=[
+            ReportRow(
+                bucket="2026-07-10", group_key="a1", group_label="Alice", values={"resolved": 5}
+            )
+        ],
+        totals={"resolved": 5},
+        warnings=[],
+    )
+
+    unfiltered = to_csv(_spec(group_by="agent"), table)
+    filtered = to_csv(_spec(group_by="agent", entity_filter="Alice"), table)
+
+    assert unfiltered == filtered
+
+
 def test_report_info_sheet_defers_the_units_note_to_the_shared_assumptions_source(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

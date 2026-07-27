@@ -206,6 +206,7 @@ def _write_report_info_sheet(
     sheet.append(["Date range", f"{spec.date_from.isoformat()} to {spec.date_to.isoformat()}"])
     sheet.append(["Granularity", spec.granularity])
     sheet.append(["Grouped by", _GROUP_COLUMN_LABELS.get(spec.group_by, "None")])
+    sheet.append(["Entity filter", spec.entity_filter or "None"])
     sheet.append(["Duration display", spec.duration_display])
     sheet.append(["Layout", spec.layout])
     sheet.append([])

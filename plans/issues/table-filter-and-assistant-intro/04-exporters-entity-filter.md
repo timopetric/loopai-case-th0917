@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 
 # 04 — Exporters: XLSX records the active filter, CSV stays untouched
 
