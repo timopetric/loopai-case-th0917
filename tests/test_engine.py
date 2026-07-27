@@ -916,6 +916,77 @@ class TestPivotLayout:
         )
         assert total_across_actors == TOTAL_RESOLVED
 
+    def test_pivot_rows_are_narrowed_by_entity_filter(self, dataset) -> None:
+        """Pivot returns early at the top of `execute()`, so this used to
+        ignore `entity_filter` altogether — same "kaur" fixture check as
+        `TestEntityFilter` (three Actors, `resolved` sums to 673)."""
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="day",
+            group_by="agent",
+            layout="pivot",
+            entity_filter="kaur",
+        )
+
+        table = execute(spec, dataset)
+
+        assert {row.group_label for row in table.rows} == {"Elena Kaur", "Rosa Kaur", "Ivan Kaur"}
+        total_across_rows = sum(
+            v for row in table.rows for v in row.values.values() if v is not None
+        )
+        assert total_across_rows == 673
+        # Totals reflect the same filtered subset, one bucket-column at a
+        # time, not the unfiltered 108-Actor total.
+        total_across_columns = sum(v for v in table.totals.values() if v is not None)
+        assert total_across_columns == 673
+
+    def test_pivot_filter_matching_nothing_is_an_empty_report_with_the_exact_warning(
+        self, dataset
+    ) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="day",
+            group_by="agent",
+            layout="pivot",
+            entity_filter="theo mancinni",
+        )
+
+        table = execute(spec, dataset)
+
+        assert table.rows == []
+        assert (
+            'No Actor/Mailbox name matched "theo mancinni" — showing an empty report.'
+            in table.warnings
+        )
+
+    def test_pivot_filter_set_with_group_by_none_is_ignored_with_a_warning(self, dataset) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-10",
+            date_to="2026-07-13",
+            granularity="day",
+            group_by="none",
+            layout="pivot",
+            entity_filter="nadia",
+        )
+
+        table = execute(spec, dataset)
+
+        # Renders exactly as an ungrouped pivot normally would...
+        assert len(table.rows) == 1
+        assert table.rows[0].group_label is None
+        assert table.rows[0].values["2026-07-10"] == DAILY_RESOLVED[0]
+        # ...alongside the pivot's own "chart metric only" warning — neither
+        # is dropped just because pivot returns early.
+        assert any("chart metric only" in w for w in table.warnings)
+        assert any(
+            "entity filter" in w.lower() and "no effect" in w.lower() for w in table.warnings
+        )
+
 
 class TestUnsupportedMetrics:
     def test_a_sum_kind_metric_is_not_yet_supported_by_any_slice(self, dataset) -> None:
@@ -931,6 +1002,121 @@ class TestUnsupportedMetrics:
 
         with pytest.raises(UnsupportedMetricError):
             execute(spec, dataset)
+
+
+class TestEntityFilter:
+    """`entity_filter` (table-filter-and-assistant-intro issue 02): a
+    free-text, case-insensitive substring match against Actor or Mailbox
+    names, whichever `group_by` currently selects. Real fixture names used
+    below: "Nadia Moreno" is the only Actor matching "nadia"; "Elena Kaur",
+    "Rosa Kaur", and "Ivan Kaur" are the three Actors matching "kaur" —
+    independently confirmed by reading `resp-full-unscoped-latest.json`
+    directly (`resolved` sums to 673 across those three Actors over the
+    window, matching `TestGroupingReconciles`'s style of cross-check)."""
+
+    def test_filter_narrows_grouped_rows_to_the_matching_actor_only(self, dataset) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="total",
+            group_by="agent",
+            entity_filter="nadia",
+        )
+
+        table = execute(spec, dataset)
+
+        assert len(table.rows) == 1
+        assert table.rows[0].group_label == "Nadia Moreno"
+        assert table.rows[0].values["resolved"] == 540
+
+    def test_filter_matches_case_insensitively(self, dataset) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="total",
+            group_by="agent",
+            entity_filter="NADIA",
+        )
+
+        table = execute(spec, dataset)
+
+        assert len(table.rows) == 1
+        assert table.rows[0].group_label == "Nadia Moreno"
+
+    def test_filter_matches_a_partial_name_and_can_return_several_rows(self, dataset) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="total",
+            group_by="agent",
+            entity_filter="kaur",
+        )
+
+        table = execute(spec, dataset)
+
+        assert {row.group_label for row in table.rows} == {"Elena Kaur", "Rosa Kaur", "Ivan Kaur"}
+
+    def test_totals_reflect_only_the_filtered_rows_not_the_full_dataset(self, dataset) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="total",
+            group_by="agent",
+            entity_filter="kaur",
+        )
+
+        table = execute(spec, dataset)
+
+        # 673 is the independently-verified sum of `resolved` across just
+        # the three "kaur" Actors (class docstring) — not TOTAL_RESOLVED
+        # (16372), which would be the unfiltered top-level total.
+        assert table.totals["resolved"] == 673
+        assert table.totals["resolved"] != TOTAL_RESOLVED
+
+    def test_filter_matching_nothing_returns_an_empty_report_and_the_exact_warning(
+        self, dataset
+    ) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="total",
+            group_by="agent",
+            entity_filter="theo mancinni",
+        )
+
+        table = execute(spec, dataset)
+
+        assert table.rows == []
+        assert (
+            'No Actor/Mailbox name matched "theo mancinni" — showing an empty report.'
+            in table.warnings
+        )
+
+    def test_filter_set_with_group_by_none_is_a_repair_not_an_error(self, dataset) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="total",
+            group_by="none",
+            entity_filter="nadia",
+        )
+
+        table = execute(spec, dataset)
+
+        # Renders exactly as an ungrouped report normally would...
+        assert len(table.rows) == 1
+        assert table.rows[0].group_label is None
+        assert table.totals["resolved"] == TOTAL_RESOLVED
+        # ...and nothing raised — the filter is reported as ignored instead.
+        assert any(
+            "entity filter" in w.lower() and "no effect" in w.lower() for w in table.warnings
+        )
 
 
 class TestPartialFinalDayFlag:

@@ -68,6 +68,7 @@ _ALTERNATE_VALUES: dict[str, object] = {
     "columns_order": ["resolved"],
     "layout": "long",
     "chart_metric": Metric.RESOLVED,
+    "entity_filter": "theo",
 }
 
 

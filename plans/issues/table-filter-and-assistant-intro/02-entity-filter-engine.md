@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 
 # 02 — `entity_filter` on ReportSpec + engine filtering
 

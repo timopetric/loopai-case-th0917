@@ -175,6 +175,54 @@ def clamp_to_coverage(
     return clamped_spec, [warning]
 
 
+def _select_entities(spec: ReportSpec, dataset: Dataset) -> list[EntityBreakdown]:
+    """The Actor or Mailbox breakdown `group_by` selects, narrowed by
+    `entity_filter` if one is set (`query.lower() in name.lower()`, no
+    diacritic folding — CONTEXT.md; verified against the real fixture, whose
+    211 Actor/Mailbox names are all plain ASCII).
+
+    The one place that selection is made, used identically by the long
+    layout's rows, the pivot layout's rows, and the chart's series — so the
+    three cannot drift apart on which entities a filter actually narrows
+    (PRD: "preview, exports, and the Assistant's `run_report` all agree
+    automatically"). Never called with `spec.group_by == "none"` — there is
+    no entity list to select in the first place; callers branch on that
+    before reaching here."""
+    entities = dataset.actors if spec.group_by == "agent" else dataset.mailboxes
+    if spec.entity_filter is not None:
+        query = spec.entity_filter.lower()
+        entities = [e for e in entities if query in e.name.lower()]
+    return entities
+
+
+def _entity_filter_warnings(
+    spec: ReportSpec, entities: list[EntityBreakdown] | None
+) -> list[str]:
+    """The two Warning-shaped outcomes `entity_filter` can produce, shared
+    by both the long and pivot layouts so neither can silently drop one:
+
+    - `entities is None` means `spec.group_by == "none"` — there is no
+      breakdown to filter, so a set `entity_filter` is ignored and reported
+      as a Repair, not an error (ADR-0002's "cross-field drift is repaired
+      and reported, never rejected"; `RepairCode.ENTITY_FILTER_IGNORED`
+      names this in the Assistant conversation, constructed from this same
+      warning the way `_set_date_range` builds `DATE_RANGE_CLAMPED` from
+      `clamp_to_coverage`'s warning).
+    - `entities == []` means the filter matched nothing — an empty report,
+      not an error, plus a Warning echoing the exact typed query.
+    """
+    if spec.entity_filter is None:
+        return []
+    if entities is None:
+        return [
+            "entity filter has no effect without grouping by Actor or "
+            f'Mailbox — ignoring "{spec.entity_filter}".'
+        ]
+    if not entities:
+        return [f'No Actor/Mailbox name matched "{spec.entity_filter}" — showing an empty report.']
+    return []
+
+
 def execute(spec: ReportSpec, dataset: Dataset) -> ReportTable:
     """`ReportSpec` + `Dataset` -> `ReportTable` (module docstring).
 
@@ -221,21 +269,38 @@ def execute(spec: ReportSpec, dataset: Dataset) -> ReportTable:
 
     columns = [_column_meta(m) for m in _ordered_metrics(spec)]
 
+    filtered_entities: list[EntityBreakdown] | None = None
+
     if spec.group_by == "none":
         rows = _rows_ungrouped(spec, dataset, indices)
     else:
-        entities = dataset.actors if spec.group_by == "agent" else dataset.mailboxes
+        entities = _select_entities(spec, dataset)
+        if spec.entity_filter is not None:
+            filtered_entities = entities
         rows = _rows_grouped(spec, entities, dataset.ticks, indices)
 
     rows = _sort_rows_within_bucket(rows, spec.sort)
 
-    totals, total_counts, warnings = _totals(spec, dataset, indices)
+    entity_filter_warnings = _entity_filter_warnings(spec, filtered_entities)
+
+    if filtered_entities is not None:
+        # Totals reflect only the filtered rows here — a deliberate,
+        # documented exception to this module's usual "totals are recomputed
+        # from the top-level dataset, never from summed rows" rule (module
+        # docstring). That rule exists solely to avoid *averaging averages*;
+        # filtering changes which rows are included, not how a row's own
+        # average is computed, so the defect the rule guards against cannot
+        # occur here. See `_totals_from_entities`.
+        totals, total_counts, warnings = _totals_from_entities(spec, filtered_entities, indices)
+    else:
+        totals, total_counts, warnings = _totals(spec, dataset, indices)
+
     return ReportTable(
         columns=columns,
         rows=rows,
         totals=totals,
         total_counts=total_counts,
-        warnings=coverage_warnings + partial_day_warnings + warnings,
+        warnings=coverage_warnings + partial_day_warnings + warnings + entity_filter_warnings,
         chart=chart,
     )
 
@@ -503,6 +568,51 @@ def _totals(
     return totals, total_counts, warnings
 
 
+def _totals_from_entities(
+    spec: ReportSpec, entities: list[EntityBreakdown], indices: list[int]
+) -> tuple[dict[str, float | None], dict[str, float], list[str]]:
+    """Grand totals recomputed from only `entities` — the already
+    `entity_filter`-narrowed Actor/Mailbox list — never from the full
+    top-level dataset arrays. See the exception note at `execute()`'s call
+    site: this still sums raw `Σvalue`/`Σcount` across entities and divides
+    once at the end, identical arithmetic to `_totals`, just over a subset
+    of entities instead of the top-level arrays, so it cannot reproduce the
+    "averaging averages" defect `_totals`'s docstring warns against.
+
+    `actioned_emails` grouped by Actor stays non-additive even across a
+    filtered subset — an email actioned by several Actors is still credited
+    to each of the ones remaining after the filter — so the same dash +
+    Warning applies (api-report-fresh.md §4.5)."""
+    totals: dict[str, float | None] = {}
+    total_counts: dict[str, float] = {}
+    warnings: list[str] = []
+
+    for m in spec.metrics:
+        if spec.group_by == _NON_ADDITIVE_GROUPING and m.value == _NON_ADDITIVE_ACROSS_ACTORS:
+            totals[m.value] = None
+            warnings.append(
+                "actioned_emails is not additive across Actors: an email actioned by "
+                "several Actors is credited to each of them, so the total would "
+                "over-count by roughly 52% (api-report-fresh.md §4.5). Shown per "
+                "Actor, omitted as a total."
+            )
+            continue
+
+        total_value = 0.0
+        total_count: float | None = 0.0 if m.value in _DURATION_KEYS else None
+        for entity in entities:
+            value, count = _metric_total_and_count(entity.metrics, entity.counts, m, indices)
+            total_value += value
+            if count is not None and total_count is not None:
+                total_count += count
+
+        totals[m.value] = _display_value(total_value, total_count, spec.duration_display)
+        if total_count is not None:
+            total_counts[m.value] = total_count
+
+    return totals, total_counts, warnings
+
+
 def _color_slot(entity_id: str) -> int:
     """A palette slot (0-7) from a stable hash of `entity_id` — never from
     its position in a ranking (architecture.md §7, issue 14 user story 57).
@@ -534,6 +644,11 @@ def _build_chart(spec: ReportSpec, dataset: Dataset, indices: list[int]) -> Char
     docstring warns against, so this reuses `_metric_total_and_count`'s
     `total_value` — the same quantity `_totals` computes — rather than
     summing the per-day cells the chart plots.
+
+    Entities are selected via `_select_entities`, so a set `entity_filter`
+    narrows the chart's series exactly as it narrows the table's rows — the
+    eight-largest cap below then ranks within that already-narrowed set,
+    never against the full unfiltered population.
     """
     if spec.granularity == "total":
         return None
@@ -546,7 +661,7 @@ def _build_chart(spec: ReportSpec, dataset: Dataset, indices: list[int]) -> Char
         series = [ChartSeries(key="total", label=_label(metric.value), color_slot=0, points=points)]
         return ChartData(metric=metric.value, series=series, dropped=0)
 
-    entities = dataset.actors if spec.group_by == "agent" else dataset.mailboxes
+    entities = _select_entities(spec, dataset)
     rows = _rows_grouped(spec, entities, dataset.ticks, indices)
 
     points_by_entity: dict[str, list[ChartPoint]] = {entity.id: [] for entity in entities}
@@ -594,6 +709,13 @@ def _execute_pivot(spec: ReportSpec, dataset: Dataset, indices: list[int]) -> Re
     applied here: it is validated to name a metric, and pivot's column keys
     are Bucket dates, so there is no meaningful column for it to rank by in
     this layout.
+
+    `entity_filter` is honoured here too, via `_select_entities` (the same
+    helper the long layout and the chart use): an empty match empties `rows`
+    and carries the same "No Actor/Mailbox name matched ..." Warning, and a
+    filter set while `group_by == "none"` is ignored with the same
+    ignored-filter Warning — this path used to return early before either
+    warning could be produced, silently dropping both.
     """
     chart_metric = spec.effective_chart_metric
     info = _METRIC_INFO_BY_KEY[chart_metric.value]
@@ -640,11 +762,16 @@ def _execute_pivot(spec: ReportSpec, dataset: Dataset, indices: list[int]) -> Re
             counts=row_counts,
         )
 
+    filtered_entities: list[EntityBreakdown] | None = None
     if spec.group_by == "none":
         rows = [build_row(dataset.metrics, dataset.counts, None, None)]
     else:
-        entities = dataset.actors if spec.group_by == "agent" else dataset.mailboxes
+        entities = _select_entities(spec, dataset)
+        if spec.entity_filter is not None:
+            filtered_entities = entities
         rows = [build_row(e.metrics, e.counts, e.id, e.name) for e in entities]
+
+    entity_filter_warnings = _entity_filter_warnings(spec, filtered_entities)
 
     is_chart_metric_non_additive = chart_metric.value == _NON_ADDITIVE_ACROSS_ACTORS
     non_additive = spec.group_by == _NON_ADDITIVE_GROUPING and is_chart_metric_non_additive
@@ -660,17 +787,42 @@ def _execute_pivot(spec: ReportSpec, dataset: Dataset, indices: list[int]) -> Re
             "Actor, omitted as a total."
         )
 
+    def cell_from_entities(
+        entities: list[EntityBreakdown], idxs: list[int]
+    ) -> tuple[float | None, float | None]:
+        # Same "totals reflect only the filtered rows" exception as
+        # `_totals_from_entities`: raw Σvalue/Σcount summed across the
+        # already-filtered entities, divided once at the end — not an
+        # average of per-entity averages.
+        total_value = 0.0
+        total_count: float | None = 0.0 if chart_metric.value in _DURATION_KEYS else None
+        for entity in entities:
+            value, count = _metric_total_and_count(
+                entity.metrics, entity.counts, chart_metric, idxs
+            )
+            total_value += value
+            if count is not None and total_count is not None:
+                total_count += count
+        return _display_value(total_value, total_count, spec.duration_display), total_count
+
     totals: dict[str, float | None] = {}
     total_counts: dict[str, float] = {}
     for key, _, idxs in bucket_columns:
         if non_additive:
             totals[key] = None
             continue
-        value, count = cell(dataset.metrics, dataset.counts, idxs)
+        if filtered_entities is not None:
+            value, count = cell_from_entities(filtered_entities, idxs)
+        else:
+            value, count = cell(dataset.metrics, dataset.counts, idxs)
         totals[key] = value
         if count is not None:
             total_counts[key] = count
 
     return ReportTable(
-        columns=columns, rows=rows, totals=totals, total_counts=total_counts, warnings=warnings
+        columns=columns,
+        rows=rows,
+        totals=totals,
+        total_counts=total_counts,
+        warnings=warnings + entity_filter_warnings,
     )

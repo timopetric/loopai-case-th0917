@@ -67,6 +67,51 @@ class TestTopEightSelection:
         assert table.chart is None
 
 
+class TestChartHonoursEntityFilter:
+    """table-filter-and-assistant-intro issue 02/07: the chart must agree
+    with the (long-layout) table it sits next to — a filtered table with an
+    unfiltered chart would contradict the PRD's stated reason for putting
+    the filter in the engine at all ("preview, exports, and the Assistant's
+    run_report all agree by construction"). "kaur" matches exactly three
+    Actors in the fixture (Elena/Rosa/Ivan Kaur — `tests/test_engine.py`'s
+    `TestEntityFilter` docstring)."""
+
+    def test_chart_series_are_narrowed_to_the_filtered_entities(self, dataset) -> None:
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="day",
+            group_by="agent",
+            entity_filter="kaur",
+        )
+
+        table = execute(spec, dataset)
+
+        assert table.chart is not None
+        assert {s.label for s in table.chart.series} == {"Elena Kaur", "Rosa Kaur", "Ivan Kaur"}
+        assert table.chart.dropped == 0
+
+    def test_the_eight_largest_cap_ranks_within_the_filtered_set_not_the_full_population(
+        self, dataset
+    ) -> None:
+        """A filter matching fewer than eight entities must show all of
+        them, never dropped as though ranked against the unfiltered 108."""
+        spec = ReportSpec(
+            metrics=[Metric.RESOLVED],
+            date_from="2026-07-10",
+            date_to="2026-07-23",
+            granularity="day",
+            group_by="agent",
+            entity_filter="kaur",
+        )
+
+        table = execute(spec, dataset)
+
+        assert len(table.chart.series) == 3
+        assert table.chart.dropped == 0
+
+
 class TestColourFollowsEntityNotRank:
     def test_an_actor_kept_in_two_date_ranges_keeps_its_colour_even_though_ranking_changes(
         self, dataset

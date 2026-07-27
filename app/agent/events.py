@@ -43,7 +43,7 @@ class RepairCode(StrEnum):
     group_by` is a single `Literal` rather than a pair of booleans
     (CONTEXT.md): the invalid case must be *unrepresentable*, not merely
     checked for. `presenter.py` maps each member to one fixed, pre-written
-    phrase; nothing outside this enum's five members can ever reach
+    phrase; nothing outside this enum's six members can ever reach
     `Repair.code`, so a tool argument or model output has no field left to
     interpolate through issue 16's repair logic.
     """
@@ -63,6 +63,13 @@ class RepairCode(StrEnum):
     DATE_RANGE_CLAMPED = "date_range_clamped"
     """`set_date_range` partially overlapped the Coverage Window — clamped
     to it."""
+    ENTITY_FILTER_IGNORED = "entity_filter_ignored"
+    """`entity_filter` was set while `group_by == "none"` — it has no Actor
+    or Mailbox breakdown to narrow, so the filter is ignored and the report
+    renders ungrouped (table-filter-and-assistant-intro issue 02/07;
+    `engine.execute` already emits the equivalent warning text this Repair
+    will be constructed from, the same way `clamp_to_coverage`'s warning
+    becomes `DATE_RANGE_CLAMPED` above)."""
 
 
 class Repair(BaseModel):

@@ -20,7 +20,7 @@ from datetime import date
 from enum import StrEnum
 from typing import Literal
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class Metric(StrEnum):
@@ -98,6 +98,23 @@ class ReportSpec(BaseModel):
     """`None` defaults to `metrics[0]`. Must be a member of `metrics` —
     enforced below — so pivot and the (later, issue 14) chart can never
     point at a column that isn't on the report."""
+    entity_filter: str | None = None
+    """Free-text, case-insensitive substring filter against Actor or Mailbox
+    names — whichever `group_by` currently selects (CONTEXT.md). The field
+    validator below normalizes empty and whitespace-only input to `None` and
+    trims surrounding whitespace on any real value, so "filter is set" and
+    "filter has a real value" can never disagree anywhere downstream — the
+    same `None`-means-unset convention `columns_order`/`chart_metric` already
+    use above. Has no effect while `group_by == "none"`; `engine.execute`
+    reports that combination as a Repair, never an error (ADR-0002)."""
+
+    @field_validator("entity_filter")
+    @classmethod
+    def _normalize_entity_filter(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        stripped = value.strip()
+        return stripped or None
 
     @model_validator(mode="after")
     def _date_range_is_ordered(self) -> "ReportSpec":

@@ -52,3 +52,30 @@ def test_metrics_cannot_be_empty() -> None:
 def test_unknown_metric_name_is_rejected() -> None:
     with pytest.raises(ValidationError):
         ReportSpec(metrics=["not_a_real_metric"], date_from="2026-07-10", date_to="2026-07-23")
+
+
+class TestEntityFilterNormalization:
+    """`entity_filter` (table-filter-and-assistant-intro issue 02): "filter is
+    set" and "filter has a real value" can never disagree — empty and
+    whitespace-only input both normalize to `None`, matching how
+    `columns_order`/`chart_metric` already use `None` to mean "not set"."""
+
+    def test_entity_filter_defaults_to_none(self) -> None:
+        spec = ReportSpec(**_VALID_KWARGS)
+
+        assert spec.entity_filter is None
+
+    def test_empty_string_normalizes_to_none(self) -> None:
+        spec = ReportSpec(**_VALID_KWARGS, entity_filter="")
+
+        assert spec.entity_filter is None
+
+    def test_whitespace_only_normalizes_to_none(self) -> None:
+        spec = ReportSpec(**_VALID_KWARGS, entity_filter="   ")
+
+        assert spec.entity_filter is None
+
+    def test_a_real_value_is_stripped_of_surrounding_whitespace(self) -> None:
+        spec = ReportSpec(**_VALID_KWARGS, entity_filter="  theo  ")
+
+        assert spec.entity_filter == "theo"

@@ -44,9 +44,10 @@ def encode_spec(spec: ReportSpec) -> dict[str, str]:
     """`ReportSpec` -> a flat `dict[str, str]` suitable for `URLSearchParams`
     / `urlencode`. Every field that affects what is displayed is present
     (architecture.md §2's full field list) — optional fields (`sort`,
-    `columns_order`, `chart_metric`) are omitted, not encoded as empty
-    strings, so `decode_spec` can tell "absent" from "explicitly cleared"
-    using the same `None`-means-default rule `ReportSpec` itself uses.
+    `columns_order`, `chart_metric`, `entity_filter`) are omitted, not
+    encoded as empty strings, so `decode_spec` can tell "absent" from
+    "explicitly cleared" using the same `None`-means-default rule
+    `ReportSpec` itself uses.
     """
     params: dict[str, str] = {
         "metrics": _LIST_SEP.join(m.value for m in spec.metrics),
@@ -64,6 +65,8 @@ def encode_spec(spec: ReportSpec) -> dict[str, str]:
         params["columns_order"] = _LIST_SEP.join(spec.columns_order)
     if spec.chart_metric is not None:
         params["chart_metric"] = spec.chart_metric.value
+    if spec.entity_filter is not None:
+        params["entity_filter"] = spec.entity_filter
     return params
 
 
@@ -101,6 +104,8 @@ def decode_spec(params: Mapping[str, str]) -> ReportSpec:
             payload["columns_order"] = [c for c in value.split(_LIST_SEP) if c]
         if "chart_metric" in params:
             payload["chart_metric"] = params["chart_metric"]
+        if "entity_filter" in params:
+            payload["entity_filter"] = params["entity_filter"]
 
         return ReportSpec(**payload)
     except KeyError as exc:
