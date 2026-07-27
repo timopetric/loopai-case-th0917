@@ -231,11 +231,14 @@ class TestThinkingIndicator:
         assert 'role="status"' in source
 
 
-class TestReasoningDisclosureIsDevelopmentOnly:
-    """The `VITE_*` hard rule bans build-time frontend configuration, so the
-    dev-only reasoning panel cannot be gated on an `import.meta.env` value —
-    it must use the same runtime signal the dev-fake banners already use
-    (`meta.dev_fake_llm`, fetched from `/api/v1/meta` at request time)."""
+class TestReasoningDisclosureIsUniversal:
+    """ADR-0005 dropped the dev-only gate on `ThinkingTextEvent`: raw
+    reasoning now streams to every user, in every environment, so the
+    frontend must not still be gating its display on a runtime dev flag —
+    that would silently hide a feature the backend now always sends. The
+    `VITE_*` hard rule (no build-time frontend configuration) still applies,
+    so this is also a guard against reintroducing an `import.meta.env` gate
+    instead."""
 
     def test_no_build_time_env_read_anywhere_in_the_panel(self) -> None:
         offenders: list[str] = []
@@ -245,18 +248,273 @@ class TestReasoningDisclosureIsDevelopmentOnly:
                 offenders.append(path.name)
         assert not offenders, f"found a build-time env read in: {offenders}"
 
-    def test_reasoning_disclosure_is_gated_on_the_meta_dev_flag(self) -> None:
+    def test_reasoning_disclosure_is_no_longer_gated_on_the_dev_flag(self) -> None:
+        """A regression here would mean someone re-added the dev-only gate
+        ADR-0005 explicitly removed — reasoning must render for every user,
+        not just when `meta.dev_fake_llm` is true."""
         source = _read(CHAT_FILE)
-        assert "dev_fake_llm" in source, (
-            "expected the raw-reasoning disclosure to be gated on "
-            "meta.dev_fake_llm, the same runtime signal Header.tsx's "
-            "DEV_FAKE_LLM banner already uses"
+        assert "dev_fake_llm" not in source, (
+            "expected Chat.tsx to no longer reference meta.dev_fake_llm — "
+            "ADR-0005 dropped the dev-only gate on the reasoning panel"
         )
 
-    def test_reasoning_disclosure_is_collapsed_by_default(self) -> None:
+    def test_reasoning_disclosure_is_a_details_element(self) -> None:
         source = _read(CHAT_FILE)
-        assert "<details" in source, "expected the raw reasoning panel to be a <details> disclosure"
+        assert "<details" in source, "expected the reasoning panel to be a <details> disclosure"
         assert "<summary" in source
+
+
+class TestReasoningLivesOnTheMessage:
+    """The PRD's data-model change: `reasoning` moves off a single shared
+    `Chat`-component `useState` onto each `ChatMessage`, exactly like
+    `chips` already persists per message. A regression back to shared state
+    would silently reintroduce the bug where reasoning accumulates across
+    the whole session instead of resetting per turn."""
+
+    def test_reasoning_is_a_field_on_the_message_type_not_shared_state(self) -> None:
+        source = _read_code_only(CHAT_FILE)
+        assert re.search(r"reasoning\s*:\s*string", source), (
+            "expected a `reasoning: string` field on the ChatMessage shape"
+        )
+        # The old bug: `const [reasoning, setReasoning] = useState("")` at
+        # the Chat-component level, shared across every turn. That specific
+        # shared-state declaration must be gone.
+        assert not re.search(r"useState[<(][^)]*reasoning", source, re.IGNORECASE), (
+            "found what looks like a shared component-level reasoning "
+            "useState — reasoning must live on each ChatMessage instead"
+        )
+
+    def test_a_new_turn_starts_with_an_empty_reasoning_trace(self) -> None:
+        """Pins the bug fix: each new assistant message must be constructed
+        with `reasoning: ""`, not inherit whatever the previous turn left
+        behind."""
+        source = _read_code_only(CHAT_FILE)
+        assert re.search(r'reasoning\s*:\s*""', source), (
+            "expected a new assistant message to be constructed with an "
+            "empty reasoning string"
+        )
+
+    def test_reasoning_segments_only_when_prior_reasoning_exists(self) -> None:
+        """Segmentation: a paragraph break must be inserted into the
+        accumulating reasoning text specifically when `thinking: start`
+        fires AND prior reasoning already exists — a break on every start,
+        unconditionally, would prepend a stray blank paragraph before the
+        very first burst too. A regex that just checks 'a newline appears
+        somewhere in the start handler' would pass even if the break were
+        unconditional (or sitting in a comment) — this test extracts the
+        actual `reasoning:` field assignment and requires it to be a real
+        conditional with two differing branches."""
+        source = _read_code_only(CHAT_FILE)
+        start_handler_match = re.search(
+            r'event\.state\s*===\s*"start".*?(?=\}\s*else|onStatus)', source, re.DOTALL
+        )
+        assert start_handler_match, "expected an onThinking handler branching on event.state"
+        start_handler = start_handler_match.group(0)
+
+        reasoning_assignment = re.search(r"reasoning:\s*(.+?),\n", start_handler)
+        assert reasoning_assignment, (
+            "expected a `reasoning:` field assignment inside the "
+            "thinking:start branch"
+        )
+        expr = reasoning_assignment.group(1)
+
+        assert "?" in expr and "message.reasoning" in expr, (
+            "expected the paragraph break to be conditioned on "
+            "message.reasoning already being non-empty, via a ternary "
+            "referencing message.reasoning — not applied unconditionally"
+        )
+        true_branch, _, false_branch = expr.split("?", 1)[1].partition(":")
+        assert true_branch.strip() != false_branch.strip(), (
+            "expected the ternary's two branches to actually differ — "
+            "identical branches mean the break is applied unconditionally "
+            "regardless of whether prior reasoning exists"
+        )
+        # The true branch (prior reasoning is non-empty) is the one that
+        # must carry the break.
+        assert "\\n\\n" in true_branch or "\\n" in true_branch, (
+            "expected the branch taken when message.reasoning is already "
+            "non-empty to append a paragraph break"
+        )
+
+
+class TestReasoningManualOverride:
+    """The PRD's manual-override rule: a user collapsing/expanding a
+    message's panel mid-turn must not be snapped back by the next
+    auto-collapse/auto-expand transition for that same message."""
+
+    def test_a_manual_override_flag_exists_on_the_message(self) -> None:
+        source = _read_code_only(CHAT_FILE)
+        assert re.search(r"reasoningManualOverride|manualOverride", source), (
+            "expected a per-message flag recording that the user manually "
+            "toggled the reasoning panel"
+        )
+
+    def test_auto_transitions_never_set_reasoning_expanded_outside_the_guard_helper(self) -> None:
+        """A regression here would be an auto-transition handler (any of
+        the four stream-event sites that change expand/collapse state)
+        writing `reasoningExpanded: ...` directly, bypassing the override
+        guard entirely — a bare `re.search(r"reasoningManualOverride\\?",
+        source)` over the whole file would still pass in that broken case,
+        since the guard helper's own definition contains that ternary even
+        if nothing outside it ever calls it. This test isolates the body of
+        `send()` (where all four onThinking/onDone/onError stream handlers
+        live) and asserts `reasoningExpanded` is written nowhere in it
+        except through the one helper call site."""
+        source = _read_code_only(CHAT_FILE)
+
+        send_match = re.search(
+            r"async function send\(\)\s*\{(.*?)\n  \}\n", source, re.DOTALL
+        )
+        assert send_match, "expected an async function send() body"
+        send_body = send_match.group(1)
+
+        assert "setExpandedUnlessOverridden" in send_body, (
+            "expected send() to route every auto expand/collapse decision "
+            "through a single named guard helper"
+        )
+
+        # Strip out the helper's own definition (it necessarily assigns
+        # reasoningExpanded once, inside the guard) before checking that no
+        # *other* line in send() assigns reasoningExpanded directly.
+        helper_def_match = re.search(
+            r"function setExpandedUnlessOverridden.*?\n    \}\n", send_body, re.DOTALL
+        )
+        assert helper_def_match, "expected setExpandedUnlessOverridden to be defined inside send()"
+        body_outside_helper = (
+            send_body[: helper_def_match.start()] + send_body[helper_def_match.end() :]
+        )
+
+        assert "reasoningExpanded:" not in body_outside_helper, (
+            "found a direct `reasoningExpanded:` assignment inside send() "
+            "outside the guard helper — every auto expand/collapse "
+            "transition must go through setExpandedUnlessOverridden so the "
+            "manual-override flag is respected"
+        )
+
+    def test_manual_toggle_sets_the_override_flag(self) -> None:
+        source = _read_code_only(CHAT_FILE)
+        assert re.search(r"reasoningManualOverride\s*:\s*true", source), (
+            "expected the user's manual toggle handler to set "
+            "reasoningManualOverride to true"
+        )
+
+
+class TestCollapsedPulseDistinguishesInFlightFromDone:
+    """The PRD's central distinction: a collapsed reasoning panel must keep
+    pulsing while that Tool Step's model call is still genuinely in flight,
+    and only go static once the whole turn reaches `done`. These are two
+    different booleans (`reasoningActive` vs. `turnDone`) — collapsing the
+    two into one would make "collapsed but still working" indistinguishable
+    from "collapsed and finished", which is the exact bug this issue exists
+    to fix."""
+
+    def test_active_and_done_are_tracked_as_distinct_fields(self) -> None:
+        source = _read_code_only(CHAT_FILE)
+        assert re.search(r"reasoningActive\s*:\s*(bool|boolean)", source), (
+            "expected a reasoningActive field distinguishing an in-flight "
+            "Tool Step's model call from an idle gap"
+        )
+        assert re.search(r"turnDone\s*:\s*(bool|boolean)", source), (
+            "expected a turnDone field distinguishing the whole turn's "
+            "completion from a single Tool Step ending"
+        )
+
+    def test_turn_done_is_only_set_on_done_or_error(self) -> None:
+        source = _read_code_only(CHAT_FILE)
+        done_and_error_block = re.search(
+            r"onDone:.*?onError:.*?(?=onThinkingText|\}\);)", source, re.DOTALL
+        )
+        assert done_and_error_block, "expected onDone and onError handlers in streamAgentMessage"
+        assert re.search(r"turnDone\s*:\s*true", done_and_error_block.group(0)), (
+            "expected turnDone to be set true inside onDone/onError, not "
+            "inside the per-Tool-Step onThinking handler"
+        )
+
+    def test_pulsing_animation_reads_the_active_flag_not_turn_done(self) -> None:
+        """The animated dot must be driven by reasoningActive (this Tool
+        Step's model call in flight), not by the inverse of turnDone —
+        otherwise the gap between Tool Steps (no model call in flight, but
+        the turn isn't done yet) would incorrectly keep pulsing."""
+        source = _read_code_only(CHAT_FILE)
+        assert re.search(r"animate-pulse", source)
+        # The pulsing class must be conditioned on reasoningActive within
+        # the same function that renders it (ReasoningPanel).
+        panel_fn = re.search(r"function ReasoningPanel\(.*?function RepairBadge", source, re.DOTALL)
+        assert panel_fn, "expected a ReasoningPanel function rendering the collapsed/expanded panel"
+        panel_source = panel_fn.group(0)
+        assert "animate-pulse" in panel_source and "reasoningActive" in panel_source, (
+            "expected the pulsing indicator to be conditioned on "
+            "message.reasoningActive inside ReasoningPanel"
+        )
+
+
+class TestWaitingStateNeedsNoNewBackendEvent:
+    """The Waiting state ("busy, no thinking:start yet, no reasoning text")
+    must be derivable purely from client-side facts available the instant
+    `send()` is called — the PRD explicitly rejects an explicit
+    `turn_start` SSE event for this. A regression toward waiting on a
+    server round-trip would reintroduce the flash-of-nothing the whole
+    state machine exists to avoid."""
+
+    def test_waiting_copy_exists_and_is_plain_not_animated(self) -> None:
+        source = _read_code_only(CHAT_FILE)
+        assert "Waiting for a response" in source
+
+    def test_waiting_state_is_gated_on_reasoning_not_started(self) -> None:
+        """A 'somewhere nearby' proximity check would pass even if
+        `reasoningStarted` merely appeared in an unrelated sibling branch —
+        this asserts the actual JSX condition immediately guarding the
+        Waiting paragraph."""
+        source = _read_code_only(CHAT_FILE)
+        waiting_line = re.search(r"\{[^{]*?<p[^>]*>Waiting for a response", source, re.DOTALL)
+        assert waiting_line, (
+            "expected a `{<condition> && (<p>...Waiting for a response...` "
+            "render guard directly above the Waiting paragraph"
+        )
+        condition = waiting_line.group(0)
+        assert "!message.reasoningStarted" in condition, (
+            "expected the Waiting text's render condition to require "
+            "!message.reasoningStarted"
+        )
+        assert "busy" in condition, (
+            "expected the Waiting text's render condition to also require "
+            "busy — a finished past turn with no reasoning must not show "
+            "the Waiting text forever"
+        )
+
+
+class TestPastTurnsReasoningPersistsAndReexpands:
+    """Past turns' reasoning traces must remain in the chat history and be
+    re-expandable after sending a new message — this is what makes
+    `reasoning` a per-message field rather than shared state (moving it
+    also fixes the accumulation bug, covered separately)."""
+
+    def test_reasoning_panel_is_rendered_per_message_not_once_globally(self) -> None:
+        """A regression here would render a single reasoning panel outside
+        the per-message map, which cannot stay attached to a specific past
+        turn once a new turn starts."""
+        source = _read_code_only(CHAT_FILE)
+        chat_bubble_fn = re.search(
+            r"function ChatBubble\((.*?)\nfunction ReasoningPanel", source, re.DOTALL
+        )
+        assert chat_bubble_fn, "expected a ChatBubble function followed by ReasoningPanel"
+        chat_bubble_body = chat_bubble_fn.group(1)
+        assert "reasoningStarted" in chat_bubble_body and "ReasoningPanel" in chat_bubble_body, (
+            "expected ChatBubble (rendered once per message) to render that "
+            "message's reasoning panel via <ReasoningPanel>, gated on that "
+            "message's own reasoningStarted"
+        )
+
+    def test_toggle_handler_targets_a_specific_message_by_index(self) -> None:
+        """The manual-toggle handler must address one message (by index or
+        id), not mutate a single shared panel-open boolean — otherwise
+        expanding one past turn's trace would expand/collapse all of them
+        together."""
+        source = _read_code_only(CHAT_FILE)
+        assert re.search(r"function toggleReasoningPanel\(index", source), (
+            "expected a per-message toggle handler parameterised on which "
+            "message it targets"
+        )
 
 
 class TestComposer:

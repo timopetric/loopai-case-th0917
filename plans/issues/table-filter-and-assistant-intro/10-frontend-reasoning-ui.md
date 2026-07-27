@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 
 # 10 — Frontend: per-message reasoning trace, three-state indicator
 

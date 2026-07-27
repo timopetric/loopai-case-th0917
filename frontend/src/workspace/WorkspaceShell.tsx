@@ -244,7 +244,6 @@ export function WorkspaceShell() {
           meta={meta}
         />
         <AssistantPane
-          meta={meta}
           collapsed={assistantCollapsed}
           onToggleCollapse={() => setAssistantCollapsed((prev) => !prev)}
         />

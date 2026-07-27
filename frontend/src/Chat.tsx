@@ -2,26 +2,107 @@ import { useEffect, useRef, useState } from "react";
 
 import { streamAgentMessage } from "./lib/agentStream";
 import { Markdown } from "./lib/markdown";
-import type { Meta } from "./lib/meta";
 import { useReportSpecStore } from "./store/reportSpecStore";
 
+/**
+ * One turn's reasoning trace and its disclosure-panel state (issue 10,
+ * ADR-0005). `reasoning` is permanent and per-message — unlike the old
+ * single shared `Chat`-level `useState`, it is never wiped by the next
+ * turn, and each past turn keeps its own re-expandable trace exactly as
+ * `chips` already do.
+ *
+ * The three visual states the PRD names (Waiting / Thinking / Collapsed)
+ * are *derived* from these fields at render time rather than stored as a
+ * fourth redundant field:
+ *   - Waiting:   !reasoningStarted && !turnDone (only meaningful on the
+ *                in-flight last message; see `Chat`'s `busy` check).
+ *   - Thinking:  reasoningStarted && reasoningActive (auto-expanded).
+ *   - Collapsed: reasoningStarted && !reasoningActive (auto-collapsed) —
+ *                its summary line still pulses if `reasoningActive` flips
+ *                back true for the *next* Tool Step, and stays static once
+ *                `turnDone`.
+ */
 interface ChatMessage {
   role: "user" | "assistant";
   text: string;
   chips: string[];
+  /** Accumulated raw reasoning text (ADR-0005: streamed to every user, in
+   * every environment, unfiltered). Paragraph-broken at each Tool Step
+   * boundary — see the `onThinking` "start" handler below. */
+  reasoning: string;
+  /** True once the first `thinking: start` has fired for this message —
+   * distinguishes "no reasoning yet" (Waiting) from "reasoning arrived,
+   * currently between Tool Steps" (Collapsed but not done). */
+  reasoningStarted: boolean;
+  /** True between a Tool Step's `thinking: start` and its `thinking: end`
+   * — "that Tool Step's model call is genuinely in flight," the exact
+   * condition the PRD ties the pulsing animation to. */
+  reasoningActive: boolean;
+  /** True once the whole turn reaches `done` or `error` — the only
+   * condition allowed to make a collapsed summary line stop pulsing for
+   * good, per the PRD's "collapsed but still working" vs. "collapsed and
+   * finished" distinction. */
+  turnDone: boolean;
+  /** Current disclosure open/closed state, driven by auto-expand/collapse
+   * unless `reasoningManualOverride` is set. */
+  reasoningExpanded: boolean;
+  /** Set the first time the user manually toggles this message's panel
+   * while its Tool Step is still active. Once set, no further auto-
+   * expand/auto-collapse transition may touch `reasoningExpanded` for this
+   * message — only a brand new turn (a brand new `ChatMessage`) starts
+   * fresh with this false again. */
+  reasoningManualOverride: boolean;
+}
+
+/** The reasoning fields are only ever populated on assistant messages, but
+ * live on the shared `ChatMessage` type (like `chips` already did) rather
+ * than a discriminated union, matching this component's existing style —
+ * `newUserMessage` just fills them with their inert defaults. */
+function newUserMessage(text: string): ChatMessage {
+  return {
+    role: "user",
+    text,
+    chips: [],
+    reasoning: "",
+    reasoningStarted: false,
+    reasoningActive: false,
+    turnDone: false,
+    reasoningExpanded: false,
+    reasoningManualOverride: false,
+  };
+}
+
+function newAssistantMessage(): ChatMessage {
+  return {
+    role: "assistant",
+    text: "",
+    chips: [],
+    reasoning: "",
+    reasoningStarted: false,
+    reasoningActive: false,
+    turnDone: false,
+    reasoningExpanded: false,
+    reasoningManualOverride: false,
+  };
 }
 
 /**
  * The Assistant chat panel (issue 15; docked as `AssistantPane` in issue
- * 02; markdown + visual pass in issue 06). Renders the presenter's small,
- * fixed vocabulary — a thinking row with an elapsed counter, chips as
- * badges on the Assistant's message, and streamed prose rendered as
- * markdown (architecture.md §6, §7). Never touches a tool name, a raw
- * argument or reasoning text outside the dev-only disclosure below — those
- * never arrive here in the first place, since `app/agent/presenter.py` is
- * the chokepoint that keeps them off the wire; this component only
- * *formats* what already arrives (`lib/markdown.tsx`'s docstring covers the
- * markdown-specific half of that guarantee).
+ * 02; markdown + visual pass in issue 06; per-message reasoning trace in
+ * issue 10). Renders the presenter's small, fixed vocabulary — a thinking
+ * row with an elapsed counter, chips as badges on the Assistant's message,
+ * a per-message reasoning trace (ADR-0005), and streamed prose rendered as
+ * markdown (architecture.md §6, §7). Never touches a tool name or raw
+ * argument — those never arrive here in the first place, since
+ * `app/agent/presenter.py` is the chokepoint that keeps them off the wire;
+ * this component only *formats* what already arrives (`lib/markdown.tsx`'s
+ * docstring covers the markdown-specific half of that guarantee). The one
+ * exception, by design, is the reasoning trace itself: ADR-0005 accepts
+ * that a reasoning model's chain-of-thought routinely names tool/enum
+ * internals, and renders it unfiltered in its own labelled panel — that
+ * tradeoff applies to the model's streamed content only, never to the
+ * chrome this component writes around it (labels, summary lines stay in
+ * Actor/Mailbox/Assistant vocabulary).
  *
  * Reads and writes the single Report Spec store (`store/reportSpecStore.ts`)
  * directly rather than taking a spec via props: `buildSpec()` is the exact
@@ -31,7 +112,7 @@ interface ChatMessage {
  * one field at a time as the Assistant works (user story 38, ADR-0002) —
  * through the SAME store `BuilderPane`'s controls edit.
  */
-export function Chat({ meta }: { meta: Meta | null }) {
+export function Chat() {
   const buildSpec = useReportSpecStore((state) => state.buildSpec);
   const applySpec = useReportSpecStore((state) => state.applySpec);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -40,15 +121,6 @@ export function Chat({ meta }: { meta: Meta | null }) {
   const [thinking, setThinking] = useState(false);
   const [elapsedMs, setElapsedMs] = useState(0);
   const [status, setStatus] = useState<string | null>(null);
-  /** Raw reasoning text, development-only (architecture.md §6 "Dev-mode
-   * exception"). Gated on `meta.dev_fake_llm` — the same runtime signal
-   * `Header.tsx`'s DEV_FAKE_LLM banner already reads from `/api/v1/meta` —
-   * rather than any build-time value, per the `VITE_*` hard rule. The
-   * backend only ever streams the underlying `thinking_text` event when
-   * `settings.is_development`, so this is a belt-and-suspenders display
-   * gate on top of an event that already cannot arrive in production. */
-  const [reasoning, setReasoning] = useState("");
-  const devMode = Boolean(meta?.dev_fake_llm);
 
   /**
    * The polite, one-shot completion announcement (issue 08: frontend-rework
@@ -103,11 +175,7 @@ export function Chat({ meta }: { meta: Meta | null }) {
     setInput("");
     setBusy(true);
     setStatus(null);
-    setMessages((prev) => [
-      ...prev,
-      { role: "user", text, chips: [] },
-      { role: "assistant", text: "", chips: [] },
-    ]);
+    setMessages((prev) => [...prev, newUserMessage(text), newAssistantMessage()]);
 
     function updateLastAssistantMessage(update: (message: ChatMessage) => ChatMessage) {
       setMessages((prev) => {
@@ -118,15 +186,41 @@ export function Chat({ meta }: { meta: Meta | null }) {
       });
     }
 
+    /** Auto-expand/auto-collapse a message's reasoning panel — a no-op once
+     * `reasoningManualOverride` is set, per the PRD's manual-override rule:
+     * a mid-turn manual toggle is never snapped back by the next auto
+     * transition for that same message. */
+    function setExpandedUnlessOverridden(message: ChatMessage, expanded: boolean): ChatMessage {
+      return message.reasoningManualOverride ? message : { ...message, reasoningExpanded: expanded };
+    }
+
     try {
       await streamAgentMessage(text, buildSpec(), {
         onThinking: (event) => {
           if (event.state === "start") {
             setThinking(true);
             startThinkingTimer();
+            updateLastAssistantMessage((message) =>
+              setExpandedUnlessOverridden(
+                {
+                  ...message,
+                  // Segmentation: a paragraph break before this Tool
+                  // Step's reasoning, but only if a previous Tool Step
+                  // already left text behind — the first burst needs no
+                  // leading separator.
+                  reasoning: message.reasoning ? message.reasoning + "\n\n" : message.reasoning,
+                  reasoningStarted: true,
+                  reasoningActive: true,
+                },
+                true,
+              ),
+            );
           } else {
             setThinking(false);
             stopThinkingTimer();
+            updateLastAssistantMessage((message) =>
+              setExpandedUnlessOverridden({ ...message, reasoningActive: false }, false),
+            );
           }
         },
         onStatus: (event) => setStatus(event.text),
@@ -147,20 +241,28 @@ export function Chat({ meta }: { meta: Meta | null }) {
           setStatus(null);
           setBusy(false);
           setAnnouncement("Assistant replied.");
+          updateLastAssistantMessage((message) =>
+            setExpandedUnlessOverridden({ ...message, reasoningActive: false, turnDone: true }, false),
+          );
         },
         onError: (event) => {
           setStatus(null);
           setThinking(false);
           stopThinkingTimer();
           setBusy(false);
-          updateLastAssistantMessage((message) => ({
-            ...message,
-            text: message.text || event.text,
-          }));
+          updateLastAssistantMessage((message) =>
+            setExpandedUnlessOverridden(
+              { ...message, text: message.text || event.text, reasoningActive: false, turnDone: true },
+              false,
+            ),
+          );
           setAnnouncement("Assistant could not complete the reply.");
         },
         onThinkingText: (event) => {
-          setReasoning((prev) => prev + event.text);
+          updateLastAssistantMessage((message) => ({
+            ...message,
+            reasoning: message.reasoning + event.text,
+          }));
         },
       });
     } finally {
@@ -168,6 +270,26 @@ export function Chat({ meta }: { meta: Meta | null }) {
       setThinking(false);
       stopThinkingTimer();
     }
+  }
+
+  /** Manual override (PRD "Manual override"): flips `reasoningExpanded` and
+   * latches `reasoningManualOverride` so no subsequent auto transition for
+   * this message can undo the user's choice. Applies to any message, not
+   * just the in-flight one — past turns' panels are freely re-expandable
+   * (PRD acceptance criterion) and re-collapsing one is just as much a
+   * manual choice, harmless to latch since a finished turn has no more
+   * auto transitions left to suppress. */
+  function toggleReasoningPanel(index: number) {
+    setMessages((prev) => {
+      const next = [...prev];
+      const message = next[index];
+      next[index] = {
+        ...message,
+        reasoningExpanded: !message.reasoningExpanded,
+        reasoningManualOverride: true,
+      };
+      return next;
+    });
   }
 
   return (
@@ -191,26 +313,29 @@ export function Chat({ meta }: { meta: Meta | null }) {
         )}
         <div className="flex flex-col gap-3">
           {messages.map((message, index) => (
-            <ChatBubble key={index} message={message} />
+            <ChatBubble
+              key={index}
+              message={message}
+              busy={busy && index === messages.length - 1}
+              // The elapsed-time counter belongs to whichever Tool Step is
+              // actually running right now, which can only ever be the
+              // last message — passing it to every bubble would either
+              // show a stale, frozen number on a past turn's panel (the
+              // counter is never reset for those) or make one restart from
+              // 0 every re-render. `ReasoningPanel` also only displays it
+              // while that same message's `reasoningActive` is true, so a
+              // past turn's collapsed summary never shows a number at all.
+              elapsedMs={index === messages.length - 1 ? elapsedMs : undefined}
+              onToggleReasoning={() => toggleReasoningPanel(index)}
+            />
           ))}
         </div>
-        {thinking && <ThinkingRow elapsedMs={elapsedMs} />}
         {status && !thinking && (
           <p role="status" className="mt-2 text-body-sm text-steel">
             {status}
           </p>
         )}
       </div>
-      {devMode && reasoning && (
-        <details className="mb-2 rounded-md border border-hairline bg-cream-soft p-2">
-          <summary className="cursor-pointer text-body-sm-medium font-medium text-ink-tint">
-            Raw reasoning (development only)
-          </summary>
-          <pre className="mt-1 max-h-48 overflow-auto whitespace-pre-wrap font-mono text-micro text-steel">
-            {reasoning}
-          </pre>
-        </details>
-      )}
       {/* The one-shot completion announcement (see the `announcement`
           state's docstring above) — visually hidden, so it never shows a
           redundant "Assistant replied." line beneath a bubble that already
@@ -251,14 +376,34 @@ export function Chat({ meta }: { meta: Meta | null }) {
 /** One turn's bubble — user and Assistant are visually distinct surfaces
  * (a plain right-aligned card for the user, a filled cream card on the
  * left for the Assistant), each carrying its Repair chips as badges
- * beneath the prose rather than inline text. */
-function ChatBubble({ message }: { message: ChatMessage }) {
+ * beneath the prose rather than inline text. The Assistant's bubble also
+ * carries its reasoning trace (issue 10) — `busy` is true only for the
+ * last message while a turn is in flight, which is what makes the Waiting
+ * state ("no reasoning yet") distinguishable from a past, already-silent
+ * turn that simply never streamed any reasoning. */
+function ChatBubble({
+  message,
+  busy,
+  elapsedMs,
+  onToggleReasoning,
+}: {
+  message: ChatMessage;
+  busy: boolean;
+  elapsedMs?: number;
+  onToggleReasoning: () => void;
+}) {
   const isUser = message.role === "user";
   return (
     <div className={"flex flex-col " + (isUser ? "items-end" : "items-start")}>
       <span className="mb-1 text-micro-uppercase font-semibold uppercase tracking-wide text-stone">
         {isUser ? "You" : "Assistant"}
       </span>
+      {!isUser && busy && !message.reasoningStarted && (
+        <p className="mb-1 text-body-sm text-steel">Waiting for a response…</p>
+      )}
+      {!isUser && message.reasoningStarted && (
+        <ReasoningPanel message={message} elapsedMs={elapsedMs} onToggle={onToggleReasoning} />
+      )}
       <div
         className={
           "max-w-full rounded-lg px-3 py-2 text-body-sm " +
@@ -282,6 +427,64 @@ function ChatBubble({ message }: { message: ChatMessage }) {
   );
 }
 
+/** The per-message reasoning trace panel (issue 10, ADR-0005) — Thinking
+ * and Collapsed are the same `<details>` element, distinguished only by
+ * `message.reasoningExpanded` and whether the dot keeps pulsing. This is
+ * also where the old standalone `ThinkingRow`'s elapsed-time counter now
+ * lives: before this slice, a Tool Step in flight showed *two* pulsing
+ * dots on screen at once — one on this panel's summary, one on
+ * `ThinkingRow` below the message list — and the second one had nothing
+ * behind it. Folding the counter into this summary line leaves exactly one
+ * indicator, which says it is thinking, how long for, and (on expand) what
+ * about.
+ *
+ * `elapsedMs` is only ever passed for the single last, in-flight message
+ * (`Chat`'s render loop) and only ever displayed while `reasoningActive` is
+ * true — a past turn's panel, or a gap between this turn's Tool Steps, must
+ * never show a stale or restarting number.
+ *
+ * Native `<details>` toggling is intercepted (`preventDefault` on the
+ * `<summary>` click) rather than trusted, because open/closed state here
+ * is also driven by auto-expand/auto-collapse from stream events — letting
+ * the DOM and React state diverge would make the manual-override rule
+ * (`reasoningManualOverride`) unenforceable. */
+function ReasoningPanel({
+  message,
+  elapsedMs,
+  onToggle,
+}: {
+  message: ChatMessage;
+  elapsedMs?: number;
+  onToggle: () => void;
+}) {
+  const pulsing = message.reasoningActive;
+  const showElapsed = message.reasoningActive && typeof elapsedMs === "number";
+  return (
+    <details
+      open={message.reasoningExpanded}
+      className="mb-1 w-full rounded-md border border-hairline bg-cream-soft p-2"
+    >
+      <summary
+        role="status"
+        onClick={(event) => {
+          event.preventDefault();
+          onToggle();
+        }}
+        className="flex cursor-pointer items-center gap-2 text-body-sm-medium font-medium text-ink-tint"
+      >
+        <span
+          className={"inline-flex h-2 w-2 rounded-full bg-primary" + (pulsing ? " animate-pulse" : "")}
+          aria-hidden="true"
+        />
+        Thinking{showElapsed ? ` (${(elapsedMs / 1000).toFixed(1)}s)` : ""}
+      </summary>
+      <div className="mt-1 max-h-64 overflow-auto text-micro text-steel">
+        <Markdown text={message.reasoning} />
+      </div>
+    </details>
+  );
+}
+
 /** A Repair/status badge (ADR-0002) — a small read-only pill, distinct from
  * the `Chip` primitive in `ui/Chip.tsx` (a selectable toggle button for the
  * builder rail, not an annotation on a message). */
@@ -290,23 +493,5 @@ function RepairBadge({ children }: { children: string }) {
     <span className="rounded-full border border-beige-deep bg-cream px-2 py-0.5 text-micro font-medium text-ink-tint">
       {children}
     </span>
-  );
-}
-
-/** The thinking indicator (architecture.md §6/§7): the model reasons for
- * several seconds before its first tool call or token, and without a live
- * "still working" row the panel reads as hung rather than busy. Reappears
- * once per model call in a multi-step turn (`Chat`'s `onThinking` handler
- * just toggles this row on/off; it does not try to distinguish which call
- * it is). */
-function ThinkingRow({ elapsedMs }: { elapsedMs: number }) {
-  return (
-    <p role="status" className="mt-2 flex items-center gap-2 text-body-sm text-steel">
-      <span
-        className="inline-flex h-2 w-2 animate-pulse rounded-full bg-primary"
-        aria-hidden="true"
-      />
-      Thinking… ({(elapsedMs / 1000).toFixed(1)}s)
-    </p>
   );
 }

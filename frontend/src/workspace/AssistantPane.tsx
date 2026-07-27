@@ -1,5 +1,4 @@
 import { Chat } from "../Chat";
-import type { Meta } from "../lib/meta";
 import { useResizableWidth } from "../lib/resizableWidth";
 
 /**
@@ -12,17 +11,15 @@ import { useResizableWidth } from "../lib/resizableWidth";
  *
  * `Chat` reads and writes the shared Report Spec store directly (see
  * `Chat.tsx`'s docstring) — this pane only owns the collapse affordance,
- * which is shell-level layout state, not Report Spec state. `meta` is
- * passed straight through to `Chat`, which needs `meta.dev_fake_llm` to
- * gate its development-only raw-reasoning disclosure (issue 06) — the same
- * fetch-derived value `Header.tsx`'s DEV_FAKE_LLM banner already reads.
+ * which is shell-level layout state, not Report Spec state. It no longer
+ * threads `meta` through to `Chat`: the reasoning disclosure `Chat` renders
+ * is no longer gated on `meta.dev_fake_llm` (ADR-0005 dropped the dev-only
+ * gate — reasoning now streams to every user, in every environment).
  */
 export function AssistantPane({
-  meta,
   collapsed,
   onToggleCollapse,
 }: {
-  meta: Meta | null;
   collapsed: boolean;
   onToggleCollapse: () => void;
 }) {
@@ -78,7 +75,7 @@ export function AssistantPane({
           »
         </button>
       </div>
-      <Chat meta={meta} />
+      <Chat />
     </aside>
   );
 }

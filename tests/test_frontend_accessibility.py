@@ -208,11 +208,18 @@ class TestReducedMotion:
         """The reduced-motion override works by beating Tailwind's
         `animate-pulse` utility class — it cannot beat an inline
         `style={{ animation: ... }}`, since inline styles win over even
-        unlayered stylesheet rules. Pin `ThinkingRow` to the utility class
-        so the global override actually reaches it."""
+        unlayered stylesheet rules. Issue 10 folded the standalone
+        `ThinkingRow` indicator into the per-message `ReasoningPanel` (two
+        pulsing dots on screen at once, one with nothing behind it, was the
+        exact bug this consolidation exists to fix) — pin the utility class
+        to `ReasoningPanel` now so the global override still reaches it."""
         source = _read_code_only(CHAT_FILE)
         assert "animate-pulse" in source
-        assert re.search(r"ThinkingRow[\s\S]*?animate-pulse", source)
+        assert "ThinkingRow" not in source, (
+            "expected the standalone ThinkingRow indicator to be gone — its "
+            "elapsed-time counter now lives inside ReasoningPanel's summary"
+        )
+        assert re.search(r"function ReasoningPanel[\s\S]*?animate-pulse", source)
         # No inline animation style anywhere in the chat panel.
         assert "style={{" not in source or "animation" not in source
 
